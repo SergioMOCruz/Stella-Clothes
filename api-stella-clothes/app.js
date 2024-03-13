@@ -47,6 +47,11 @@ connectDB();
 // Firebase
 connectFirebase();
 
+// Routes
+app.use('/clients', require('./routes/client'));
+app.use('/employees', require('./routes/employee'));
+app.use('/products', require('./routes/product'));
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
