@@ -1,0 +1,34 @@
+@import "variables.scss";
+
+* {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+a, a:visited, a:hover, a:active {
+  color: #fff;
+}
+
+p {
+  font-family: $font-telex;
+}
+
+.white-button {
+  font-family: $font-telex;
+  border: 1px solid;
+  padding: 0.5rem 4rem;
+  text-decoration: none;
+}
+
+.redirect {
+  cursor: pointer;
+  font-family: $font-graphik;
+  text-transform: uppercase;
+  background-color: #000;
+  color: #fff;
+  padding: 0.5rem;
+  text-decoration: none;
+}
