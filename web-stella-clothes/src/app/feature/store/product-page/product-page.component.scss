@@ -1,0 +1,69 @@
+@import "../../../styles/variables.scss";
+
+#product {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  font-family: $font-telex;
+
+  &-images, &-description {
+    width: 50%;
+  }
+
+  &-images {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+
+    img {
+      width: 50%;
+    }
+  }
+
+  &-description {
+    padding: 4rem 0 0 5rem;
+  }
+}
+
+#product-description {
+    &-type {
+      font-size: 0.6rem;
+      color: #818181;
+    }
+
+    &-color {
+      font-size: 0.7rem;
+      color: #494949;
+    }
+
+    &-price {
+      font-weight: bold;
+    }
+
+    &-type, &-name, &-color {
+      padding-bottom: 0.4rem;
+    }
+}
+
+#product-sizes {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 6rem 0 1rem 0;
+
+  select {
+    width: 10rem;
+    color: #8F8F8F;
+    border: 1px black solid;
+    margin-left: 1rem;
+    padding: 0.5rem;
+  }
+}
+
+#add-to-cart {
+  width: 15.3rem;
+  display: block;
+  background-color: #000;
+  margin-top: 2rem;
+  padding: 0.5rem 1rem;
+}
