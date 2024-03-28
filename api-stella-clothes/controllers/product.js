@@ -1,179 +1,115 @@
-const Service = require('../models/product');
-const ClientModel = require('../models/client');
-const EmployeeModel = require('../models/employee');
+const Product = require('../models/product');
 
-// Get all services
+// Get all products
 const getAll = async (req, res) => {
   try {
-    const services = await Service.find();
-    //get car licence plate and client phone if any service is found
-    if (services.length == 0) {
-      return res.status(200).json({ message: 'No services found' });
-    }
-    res.status(201).json(services);
+    const products = await Product.find();
+
+    res.status(201).json(products);
   } catch (error) {
-    console.error('Get All Services Error:', error.message);
+    console.error('Get All Products Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// Get all finished services
-const getAllFinished = async (req, res) => {
-  try {
-    const services = await Service.find({ state: false });
-    //get car licence plate and client phone if any service is found
-    if (services.length == 0) {
-      return res.status(200).json({ message: 'No services found' });
-    }
-    res.status(201).json(services);
-  } catch (error) {
-    console.error('Get All Services Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-// Get service by id
+// Get product by id
 const getById = async (req, res) => {
   try {
     const { id } = req.params;
-    const service = await Service.findById(id);
+    const product = await Product.findById(id);
 
-    res.status(200).json(service);
+    res.status(200).json(product);
   } catch (error) {
-    console.error('Get Service By Id Error:', error.message);
+    console.error('Get Product By Id Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// Get service by phone (client)
-const getByPhone = async (req, res) => {
+// Get products by ref
+const getByRef = async (req, res) => {
   try {
-    const phone = req.params.phone;
+    const { ref } = req.params;
+    const products = await Product.find({ ref });
 
-    const service = await Service.find({ phone: phone });
-
-    res.status(201).json(service);
+    res.status(200).json(products);
   } catch (error) {
-    console.error('Get Service By Phone Error:', error.message);
+    console.error('Get Product By Ref Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// Get service by phone (client), finished services
-const getByPhoneFinished = async (req, res) => {
+// Get stock by ref and size
+const getStock = async (req, res) => {
   try {
-    const phone = req.params.phone;
+    const { ref, size } = req.body;
+    const products = await Product.find({ ref });
 
-    const service = await Service.find({ phone: phone, state: false });
+    const product = products.filter((product) => product.size === size);
+    const stock = product[0].stock;
 
-    res.status(201).json(service);
+    res.status(200).json({ stock });
   } catch (error) {
-    console.error('Get Service By Phone Error:', error.message);
+    console.error('Get Stock By Ref Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// Get service by licence plate (car)
-const getByLicencePlate = async (req, res) => {
-  try {
-    const licencePlate = req.params.licencePlate.toUpperCase();
-
-    const service = await Service.find({ licencePlate: licencePlate});
-
-    res.status(201).json(service);
-  } catch (error) {
-    console.error('Get Service By Licence Plate Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-// Get service by licence plate (car), finished services
-const getByLicencePlateFinished = async (req, res) => {
-  try {
-    const licencePlate = req.params.licencePlate.toUpperCase();
-
-    const service = await Service.find({ licencePlate: licencePlate, state: false });
-
-    res.status(201).json(service);
-  } catch (error) {
-    console.error('Get Service By Licence Plate Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-// Create a new service
+// Create a new product
 const create = async (req, res) => {
   try {
-    const { licencePlate, phone, deliveryDate, code, services, obs, price, clientType, prePaid } = req.body;
+    const { ref, description, price, size, stock } = req.body;
 
-    // Get car by licence plate
-    let car = await CarModel.findOne({ licencePlate: licencePlate });
-
-    // Get client by phone
-    let client = await ClientModel.findOne({ phone: phone });
-
-    // Get employee by code
-    let employee = await EmployeeModel.findOne({ code: code });
-
-    // Body of service
-    const service = new Service({
-      car: car._id,
-      licencePlate,
-      client: client._id,
-      phone,
-      deliveryDate,
-      employee: employee._id,
-      code,
-      services,
-      obs,
+    // Body of product
+    const product = new Product({
+      ref,
+      description,
       price,
-      clientType,
-      prePaid,
-      state: true,
+      size,
+      stock,
     });
 
-    await service.save();
-    console.log('Service created with success!\nService Id:', service._id);
+    await product.save();
+    console.log('Product created with success!\nProduct Id:', product._id);
 
-    res.status(201).json({ message: 'Service registered!' });
+    res.status(201).json({ message: 'Product registered!' });
   } catch (error) {
-    console.error('Service Registration Error:', error.message);
+    console.error('Product Registration Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// Update a service
+// Update a product
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { services, obs, finalPrice, state, paid, receipt } = req.body;
+    const { ref, description, price, size, stock } = req.body;
 
-    let service = await Service.findById(id);
-    service.services = services;
-    service.obs = obs;
-    service.finalPrice = finalPrice;
-    service.state = state;
-    service.paid = paid;
-    service.receipt = receipt;
+    let product = await Product.findById(id);
 
-    await service.save();
-    res.status(200).json({ message: 'Service updated' });
+    product.ref = ref;
+    product.description = description;
+    product.price = price;
+    product.size = size;
+    product.stock = stock;
+
+    await product.save();
+    res.status(200).json({ message: 'Product updated' });
   } catch (error) {
-    console.error('Update Service Error:', error.message);
+    console.error('Update Product Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// Delete a service
+// Delete a product
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    await Service.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Service deleted' });
+    await Product.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Product deleted' });
   } catch (error) {
-    console.error('Delete Service Error:', error.message);
+    console.error('Delete Product Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-module.exports = { getAll, getAllFinished, getById, getByPhone, getByPhoneFinished, getByLicencePlate, getByLicencePlateFinished, create, update, remove };
+module.exports = { getAll, getById, getByRef, getStock, create, update, remove };

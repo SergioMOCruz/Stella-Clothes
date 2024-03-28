@@ -5,12 +5,9 @@ const employeeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  code: {
+  position: {
     type: String,
     required: true,
-  },
-  commissions: {
-    type: Number,
   },
 });
 

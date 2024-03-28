@@ -1,67 +1,25 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const serviceSchema = new mongoose.Schema({
-  car: {
-    type: Schema.ObjectId,
-    ref: 'Car',
-    required: true,
-  },
-  licencePlate: {
+const productSchema = new mongoose.Schema({
+  ref : {
     type: String,
-  },
-  client: {
-    type: Schema.ObjectId,
-    ref: 'Client',
     required: true,
   },
-  phone: {
+  description: {
     type: String,
-  },
-  deliveryDate: {
-    type: Date,
     required: true,
-  },
-  employee: {
-    type: Schema.ObjectId,
-    ref: 'Employee',
-    required: true,
-  },
-  code : {
-    type: String,
-  },
-  services: {
-    type: [String],
-    required: true,
-  },
-  obs: {
-    type: String,
   },
   price: {
     type: Number,
     required: true,
   },
-  clientType: {
-    type: Boolean,
-    default: false,
+  size: {
+    type: String,
+    required: true,
   },
-  finalPrice: { 
-    type: Number,
-  },
-  prePaid: {
-    type: Boolean,
-    default: false,
-  },
-  paid: {
-    type: Boolean,
-    default: false,
-  },
-  receipt: {
-    type: Boolean,
-    default: false,
-  },
-  state: {
-    type: Boolean,
+  stock: {
+    type: String,
     required: true,
   },
   createdAt: {
@@ -70,6 +28,6 @@ const serviceSchema = new mongoose.Schema({
   },
 });
 
-const Service = mongoose.model('Service', serviceSchema);
+const Product = mongoose.model('Product', productSchema);
 
-module.exports = Service;
+module.exports = Product;

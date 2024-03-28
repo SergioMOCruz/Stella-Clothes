@@ -23,42 +23,23 @@ const getById = async (req, res) => {
   }
 };
 
-// Get client by phone
-const getByPhone = async (req, res) => {
-  try {
-    const phone = req.params.phone;
-    const client = await Client.find({ phone: phone });
-    res.status(200).json(client);
-  } catch (error) {
-    console.error('Get Client By Id Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-// Get client by nif
-const getByNif = async (req, res) => {
-  try {
-    const nif = req.params.nif;
-    const client = await Client.find({ nif: nif });
-    res.status(200).json(client);
-  } catch (error) {
-    console.error('Get Client By Id Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
 // Create a new client
 const create = async (req, res) => {
   try {
-    const { name, phone, nif, calledIn } = req.body;
+    const { firstName, lastName, email, phone, nif, address, addressContinued, city, postalCode, country } = req.body;
 
     // Body of client
     const client = new Client({
-      name,
+      firstName,
+      lastName,
+      email,
       phone,
       nif,
-      calledIn,
-      cars: []
+      address,
+      addressContinued,
+      city,
+      postalCode,
+      country,
     });
 
     await client.save();
@@ -75,15 +56,20 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, phone, nif, calledIn, cars } = req.body;
+    const { firstName, lastName, email, phone, nif, address, addressContinued, city, postalCode, country } = req.body;
 
     let client = await Client.findById(id);
 
-    client.name = name;
+    client.firstName = firstName;
+    client.lastName = lastName;
+    client.email = email;
     client.phone = phone;
     client.nif = nif;
-    client.calledIn = calledIn;
-    client.cars = cars;
+    client.address = address;
+    client.addressContinued = addressContinued;
+    client.city = city;
+    client.postalCode = postalCode;
+    client.country = country;
 
     await client.save();
     res.status(200).json({ message: 'Client updated' });
@@ -105,4 +91,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, getByPhone, getByNif, create, update, remove };
+module.exports = { getAll, getById, create, update, remove };

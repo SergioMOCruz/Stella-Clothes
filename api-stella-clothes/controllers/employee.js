@@ -23,31 +23,15 @@ const getById = async (req, res) => {
   }
 };
 
-// Get employee by code
-const getByCode = async (req, res) => {
-  try {
-    const code = req.params.code;
-    const employee = await Employee.find({ code: code });
-    res.status(200).json(employee);
-  } catch (error) {
-    console.error('Get Employee By Code Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
 // Create a new employee
 const create = async (req, res) => {
   try {
-    const { name } = req.body;
-
-    // Generate a random code for the employee (3 digits)
-    const code = Math.floor(100 + Math.random() * 900);
+    const { name, position } = req.body;
 
     // Body of employee
     const employee = new Employee({
-      name,
-      code: code,
-      commissions: 0,
+      name: name,
+      position: position,
     });
 
     await employee.save();
@@ -64,23 +48,14 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, code, commissions } = req.body;
+    const { name, position } = req.body;
 
     // Find employee by id
     let employee = await Employee.findById(id);
 
-    // Check if code is already in use by another employee
-    if (employee.code !== code) {
-      const codeExists = await Employee.find({ code: code });
-      if (codeExists.length > 0) {
-        return res.status(400).json({ message: 'Código do funcionário já utilizado! Por favor, utilize outro código.' });
-      }
-    }
-
     // Update employee
     employee.name = name;
-    employee.code = code;
-    employee.commissions = commissions;
+    employee.position = position;
 
     await employee.save();
     res.status(200).json({ message: 'Employee updated' });
@@ -102,4 +77,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, getByCode, create, update, remove };
+module.exports = { getAll, getById, create, update, remove };

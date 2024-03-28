@@ -2,9 +2,17 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const clientSchema = new mongoose.Schema({
-  name: {
+  firstName: {
     type: String,
     required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    unique: true,
   },
   phone: {
     type: String,
@@ -15,16 +23,29 @@ const clientSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  calledIn: {
-    type: Boolean,
-    default: false,
+  address: {
+    type: String,
+    required: true,
   },
-  cars: [
-    {
-      type: Schema.ObjectId,
-      ref: 'Car',
-    },
-  ],
+  addressContinued: {
+    type: String,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  postalCode: {
+    type: String,
+    required: true,
+  },
+  country: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Client = mongoose.model('Client', clientSchema);
