@@ -98,6 +98,23 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "version": 2
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "web-stella-clothes:build:production",
+              "serveTarget": "web-stella-clothes:serve:production"
+            },
+            "development": {
+              "buildTarget": "web-stella-clothes:build:development",
+              "serveTarget": "web-stella-clothes:serve:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }

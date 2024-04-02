@@ -1,13 +1,49 @@
-<section id="login">
-    <form>
-        <div class="form-group">
-            <input type="email" id="email" name="email" required placeholder="utilizador@gmail.com">
+<div class="loginContainer">
+    <div class="loginSectionForm">
+      <div class="authBlock">
+        <h3>Sign In</h3>
+        <div class="formGroup">
+          <input
+            type="email"
+            class="formControl"
+            placeholder="email"
+            #email
+            required
+          />
         </div>
-        <div class="form-group">
-            <input type="password" id="password" name="password" required placeholder="********">
+        <div class="formGroup">
+          <input
+            type="password"
+            class="formControl"
+            placeholder="Password"
+            #userPassword
+            required
+          />
         </div>
-        <a id="ForgotPassword">Esqueceu a palavra-passe?</a>
-        <button id="submit">Iniciar Sessão</button>
-        <a id="register-account-link" href="">Não tem uma conta?</a>
-    </form>
-</section>
+        <div class="formGroup">
+          <input
+            type="button"
+            class="btn btnPrimary"
+            value="Log in"
+            (click)="login(email.value, userPassword.value)"
+          />
+        </div>
+        <div class="formGroup">
+          <span class="or"><span class="orInner">Or</span></span>
+        </div>
+        <div class="forgotPassword">
+          <span routerLink="/forgot-password">Forgot Password?</span>
+        </div>
+      </div>
+      <div class="redirectToLogin">
+        <span
+          >Don't have an account?<span
+            class="redirect"
+            routerLink="/register-user"
+          >
+            Sign Up</span
+          ></span
+        >
+      </div>
+    </div>
+  </div>

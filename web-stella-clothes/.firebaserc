@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "loja-online-979c4": {
+      "hosting": {
+        "web-stella-clothes": [
+          "loja-online-979c4"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "loja-online-979c4"
+  }
+}
