@@ -39,7 +39,7 @@ export class AuthService {
         this.SetUserData(result.user);
         this.afAuth.authState.subscribe((user) => {
           if (user) {
-            const isLogged:any = result.user?.multiFactor.getSession().then((session:any) => {
+            result.user?.multiFactor.getSession().then((session:any) => {
               //console.log(session.credential);
               localStorage.setItem('token', session.credential);
               this.router.navigate(['Home']);

@@ -1,7 +1,9 @@
+import { API_KEY } from '../../api-key.json';
+
 export const environment = {
   production: false,
   firebaseConfig: {
-    apiKey: "AIzaSyDQUd8PM3D45W54WDGnjzNl-bKkS-mGJLo",
+    apiKey: API_KEY,
     authDomain: "loja-online-979c4.firebaseapp.com",
     projectId: "loja-online-979c4",
     storageBucket: "loja-online-979c4.appspot.com",
