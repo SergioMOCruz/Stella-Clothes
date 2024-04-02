@@ -6,7 +6,6 @@ import { LoginComponent } from './views/login/login.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'Home', component: HomeComponent },
   { path: '404', component: FourOFourComponent },
   { path: 'login', component: LoginComponent},
   { path: '**', redirectTo: '/404' },
