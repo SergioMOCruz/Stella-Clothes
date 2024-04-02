@@ -1,0 +1,25 @@
+<mat-drawer-container id="sidenav-container" autosize>
+  <mat-drawer #drawer id="sidenav" mode="side" from="right">
+    <p>Auto-resizing sidenav</p>
+    <div id="close-menu" (click)="drawer.toggle(); toogleOverlay()">X</div>
+  </mat-drawer>
+</mat-drawer-container>
+
+<div id="navbar">
+  <div id="navbar-menu">
+    <div id="open-menu" (click)="drawer.toggle(); toogleOverlay()"><span></span><span></span><span></span></div>
+  </div>
+  <div id="navbar-logo">STELLA CLOTHES</div>
+  <div id="navbar-utils">
+    <div id="util-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      Pesquisar
+    </div>
+    <div id="util-myaccount">Iniciar Sessão</div>
+    <div id="util-cart" (click)="toggleRightSidebar()">
+      <i class="fa-solid fa-bag-shopping"></i>
+    </div>
+  </div>
+</div>
+
+<div id="overlay" (click)="drawer.toggle(); toogleOverlay()" [hidden]="!isVisible"></div>
