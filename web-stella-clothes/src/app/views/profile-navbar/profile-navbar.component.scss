@@ -1,0 +1,57 @@
+#navbar{
+    padding: 0 2rem;
+    width: 20vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: flex-start; 
+    margin-left: auto;
+    background-color: rgb(240, 236, 231);
+    font-size: 13px;
+}
+
+#hello{
+    width: 100%;
+    margin-top: 14%;
+}
+
+#compras{
+    margin-top: 17%;
+    width: 100%;
+    height: 4vh;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+}
+.TextDiv{
+    margin-top: 3%;
+    width: 100%;
+    height: 4vh;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+}
+
+.Text{
+    width: 80%;
+    display: flex;
+    align-items: center;
+}
+
+.Icon{
+    width: 20%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.icons{
+    font-size: 1.2rem;
+    overflow: hidden;
+    margin-top: 10%;
+    margin-left: 20%;
+}
+
