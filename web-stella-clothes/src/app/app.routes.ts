@@ -5,7 +5,6 @@ import { FourOFourComponent } from './views/four-o-four/four-o-four.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'Home', component: HomeComponent },
   { path: '404', component: FourOFourComponent },
   { path: '**', redirectTo: '/404' }
 ];
