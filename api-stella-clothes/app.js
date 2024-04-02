@@ -51,6 +51,7 @@ connectFirebase();
 app.use('/clients', require('./routes/client'));
 app.use('/employees', require('./routes/employee'));
 app.use('/products', require('./routes/product'));
+app.use('/orders', require('./routes/order'));
 
 // Start the server
 app.listen(port, () => {
