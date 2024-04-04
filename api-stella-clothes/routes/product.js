@@ -1,5 +1,6 @@
 const express = require('express');
-const router = express.Router();
+const multer = require('multer');
+const { authenticateUser } = require('../middleware/authenticate');
 const {
   getAll,
   getById,
@@ -7,7 +8,8 @@ const {
   update,
   remove,
 } = require('../controllers/product');
-const { authenticateUser } = require('../middleware/authenticate');
+const router = express.Router();
+const upload = multer({ dest: 'clothing/' });
 
 // GET /service
 // Get all services
@@ -17,11 +19,11 @@ router.get('/:id', authenticateUser, getById);
 
 // POST /service
 // Create a new service
-router.post('/', authenticateUser, create);
+router.post('/', authenticateUser, upload.single('image'), create);
 
 // PUT /service
 // Update a service
-router.put('/:id', authenticateUser, update);
+router.put('/:id', authenticateUser, upload.single('image'), update);
 
 // DELETE /service
 // Delete a service
