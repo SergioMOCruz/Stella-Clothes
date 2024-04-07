@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
@@ -9,6 +9,8 @@ import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
   styleUrl: './right-sidebar.component.scss'
 })
 export class RightSidebarComponent {
+
+  @Output() closeMenuTrigger = new EventEmitter<void>();
   @ViewChild('rightSideBar') rightSideBar: MatDrawer;
 
   isVisible: boolean = false;
@@ -22,5 +24,6 @@ export class RightSidebarComponent {
   toggleDrawer() {
     this.rightSideBar.toggle();
     this.toogleOverlay();
+    this.closeMenuTrigger.emit();
   }
 }

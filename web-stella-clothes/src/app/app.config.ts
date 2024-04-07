@@ -13,7 +13,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire/compat';
-
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,6 +28,7 @@ export const appConfig: ApplicationConfig = {
       AngularFireModule.initializeApp(environment.firebaseConfig),
     ),
     importProvidersFrom_alias(provideAuth(() => getAuth())),
+    provideAnimationsAsync()
   ],
 };
 
