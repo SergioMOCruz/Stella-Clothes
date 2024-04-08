@@ -19,6 +19,22 @@ p, label, input, a, div {
   font-family: $font-telex;
 }
 
+.hideDisplay {
+  display: none;
+}
+
+.showWarning {
+  display: block;
+}
+
+.invalidData {
+  color: red;
+}
+
+.validData {
+  color: green;
+}
+
 .white-button {
   font-family: $font-telex;
   border: 1px solid;
