@@ -12,8 +12,7 @@
   <div id="navbar-logo">STELLA CLOTHES</div>
   <div id="navbar-utils">
     <div id="util-search">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      Pesquisar
+      <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
     </div>
     <div id="util-myaccount" *ngIf="!isLoggedIn" (click)="toggleRightSidebar(); toggleForm('login')">Iniciar Sessão</div>
     <div id="util-myaccount" *ngIf="isLoggedIn" (click)="toggleRightSidebar(); toggleForm('my-account')">A Minha Conta</div>
@@ -28,6 +27,7 @@
     <app-login class="auth-containers" *ngIf="showLogin" (redirectToRegisterEvent)="toggleForm('register')" (redirectToForgotPasswordEvent)="toggleForm('forgot-password')"></app-login>
     <app-register class="auth-containers" *ngIf="showRegister" (redirectToLoginEvent)="toggleForm('login')"></app-register>
     <app-forgot-password class="auth-containers" *ngIf="showForgotPassword" (redirectToLoginEvent)="toggleForm('login')"></app-forgot-password>
+    <app-profile-navbar class="auth-containers" *ngIf="showProfileMenu && isLoggedIn"></app-profile-navbar>
   </ng-container>
 </app-right-sidebar>
 

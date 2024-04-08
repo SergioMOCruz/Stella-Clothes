@@ -9,11 +9,12 @@ import { RegisterComponent } from '../../auth/register/register.component';
 import { UserSessionHandlerService } from '../../../auth/services/helpers/user-session-handler.service';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { ForgotPasswordComponent } from '../../auth/forgot-password/forgot-password.component';
+import { ProfileNavbarComponent } from '../../../views/profile-navbar/profile-navbar.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatSidenavModule, RightSidebarComponent, LoginComponent, RegisterComponent, ForgotPasswordComponent],
+  imports: [CommonModule, RouterModule, MatSidenavModule, RightSidebarComponent, LoginComponent, RegisterComponent, ForgotPasswordComponent, ProfileNavbarComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
@@ -25,6 +26,7 @@ export class NavbarComponent {
   showLogin: boolean = false;
   showRegister: boolean = false;
   showForgotPassword: boolean = false;
+  showProfileMenu: boolean = false;
   isLoggedIn = null;
 
   constructor(
@@ -47,11 +49,13 @@ export class NavbarComponent {
     this.showLogin = false;
     this.showRegister = false;
     this.showForgotPassword = false;
+    this.showProfileMenu = false;
   }
 
   toggleForm(formType: string) {
     this.showLogin = formType === 'login';
     this.showRegister = formType === 'register';
     this.showForgotPassword = formType === 'forgot-password';
+    this.showProfileMenu = formType === 'my-account';
   }
 }
