@@ -1,0 +1,33 @@
+<section id="mini-cart-products">
+  <div id="mini-cart-products-list">
+    <div id="mini-cart-products-list-item" *ngFor="let product of products">
+      <div id="mini-cart-products-list-item-image">
+        <img [src]="product.image" [alt]="product.name" />
+      </div>
+      <div id="mini-cart-products-list-item-details">
+        <p id="mini-cart-products-list-item-details-name">
+          {{ product.name }}
+        </p>
+        <p id="mini-cart-products-list-item-details-quantity-price">
+          {{ product.quantity }} x {{ product.price }}€
+        </p>
+        <p id="remove-item-btn" (click)="removeProductFromCart(product)">
+          <i class="fa-solid fa-x"></i>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div id="mini-cart-products-footer">
+    <div id="mini-cart-products-footer-total">
+      <p>Total</p>
+      <p>{{ total }}€</p>
+    </div>
+    <!-- Add click event to navigate to cart page -->
+    <div id="mini-cart-products-footer-more" (click)="redirectToCart()">
+      Ver Carrinho
+    </div>
+    <div id="mini-cart-products-footer-checkout" (click)="redirectToCheckout()">
+      Pagamento
+    </div>
+  </div>
+</section>

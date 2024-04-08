@@ -9,11 +9,12 @@ import { RegisterComponent } from '../../auth/register/register.component';
 import { UserSessionHandlerService } from '../../../auth/services/helpers/user-session-handler.service';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { ForgotPasswordComponent } from '../../auth/forgot-password/forgot-password.component';
+import { MiniCartComponent } from '../../../views/mini-cart/mini-cart.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatSidenavModule, RightSidebarComponent, LoginComponent, RegisterComponent, ForgotPasswordComponent],
+  imports: [CommonModule, RouterModule, MatSidenavModule, RightSidebarComponent, LoginComponent, RegisterComponent, ForgotPasswordComponent, MiniCartComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
@@ -25,6 +26,7 @@ export class NavbarComponent {
   showLogin: boolean = false;
   showRegister: boolean = false;
   showForgotPassword: boolean = false;
+  showMiniCart: boolean = false;
   isLoggedIn = null;
 
   constructor(
@@ -53,5 +55,6 @@ export class NavbarComponent {
     this.showLogin = formType === 'login';
     this.showRegister = formType === 'register';
     this.showForgotPassword = formType === 'forgot-password';
+    this.showMiniCart = formType === 'mini-cart';
   }
 }

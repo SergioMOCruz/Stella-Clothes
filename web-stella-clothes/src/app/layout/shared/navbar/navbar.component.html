@@ -17,7 +17,7 @@
     </div>
     <div id="util-myaccount" *ngIf="!isLoggedIn" (click)="toggleRightSidebar(); toggleForm('login')">Iniciar Sessão</div>
     <div id="util-myaccount" *ngIf="isLoggedIn" (click)="toggleRightSidebar(); toggleForm('my-account')">A Minha Conta</div>
-    <div id="util-cart" (click)="toggleRightSidebar();">
+    <div id="util-cart" (click)="toggleRightSidebar(); toggleForm('mini-cart')">
       <i class="fa-solid fa-bag-shopping"></i>
     </div>
   </div>
@@ -28,6 +28,7 @@
     <app-login class="auth-containers" *ngIf="showLogin" (redirectToRegisterEvent)="toggleForm('register')" (redirectToForgotPasswordEvent)="toggleForm('forgot-password')"></app-login>
     <app-register class="auth-containers" *ngIf="showRegister" (redirectToLoginEvent)="toggleForm('login')"></app-register>
     <app-forgot-password class="auth-containers" *ngIf="showForgotPassword" (redirectToLoginEvent)="toggleForm('login')"></app-forgot-password>
+    <app-mini-cart class="auth-containers" *ngIf="showMiniCart"></app-mini-cart>
   </ng-container>
 </app-right-sidebar>
 
