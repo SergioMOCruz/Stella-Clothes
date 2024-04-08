@@ -1,0 +1,12 @@
+<section id="register-container">
+  <form id="register-block" [formGroup]="registerForm">
+    <span>Registo</span>
+    <input class="user-info" type="email" placeholder="utilizador@gmail.com" formControlName="userEmail" required />
+    <input class="user-info" type="password" placeholder="*********" formControlName="userPassword" required />
+    <input id="register-button" type="button" value="Registar" (click)="validateAndRegister()" />
+  </form>
+  <div id="redirect-login" (click)="redirectToLogin()">
+    <span id="redirect-link">Já tem uma conta?</span>
+  </div>
+  <span class="hideDisplay" [ngClass]="{'showWarning invalidData': showWarning}">Dados inválidos</span>
+</section>
