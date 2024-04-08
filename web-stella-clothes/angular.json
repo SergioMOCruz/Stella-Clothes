@@ -30,6 +30,7 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/deeppurple-amber.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "src/styles.scss",
               "src/app/styles/fonts.scss",
@@ -94,10 +95,28 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.scss"
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "version": 2
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "web-stella-clothes:build:production",
+              "serveTarget": "web-stella-clothes:serve:production"
+            },
+            "development": {
+              "buildTarget": "web-stella-clothes:build:development",
+              "serveTarget": "web-stella-clothes:serve:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }

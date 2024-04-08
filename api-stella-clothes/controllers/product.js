@@ -58,6 +58,7 @@ const getStock = async (req, res) => {
 const create = async (req, res) => {
   try {
     const { ref, description, price, size, stock } = req.body;
+    const image = req.file.path;
 
     // Body of product
     const product = new Product({
@@ -66,6 +67,7 @@ const create = async (req, res) => {
       price,
       size,
       stock,
+      image: image ? image : '',
     });
 
     await product.save();
@@ -78,11 +80,28 @@ const create = async (req, res) => {
   }
 };
 
+// Upload image to a product
+const uploadImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const imagePath = req.file.path;
+
+    let product = await Product.findById(id);
+    product.image = imagePath ? imagePath : '';
+
+    res.status(200).json({ message: 'Image uploaded' });
+  } catch (error) {
+    console.error('Upload Image Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Update a product
 const update = async (req, res) => {
   try {
     const { id } = req.params;
     const { ref, description, price, size, stock } = req.body;
+    const image = req.file.path;
 
     let product = await Product.findById(id);
 
@@ -91,6 +110,7 @@ const update = async (req, res) => {
     product.price = price;
     product.size = size;
     product.stock = stock;
+    product.image = image ? image : product.image;
 
     await product.save();
     res.status(200).json({ message: 'Product updated' });

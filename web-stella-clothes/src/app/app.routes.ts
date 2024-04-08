@@ -7,7 +7,6 @@ import { ProfileNavbarComponent } from './views/profile-navbar/profile-navbar.co
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'Home', component: HomeComponent },
   { path: '404', component: FourOFourComponent },
   { path: 'login', component: LoginComponent},
   { path: 'profile-navbar', component: ProfileNavbarComponent},
