@@ -1,4 +1,41 @@
+require('dotenv').config();
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const Client = require('../models/client');
+
+// Login an client
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const client = await Client.findOne({ email });
+
+    if (!client) {
+      return res.status(204).json({ message: 'Client not found' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, client.password);
+
+    if (passwordMatch) {
+      const jwtSecret = process.env.JWT_SECRET;
+
+      const token = jwt.sign({ id: client._id, email: client.email }, jwtSecret, {
+        expiresIn: '30d',
+      });
+
+      res.status(200).json({
+        token,
+        accID: client._id,
+      });
+    } else {
+      res.status(403).json({ message: 'Incorrect Password' });
+    }
+  } catch (error) {
+    console.error('Client Login Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 // Get all clients
 const getAll = async (req, res) => {
@@ -26,13 +63,30 @@ const getById = async (req, res) => {
 // Create a new client
 const create = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, nif, address, addressContinued, city, postalCode, country } = req.body;
+    const { firstName, lastName, email, password, phone, nif, address, addressContinued, city, postalCode, country } =
+      req.body;
+
+    // Check if client already exists
+    const clientExists = await Client.findOne({ email });
+    if (clientExists) {
+      return res.status(409).json({ message: 'O email que introduziu já pertence a uma conta!' });
+    }
+
+    // Check if nif already exists
+    const nifExists = await Client.findOne({ nif });
+    if (nifExists) {
+      return res.status(409).json({ message: 'O NIF que introduziu já pertence a uma conta!' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Body of client
     const client = new Client({
       firstName,
       lastName,
       email,
+      password: hashedPassword,
       phone,
       nif,
       address,
@@ -91,4 +145,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { login, getAll, getById, create, update, remove };
