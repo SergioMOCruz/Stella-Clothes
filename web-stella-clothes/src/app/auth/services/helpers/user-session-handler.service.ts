@@ -14,14 +14,15 @@ export class UserSessionHandlerService {
     public afs: AngularFirestore,
     public afAuth: AngularFireAuth,
   ) {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      this.userData = JSON.parse(storedUser);
-    }
+    this.getLocalUserData();
   }
 
   isLoggedIn(): boolean {
     return this.userData !== null;
+  }
+
+  getLocalUserData() {
+    return JSON.parse(localStorage.getItem('user')) ?? false;
   }
 
   checkSession() {
