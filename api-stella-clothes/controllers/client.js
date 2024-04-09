@@ -113,6 +113,10 @@ const create = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // if any of the fields don't have the same name as the variable return an error
+    if (!req.body.firstName || !req.body.lastName || !req.body.email || !req.body.password || !req.body.phone || !req.body.nif || !req.body.address || !req.body.city || !req.body.postalCode || !req.body.country) {
+      return res.status(406).json({ message: 'Invalid field name' });
+    }
 
     // Body of client
     const client = new Client({
