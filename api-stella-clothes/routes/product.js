@@ -12,7 +12,7 @@ const {
   remove,
 } = require('../controllers/product');
 const router = express.Router();
-const upload = multer({ dest: 'clothing/' });
+const upload = multer();
 
 // GET /product
 // Get all products
