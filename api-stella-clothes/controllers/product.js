@@ -54,6 +54,18 @@ const getStock = async (req, res) => {
   }
 };
 
+// Get the last 4 products added
+const getLastFour = async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 }).limit(4);
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Get Last Products Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Create a new product
 const create = async (req, res) => {
   try {
@@ -132,4 +144,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, getByRef, getStock, create, update, remove };
+module.exports = { getAll, getById, getByRef, getStock, getLastFour, create, update, remove };

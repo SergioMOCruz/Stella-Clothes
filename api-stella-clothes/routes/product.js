@@ -4,6 +4,9 @@ const { authenticateToken } = require('../middleware/authenticate');
 const {
   getAll,
   getById,
+  getByRef,
+  getStock,
+  getLastFour,
   create,
   update,
   remove,
@@ -11,22 +14,29 @@ const {
 const router = express.Router();
 const upload = multer({ dest: 'clothing/' });
 
-// GET /service
-// Get all services
+// GET /product
+// Get all products
 router.get('/', authenticateToken, getAll);
-// Get service by id
+// Get product by id
 router.get('/:id', authenticateToken, getById);
+// Get product by reference
+router.get('/ref/:ref', authenticateToken, getByRef);
+// Get product stock by ref and size
+router.get('/stock', authenticateToken, getStock);
+// Get the last 4 products added
+router.get('/lastFour', authenticateToken, getLastFour);
 
-// POST /service
-// Create a new service
+
+// POST /product
+// Create a new product
 router.post('/', authenticateToken, upload.single('image'), create);
 
-// PUT /service
-// Update a service
+// PUT /product
+// Update a product
 router.put('/:id', authenticateToken, upload.single('image'), update);
 
-// DELETE /service
-// Delete a service
+// DELETE /product
+// Delete a product
 router.delete('/:id', authenticateToken, remove);
 
 module.exports = router;
