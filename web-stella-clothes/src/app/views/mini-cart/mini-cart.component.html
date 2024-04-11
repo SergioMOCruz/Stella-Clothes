@@ -1,0 +1,34 @@
+<section id="mini-cart-products" *ngIf="isLoggedIn">
+  <div id="mini-cart-products-list">
+    <div id="mini-cart-products-list-item" *ngFor="let product of products">
+      <div id="mini-cart-products-list-item-image">
+        <img [src]="product.image" [alt]="product.name" />
+      </div>
+      <div id="mini-cart-products-list-item-details">
+        <p id="mini-cart-products-list-item-details-name">
+          {{ product.name }}
+        </p>
+        <p id="mini-cart-products-list-item-details-quantity-price">
+          {{ product.quantity }} x {{ product.price }}€
+        </p>
+        <p id="remove-item-btn" (click)="removeProductFromCart(product)">
+          <i class="fa-solid fa-x"></i>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div id="mini-cart-products-footer">
+    <div id="mini-cart-products-footer-total">
+      <p>Total</p>
+      <p>{{ total }}€</p>
+    </div>
+    <div id="mini-cart-products-footer-more" (click)="redirectToMenu('cart')">  Ver Carrinho </div>
+    <div id="mini-cart-products-footer-checkout" (click)="redirectToMenu('checkout')"> Pagamento </div>
+  </div>
+</section>
+
+<section id="log-in-screen">
+  <span id="log-in-screen-message">Para adicionar items ao carrinho precisa de iniciar sessão</span>
+  <div id="mini-cart-products-footer-more" (click)="redirectToLogin()"> Iniciar Sessão </div>
+
+</section>
