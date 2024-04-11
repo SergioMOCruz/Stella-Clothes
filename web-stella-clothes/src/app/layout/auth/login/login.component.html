@@ -1,8 +1,8 @@
 <section id="login-container">
   <form id="login-block" [formGroup]="loginForm">
       <span>Iniciar sessão</span>
-      <input class="user-info" type="email" placeholder="utilizador@gmail.com" formControlName="userEmail" />
-      <input class="user-info" type="password" placeholder="*********" formControlName="userPassword" />
+      <input class="user-info" type="email" placeholder="utilizador@gmail.com" formControlName="email" />
+      <input class="user-info" type="password" placeholder="*********" formControlName="password" />
       <input id="login-button" type="button" value="Entrar" (click)="validateAndLogin()" />
       <div id="forgot-password" (click)="redirectToForgotPassword()">
         <span>Esqueceu a palavra-passe?</span>

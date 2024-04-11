@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FIREBASE_OPTIONS } from '@angular/fire/compat';
-import { environment } from '../../../../environments/environment';
 import { NavigationExtras, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LoginService } from '../../../auth/services/login.service';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UserSessionHandlerService } from '../../../auth/services/helpers/user-session-handler.service';
+import { LoginInterface } from '../../../shared/interfaces/auth/login-interface';
+import { UserService } from '../../../services/users/user.service';
+import { User } from '../../../shared/interfaces/user';
 
 @Component({
   selector: 'app-login',
@@ -12,9 +14,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
   styleUrls: ['./login.component.scss'],
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ReactiveFormsModule],
-  providers: [
-    { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }
-  ],
+  providers: [],
 })
 
 export class LoginComponent {
@@ -27,11 +27,13 @@ export class LoginComponent {
 
   constructor(
     public router: Router,
-    private _loginService: LoginService
+    private _loginService: LoginService,
+    private _userSession: UserSessionHandlerService,
+    private _userService: UserService,
   ) {
     this.loginForm = new FormGroup({
-      userEmail: new FormControl('', [Validators.required, Validators.email]),
-      userPassword: new FormControl('', Validators.required)
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required)
     });
   }
 
@@ -52,25 +54,32 @@ export class LoginComponent {
 
   validateAndLogin() {
     if (this.loginForm.valid) {
-      let userEmail = this.loginForm.get('userEmail').value;
-      let userPassword = this.loginForm.get('userPassword').value;
+      let dataUser: LoginInterface = {
+        email: this.loginForm.get('email').value,
+        password: this.loginForm.get('password').value
+      }
 
       const navigationExtras: NavigationExtras = {
         skipLocationChange: true
       };
 
-      this._loginService.signIn(userEmail, userPassword)
-      .then(() => {
-        this.router.navigate(['/home'], navigationExtras).then(() => {
-          window.location.reload();
-        });
-      })
-      .catch(() => {
-        this.showInvalidDataWarning();
-      });
+      this._loginService.authLogin(dataUser).subscribe(
+        data => {
+          this._userSession.setLocalToken(data);
+          // let dataUser: User = this._userService.getCurrentUser();
+          // this._userSession.setLocalUserData(dataUser);
+
+          this.router.navigate(['/home'], navigationExtras).then(() => {
+            window.location.reload();
+          });
+        },
+        error => this.showInvalidDataWarning()
+      );
     } else {
       this.showInvalidDataWarning();
     }
   }
+
+
 }
 

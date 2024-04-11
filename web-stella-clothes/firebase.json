@@ -1,9 +1,0 @@
-{
-  "hosting": [
-    {
-      "target": "web-stella-clothes",
-      "source": ".",
-      "frameworksBackend": {}
-    }
-  ]
-}
