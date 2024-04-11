@@ -15,16 +15,16 @@ const router = express.Router();
 const upload = multer();
 
 // GET /product
+// Get product stock by ref and size
+router.get('/stock', authenticateToken, getStock);
+// Get the last 4 products added
+router.get('/lastFour', authenticateToken, getLastFour);
 // Get all products
 router.get('/', authenticateToken, getAll);
 // Get product by id
 router.get('/:id', authenticateToken, getById);
 // Get product by reference
 router.get('/ref/:ref', authenticateToken, getByRef);
-// Get product stock by ref and size
-router.get('/stock', authenticateToken, getStock);
-// Get the last 4 products added
-router.get('/lastFour', authenticateToken, getLastFour);
 
 
 // POST /product

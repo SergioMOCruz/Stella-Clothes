@@ -27,7 +27,7 @@ const authenticateToken = (req, res, next) => {
 
     // If token is valid, retrieve user from database
     try {
-      const userData = await Client.findById(user.id).exec();
+      const userData = await Client.findById(user.id)
       if (!userData) {
         return res.sendStatus(404);
       }
