@@ -4,14 +4,14 @@ const { login, getAll, getById, create, update, remove } = require('../controlle
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /client
-// Get all clients
-router.get('/', authenticateToken, getAll);
-// Get client by id
-router.get('/:id', authenticateToken, getById);
 // Get client by token
 router.get('/token', authenticateToken, (req, res) => {
   res.status(200).json(req.user);
 });
+// Get all clients
+router.get('/', authenticateToken, getAll);
+// Get client by id
+router.get('/:id', authenticateToken, getById);
 
 // POST /client
 // LOGIN /client/login
