@@ -30,8 +30,7 @@ export class NavbarComponent {
   isLoggedIn = null;
 
   constructor(
-    private _userSession: UserSessionHandlerService,
-    public afAuth: AngularFireAuth,
+    private _userSession: UserSessionHandlerService
   ) {
     this.isLoggedIn = this._userSession.isLoggedIn();
   }

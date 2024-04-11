@@ -27,7 +27,7 @@ export class ForgotPasswordComponent {
     private _utilsAuthService: UtilsAuthService
   ) {
     this.fpasswordForm = new FormGroup({
-      userEmail: new FormControl('', [Validators.required, Validators.email])
+      email: new FormControl('', [Validators.required, Validators.email])
     });
   }
 
@@ -51,10 +51,10 @@ export class ForgotPasswordComponent {
 
   validateAndRecover() {
     if (this.fpasswordForm.valid) {
-      let userEmail = this.fpasswordForm.get('userEmail').value;
+      let email = this.fpasswordForm.get('email').value;
 
       this._utilsAuthService
-        .forgotPassword(userEmail)
+        .forgotPassword(email)
         .then(() => {
           this.showWarning('valid');
         })
