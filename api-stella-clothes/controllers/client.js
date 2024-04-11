@@ -66,6 +66,38 @@ const create = async (req, res) => {
     const { firstName, lastName, email, password, phone, nif, address, addressContinued, city, postalCode, country } =
       req.body;
 
+    // Check if all fields are filled
+    if (!firstName) {
+      return res.status(406).json({ message: 'O campo primeiro nome é obrigatório!' });
+    }
+    if (!lastName) {
+      return res.status(406).json({ message: 'O campo último nome é obrigatório!' });
+    }
+    if (!email) {
+      return res.status(406).json({ message: 'O campo email é obrigatório!' });
+    }
+    if (!password) {
+      return res.status(406).json({ message: 'O campo password é obrigatório!' });
+    }
+    if (!phone) {
+      return res.status(406).json({ message: 'O campo telefone é obrigatório!' });
+    }
+    if (!nif) {
+      return res.status(406).json({ message: 'O campo NIF é obrigatório!' });
+    }
+    if (!address) {
+      return res.status(406).json({ message: 'O campo morada é obrigatório!' });
+    }
+    if (!city) {
+      return res.status(406).json({ message: 'O campo cidade é obrigatório!' });
+    }
+    if (!postalCode) {
+      return res.status(406).json({ message: 'O campo código postal é obrigatório!' });
+    }
+    if (!country) {
+      return res.status(406).json({ message: 'O campo país é obrigatório!' });
+    }
+
     // Check if client already exists
     const clientExists = await Client.findOne({ email });
     if (clientExists) {
@@ -80,6 +112,11 @@ const create = async (req, res) => {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // if any of the fields don't have the same name as the variable return an error
+    if (!req.body.firstName || !req.body.lastName || !req.body.email || !req.body.password || !req.body.phone || !req.body.nif || !req.body.address || !req.body.city || !req.body.postalCode || !req.body.country) {
+      return res.status(406).json({ message: 'Invalid field name' });
+    }
 
     // Body of client
     const client = new Client({

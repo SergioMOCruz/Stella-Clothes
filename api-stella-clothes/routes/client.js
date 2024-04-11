@@ -8,6 +8,10 @@ const { authenticateToken } = require('../middleware/authenticate');
 router.get('/', authenticateToken, getAll);
 // Get client by id
 router.get('/:id', authenticateToken, getById);
+// Get client by token
+router.get('/token', authenticateToken, (req, res) => {
+  res.status(200).json(req.user);
+});
 
 // POST /client
 // LOGIN /client/login

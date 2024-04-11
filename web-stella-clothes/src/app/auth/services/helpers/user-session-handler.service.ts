@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
-import { User } from '../../../shared/interfaces/user';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { User } from '../../../shared/interfaces/users/user';
 
 @Injectable({
   providedIn: 'root'
@@ -10,46 +8,27 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 export class UserSessionHandlerService {
   userData: any = null;
 
-  constructor(
-    public afs: AngularFirestore,
-    public afAuth: AngularFireAuth,
-  ) {
-    this.getLocalUserData();
-  }
+  constructor() { }
 
   isLoggedIn(): boolean {
     return this.userData !== null;
   }
 
+  setLocalToken(data) {
+    localStorage.setItem('token', data.token);
+  }
+
+  getLocalToken() {
+    return localStorage.getItem('token');
+  }
+
   getLocalUserData() {
-    return JSON.parse(localStorage.getItem('user')) ?? false;
+    return JSON.stringify(localStorage.getItem('user'));
   }
 
-  checkSession() {
-    this.afAuth.authState.subscribe((user) => {
-      if (user) {
-        this.userData = user;
-        localStorage.setItem('user', JSON.stringify(this.userData));
-      } else {
-        localStorage.removeItem('user');
-      }
-    });
-  }
-
-  setUserData(user: any) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
-
-    const userData: User = {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      emailVerified: user.emailVerified,
-    };
-
-    return userRef.set(userData, {
-      merge: true,
-    });
+  setLocalUserData(user: User) {
+    this.userData = user;
+    localStorage.setItem('user',  JSON.stringify(user));
   }
 }
 
