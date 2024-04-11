@@ -1,0 +1,16 @@
+<section id="login-container">
+  <form id="login-block" [formGroup]="loginForm">
+      <span>Iniciar sessão</span>
+      <input class="user-info" type="email" placeholder="utilizador@gmail.com" formControlName="email" />
+      <input class="user-info" type="password" placeholder="*********" formControlName="password" />
+      <input id="login-button" type="button" value="Entrar" (click)="validateAndLogin()" />
+      <div id="forgot-password" (click)="redirectToForgotPassword()">
+        <span>Esqueceu a palavra-passe?</span>
+      </div>
+  </form>
+  <div id="redirect-register" (click)="redirectToRegister()">
+    <span>Não tem conta?</span>
+    <span id="redirect-link">Registe-se</span>
+  </div>
+  <span class="hideDisplay" [ngClass]="{'showWarning invalidData': showWarning}">Dados inválidos</span>
+</section>
