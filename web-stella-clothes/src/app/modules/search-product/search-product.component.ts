@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Product } from '../../interfaces/product';
+import { ProductService } from '../../services/products/product.service';
+import { Product } from '../../shared/interfaces/products/products';
 
 @Component({
   selector: 'app-search-product',
@@ -13,8 +14,20 @@ import { Product } from '../../interfaces/product';
 })
 export class SearchProductComponent {
 
-  constructor() { }
+  @Output() redirectToHomeEvent = new EventEmitter<void>();
 
   products: Product[] = [];
 
+  constructor(
+    private _productService: ProductService
+  ) {
+    this._productService.getLastFour().subscribe(
+      data => this.products = data,
+      error => this.products = null
+    );
+  }
+
+  redirectToHome() {
+    this.redirectToHomeEvent.emit();
+  }
 }

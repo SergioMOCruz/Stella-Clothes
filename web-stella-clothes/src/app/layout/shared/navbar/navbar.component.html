@@ -11,7 +11,7 @@
   </div>
   <div id="navbar-logo">STELLA CLOTHES</div>
   <div id="navbar-utils">
-    <div id="util-search">
+    <div id="util-search" (click)="toggleForm('search-product')">
       <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
     </div>
     <div id="util-myaccount" *ngIf="!isLoggedIn" (click)="toggleRightSidebar(); toggleForm('login')">Iniciar Sessão</div>
@@ -21,6 +21,9 @@
     </div>
   </div>
 </div>
+
+<app-search-product *ngIf="showSearchMenu" (redirectToHomeEvent)="closeMenuEvent()"></app-search-product>
+
 
 <app-right-sidebar (closeMenuTrigger)="closeMenuEvent()" #rightSideBar>
   <ng-container>
