@@ -12,6 +12,10 @@ export class ProductService {
     private _http: HttpClient
   ) { }
 
+  getProducts() {
+
+  }
+
   getLastFour(): Observable<any> {
     return this._http.get(`${environment.apiUrl}/products/lastFour`);
   }

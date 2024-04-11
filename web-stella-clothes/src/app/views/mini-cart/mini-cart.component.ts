@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  Router,
-} from '@angular/router';
-import { ProductsService } from '../../services/products.service';
+import { Router } from '@angular/router';
+import { ProductService } from '../../services/products/product.service';
+import { UserSessionHandlerService } from '../../auth/services/helpers/user-session-handler.service';
 
 @Component({
   selector: 'app-mini-cart',
@@ -15,11 +14,20 @@ import { ProductsService } from '../../services/products.service';
   styleUrl: './mini-cart.component.scss',
 })
 export class MiniCartComponent {
+
+  @Output() redirectToLoginEvent = new EventEmitter<void>();
+
+  isLoggedIn: boolean = true;
   products: any[] = [];
   total: number = 0;
 
-  constructor(public router: Router, private productsService: ProductsService) {
-    this.products = this.productsService.getProducts();
+  constructor(
+    public router: Router,
+    private _productService: ProductService,
+    private _userSession: UserSessionHandlerService
+  ) {
+    this.isLoggedIn = this._userSession.isLoggedIn();
+    // this.products = this._productService.getProducts();
     this.calculateTotal();
   }
 
@@ -38,11 +46,11 @@ export class MiniCartComponent {
     );
   }
 
-  redirectToCart() {
-    this.router.navigate(['/cart']);
+  redirectToMenu(page: string) {
+    this.router.navigate([`/${page}`]);
   }
 
-  redirectToCheckout() {
-    this.router.navigate(['/checkout']);
+  redirectToLogin() {
+    this.redirectToLoginEvent.emit();
   }
 }

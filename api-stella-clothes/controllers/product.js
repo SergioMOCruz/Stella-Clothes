@@ -59,6 +59,9 @@ const getLastFour = async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 }).limit(4);
 
+    if (!products.length)
+      return res.status(500).json({ message: 'No products ' });
+
     res.status(200).json(products);
   } catch (error) {
     console.error('Get Last Products Error:', error.message);

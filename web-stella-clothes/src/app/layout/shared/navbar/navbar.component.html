@@ -30,7 +30,7 @@
     <app-login class="auth-containers" *ngIf="showLogin" (redirectToRegisterEvent)="toggleForm('register')" (redirectToForgotPasswordEvent)="toggleForm('forgot-password')"></app-login>
     <app-register class="auth-containers" *ngIf="showRegister" (redirectToLoginEvent)="toggleForm('login')"></app-register>
     <app-forgot-password class="auth-containers" *ngIf="showForgotPassword" (redirectToLoginEvent)="toggleForm('login')"></app-forgot-password>
-    <app-mini-cart class="auth-containers" *ngIf="showMiniCart"></app-mini-cart>
+    <app-mini-cart class="auth-containers" *ngIf="showMiniCart" (redirectToLoginEvent)="toggleForm('login')"></app-mini-cart>
     <app-profile-navbar class="auth-containers" *ngIf="showProfileMenu && isLoggedIn"></app-profile-navbar>
   </ng-container>
 </app-right-sidebar>

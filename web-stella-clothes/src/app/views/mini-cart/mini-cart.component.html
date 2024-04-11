@@ -1,4 +1,4 @@
-<section id="mini-cart-products">
+<section id="mini-cart-products" *ngIf="isLoggedIn">
   <div id="mini-cart-products-list">
     <div id="mini-cart-products-list-item" *ngFor="let product of products">
       <div id="mini-cart-products-list-item-image">
@@ -22,12 +22,13 @@
       <p>Total</p>
       <p>{{ total }}€</p>
     </div>
-    <!-- Add click event to navigate to cart page -->
-    <div id="mini-cart-products-footer-more" (click)="redirectToCart()">
-      Ver Carrinho
-    </div>
-    <div id="mini-cart-products-footer-checkout" (click)="redirectToCheckout()">
-      Pagamento
-    </div>
+    <div id="mini-cart-products-footer-more" (click)="redirectToMenu('cart')">  Ver Carrinho </div>
+    <div id="mini-cart-products-footer-checkout" (click)="redirectToMenu('checkout')"> Pagamento </div>
   </div>
+</section>
+
+<section id="log-in-screen">
+  <span id="log-in-screen-message">Para adicionar items ao carrinho precisa de iniciar sessão</span>
+  <div id="mini-cart-products-footer-more" (click)="redirectToLogin()"> Iniciar Sessão </div>
+
 </section>
