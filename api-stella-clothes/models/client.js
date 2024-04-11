@@ -50,7 +50,7 @@ const clientSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, {versionKey: false});
 
 const Client = mongoose.model('Client', clientSchema);
 
