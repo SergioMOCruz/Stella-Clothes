@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { FooterComponent } from "../../layout/shared/footer/footer.component";
 import { NavbarComponent } from "../../layout/shared/navbar/navbar.component";
-import { UserService } from '../../services/users/user.service';
 
 @Component({
     selector: 'app-home',
@@ -15,8 +14,5 @@ import { UserService } from '../../services/users/user.service';
 
 export class HomeComponent {
 
-  constructor(
-    private userService: UserService
-  ) { }
-
+  constructor() { }
 }

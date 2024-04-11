@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UserSessionHandlerService } from '../../auth/services/helpers/user-session-handler.service';
 import { Router } from '@angular/router';
 import { LoginService } from '../../auth/services/login.service';
-import { User } from '../../shared/interfaces/user';
+import { User } from '../../shared/interfaces/users/user';
 
 @Component({
   selector: 'app-profile-navbar',

@@ -6,7 +6,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { UserSessionHandlerService } from '../../../auth/services/helpers/user-session-handler.service';
 import { LoginInterface } from '../../../shared/interfaces/auth/login-interface';
 import { UserService } from '../../../services/users/user.service';
-import { User } from '../../../shared/interfaces/user';
+import { User } from '../../../shared/interfaces/users/user';
 
 @Component({
   selector: 'app-login',
