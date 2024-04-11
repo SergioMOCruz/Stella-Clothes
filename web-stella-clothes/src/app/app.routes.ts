@@ -3,12 +3,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './modules/home/home.component';
 import { FourOFourComponent } from './views/four-o-four/four-o-four.component';
 import { AuthGuard } from './auth/guards/auth.guard';
+import { CartComponent } from './modules/cart/cart.component';
 
 export const routes: Routes = [
   // In routes needing of Authentication add { ..., canActivate: [AuthGuard] }
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: '404', component: FourOFourComponent },
+  { path: 'cart', component: CartComponent },
   { path: '**', redirectTo: '/404' },
 ];
 
