@@ -1,7 +1,15 @@
 export interface User {
-  uid: string,
+  _id: string,
+  firstName: string,
+  lastName: string,
   email: string,
-  displayName: string,
-  photoURL: string,
-  emailVerified: boolean
+  password?: string,
+  phone: string,
+  nif: string,
+  address: string,
+  addressContinued: string,
+  city: string,
+  postalCode: string,
+  country: string,
+  createdAt: string
 }

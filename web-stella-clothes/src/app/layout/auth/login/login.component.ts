@@ -24,12 +24,12 @@ export class LoginComponent {
 
   loginForm: FormGroup;
   showWarning: boolean = false;
+  user: User = null;
 
   constructor(
     public router: Router,
     private _loginService: LoginService,
-    private _userSession: UserSessionHandlerService,
-    private _userService: UserService,
+    private _userSession: UserSessionHandlerService
   ) {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -59,19 +59,9 @@ export class LoginComponent {
         password: this.loginForm.get('password').value
       }
 
-      const navigationExtras: NavigationExtras = {
-        skipLocationChange: true
-      };
-
       this._loginService.authLogin(dataUser).subscribe(
         data => {
-          this._userSession.setLocalToken(data);
-          // let dataUser: User = this._userService.getCurrentUser();
-          // this._userSession.setLocalUserData(dataUser);
-
-          this.router.navigate(['/home'], navigationExtras).then(() => {
-            window.location.reload();
-          });
+          this._userSession.loginHelper(data);
         },
         error => this.showInvalidDataWarning()
       );

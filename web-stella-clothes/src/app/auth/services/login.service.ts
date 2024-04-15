@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 export class LoginService {
 
   constructor(
-    private _http: HttpClient,
+    private _http: HttpClient
   ) { }
 
   authLogin(data: LoginInterface) {

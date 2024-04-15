@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UserSessionHandlerService } from '../../auth/services/helpers/user-session-handler.service';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { LoginService } from '../../auth/services/login.service';
 import { User } from '../../shared/interfaces/users/user';
 
@@ -21,7 +21,21 @@ export class ProfileNavbarComponent {
     private _userSession: UserSessionHandlerService,
     private _loginService: LoginService
   ) {
-    // this.user = this._userSession.getLocalUserData() ?? this._loginService.signOut().subscribe(data => { this.router.navigate(['/home']); });
+    this.user = this._userSession.getLocalUserData()
+    if (!this.user) {
+      this._loginService.signOut();
+      this.router.navigate(['/home']);
+    }
   }
 
+  signOut() {
+    const navigationExtras: NavigationExtras = {
+      skipLocationChange: true
+    };
+
+    this._loginService.signOut();
+    this.router.navigate(['/home'], navigationExtras).then(() => {
+      window.location.reload();
+    });
+  }
 }

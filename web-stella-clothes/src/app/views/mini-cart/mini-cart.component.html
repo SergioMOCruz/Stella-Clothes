@@ -27,8 +27,7 @@
   </div>
 </section>
 
-<section id="log-in-screen">
+<section id="log-in-screen" *ngIf="!isLoggedIn">
   <span id="log-in-screen-message">Para adicionar items ao carrinho precisa de iniciar sessão</span>
-  <div id="mini-cart-products-footer-more" (click)="redirectToLogin()"> Iniciar Sessão </div>
-
+  <div id="log-in-screen-button" (click)="redirectToLogin()"> Iniciar Sessão </div>
 </section>

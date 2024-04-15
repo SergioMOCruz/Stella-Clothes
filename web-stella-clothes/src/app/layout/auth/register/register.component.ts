@@ -5,6 +5,8 @@ import { NavigationExtras, Router } from '@angular/router';
 import { RegisterService } from '../../../auth/services/register.service';
 import { RegisterInterface } from '../../../shared/interfaces/auth/register-interface';
 import { UserSessionHandlerService } from '../../../auth/services/helpers/user-session-handler.service';
+import { LoginService } from '../../../auth/services/login.service';
+import { LoginInterface } from '../../../shared/interfaces/auth/login-interface';
 
 @Component({
   selector: 'app-register',
@@ -25,6 +27,7 @@ export class RegisterComponent {
     public router: Router,
     private _registerService: RegisterService,
     private _userSession: UserSessionHandlerService,
+    private _loginService: LoginService
   ) {
     this.registerForm = new FormGroup({
       firstName: new FormControl('', Validators.required),
@@ -68,19 +71,16 @@ export class RegisterComponent {
         country: this.registerForm.get('country').value
       }
 
-      const navigationExtras: NavigationExtras = {
-        skipLocationChange: true
-      };
-
       this._registerService.authRegister(dataUser).subscribe(
         data => {
-          this._userSession.setLocalToken(data);
-          // let dataUser: User = this._userService.getCurrentUser();
-          // this._userSession.setLocalUserData(dataUser);
+          const loginData: LoginInterface = {email: dataUser.email, password: dataUser.password};
 
-          this.router.navigate(['/home'], navigationExtras).then(() => {
-            window.location.reload();
-          });
+          this._loginService.authLogin(loginData).subscribe(
+            data => {
+              this._userSession.loginHelper(data);
+            },
+            error => this.showInvalidDataWarning()
+          );
         },
         error => this.showInvalidDataWarning()
       );

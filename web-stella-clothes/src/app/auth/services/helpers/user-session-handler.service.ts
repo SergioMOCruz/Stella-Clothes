@@ -1,34 +1,50 @@
 import { Injectable } from '@angular/core';
 import { User } from '../../../shared/interfaces/users/user';
+import { NavigationExtras, Router } from '@angular/router';
+import { UserService } from '../../../services/users/user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class UserSessionHandlerService {
-  userData: any = null;
 
-  constructor() { }
+  constructor(
+    public router: Router,
+    private _userService: UserService
+  ) { }
 
   isLoggedIn(): boolean {
-    return this.userData !== null;
+    return this.getLocalUserData() !== null;
   }
 
   setLocalToken(data) {
     localStorage.setItem('token', data.token);
   }
 
-  getLocalToken() {
-    return localStorage.getItem('token');
-  }
-
-  getLocalUserData() {
-    return JSON.stringify(localStorage.getItem('user'));
+  getLocalUserData(): User {
+    return JSON.parse(localStorage.getItem('user'));
   }
 
   setLocalUserData(user: User) {
-    this.userData = user;
     localStorage.setItem('user',  JSON.stringify(user));
+  }
+
+  loginHelper(data) {
+    const navigationExtras: NavigationExtras = {
+      skipLocationChange: true
+    };
+
+    this.setLocalToken(data);
+    this._userService.getCurrentUser().subscribe(
+      data => {
+        this.setLocalUserData(data);
+
+        this.router.navigate(['/home'], navigationExtras).then(() => {
+          window.location.reload();
+        });
+      }
+    );
   }
 }
 
