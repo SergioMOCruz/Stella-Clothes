@@ -1,5 +1,5 @@
 <app-navbar></app-navbar>
-<section id="cart">
+<section id="cart" *ngIf="isLoggedIn">
   <div id="cart-box">
     <div class="cart-title-row">
       <span class="cart-title">PRODUTO</span>
@@ -8,46 +8,33 @@
       <span class="cart-title">TOTAL</span>
     </div>
 
-    <!-- Iterate over each item in cartItems -->
-    <div class="cart-item-row" *ngFor="let item of cartItems">
+    <div class="cart-item-row" *ngFor="let item of cartItems;let i = index;">
       <div class="cart-item">
-        <!-- Product Image -->
         <div class="cart-item-product">
-          <img class="cart-image" src="../../../assets/images/vestido.jpg" />
+          <img class="cart-image" [src]="item.image" [alt]="item.name" />
           <div class="cart-item-info">
             <div class="cart-item-model">
               <p class="cart-item-name">{{ item.name }}</p>
               <p class="cart-item-size">Tamanho {{ item.size }}</p>
             </div>
-            <button class="cart-item-remove">X Remover</button>
+            <button class="cart-item-remove" (click)="removeItem(item)">X Remover</button>
           </div>
         </div>
 
-        <!-- Price -->
         <div class="cart-item-price-row">
           <span class="cart-item-price">{{ item.price }} €</span>
         </div>
 
-        <!-- Quantity -->
         <div class="cart-item-quantity-row">
-          <input
-            type="number"
-            class="cart-item-quantity-input"
-            [(ngModel)]="item.quantity"
-            (change)="updateItem(item)"
-          />
+          <input type="number" class="cart-item-quantity-input" [(ngModel)]="item.quantity"/>
         </div>
 
-        <!-- Total -->
         <div class="cart-item-total-row">
-          <span class="cart-item-total"
-            >{{ item.price * item.quantity }} €</span
-          >
+          <span class="cart-item-total">{{ calculateItemSubtotal(item.price, item.quantity) }} € </span>
         </div>
       </div>
     </div>
 
-    <!-- Subtototal and a button Pagamento under -->
     <div class="cart-subtotal">
       <div class="cart-subtotal-row">
         <span class="cart-subtotal-title">Subtotal</span>
@@ -55,5 +42,10 @@
       </div>
       <button class="cart-payment">PAGAMENTO</button>
     </div>
-</div>
+  </div>
+</section>
+
+<section id="log-in-screen" *ngIf="!isLoggedIn">
+  <p>Lamentamos, mas para ver esta página necessita de iniciar sessão</p>
+  <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
 </section>
