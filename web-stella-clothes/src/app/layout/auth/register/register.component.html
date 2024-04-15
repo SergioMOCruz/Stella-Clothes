@@ -1,0 +1,21 @@
+<section id="register-container">
+  <form id="register-block" [formGroup]="registerForm">
+    <span>Registo</span>
+    <input class="user-info" type="text" placeholder="Primeiro Nome" formControlName="firstName" required />
+    <input class="user-info" type="text" placeholder="Último Nome" formControlName="lastName" required />
+    <input class="user-info" type="email" placeholder="Email" formControlName="email" required />
+    <input class="user-info" type="password" placeholder="Password" formControlName="password" required />
+    <input class="user-info" type="text" placeholder="Telefone" formControlName="phone" required />
+    <input class="user-info" type="text" placeholder="NIF" formControlName="nif" required />
+    <input class="user-info" type="text" placeholder="Morada" formControlName="address" required />
+    <input class="user-info" type="text" placeholder="Mais informações (Opcional)" formControlName="addressContinued" />
+    <input class="user-info" type="text" placeholder="Cidade" formControlName="city" required />
+    <input class="user-info" type="text" placeholder="Código Postal" formControlName="postalCode" required />
+    <input class="user-info" type="text" placeholder="Country" formControlName="country" required />
+    <input id="register-button" type="button" value="Registar" (click)="validateAndRegister()" />
+  </form>
+  <div id="redirect-login" (click)="redirectToLogin()">
+    <span id="redirect-link">Já tem uma conta?</span>
+  </div>
+  <span class="hideDisplay" [ngClass]="{'showWarning invalidData': showWarning}">Dados inválidos</span>
+</section>
