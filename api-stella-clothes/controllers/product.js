@@ -75,6 +75,24 @@ const create = async (req, res) => {
     const { ref, description, price, size, stock } = req.body;
     const image = req.file.path;
 
+    // Check if the fields are empty
+    if (!ref || !description || !price || !size || !stock)
+      return res.status(400).json({ message: 'All fields are required' });
+
+    // Check if image is empty
+    //if (!image) return res.status(400).json({ message: 'Image is required' });
+
+    // Check if the product already exists
+    const productExists = await Product.findOne({
+      ref,
+      description,
+      price,
+      size,
+      stock,
+    });
+    if (productExists)
+      return res.status(400).json({ message: 'Product already exists' });
+
     // Body of product
     const product = new Product({
       ref,
