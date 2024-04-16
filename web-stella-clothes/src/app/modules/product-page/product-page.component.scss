@@ -1,10 +1,11 @@
-@import "../../../styles/variables.scss";
+@import '../../styles/variables.scss';
 
 #product {
   width: 100vw;
   display: flex;
   flex-direction: row;
   font-family: $font-telex;
+  margin: 5rem 0;
 
   &-images, &-description {
     width: 50%;

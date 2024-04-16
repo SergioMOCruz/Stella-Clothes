@@ -10,7 +10,7 @@ import { UserService } from '../../../services/users/user.service';
 export class UserSessionHandlerService {
 
   constructor(
-    public router: Router,
+    private _router: Router,
     private _userService: UserService
   ) { }
 
@@ -40,7 +40,7 @@ export class UserSessionHandlerService {
       data => {
         this.setLocalUserData(data);
 
-        this.router.navigate(['/home'], navigationExtras).then(() => {
+        this._router.navigate(['/home'], navigationExtras).then(() => {
           window.location.reload();
         });
       }

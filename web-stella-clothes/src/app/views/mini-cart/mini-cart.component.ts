@@ -22,7 +22,7 @@ export class MiniCartComponent {
   total: number = 0;
 
   constructor(
-    public router: Router,
+    private _router: Router,
     private _productService: ProductService,
     private _userSession: UserSessionHandlerService
   ) {
@@ -47,7 +47,7 @@ export class MiniCartComponent {
   }
 
   redirectToMenu(page: string) {
-    this.router.navigate([`/${page}`]);
+    this._router.navigate([`/${page}`]);
   }
 
   redirectToLogin() {

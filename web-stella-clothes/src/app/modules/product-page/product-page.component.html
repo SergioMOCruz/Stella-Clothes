@@ -1,12 +1,12 @@
+<app-navbar></app-navbar>
 <section id="product">
   <div id="product-images">
-    
+    <img [src]="product.image" [alt]="product.name" />
   </div>
   <div id="product-description">
     <div id="product-description-char">
       <p id="product-description-type">{{ product.category }}</p>
-      <p id="product-description-name">{{ product.title }}</p>
-      <p id="product-description-color">{{ product.colors }}</p>
+      <p id="product-description-name">{{ product.name }}</p>
       <p id="product-description-price">€ {{ product.price }}</p>
     </div>
     <div id="product-sizes">
@@ -16,3 +16,4 @@
     <a id="add-to-cart">ADICIONAR AO CARRINHO</a>
   </div>
 </section>
+<app-footer></app-footer>
