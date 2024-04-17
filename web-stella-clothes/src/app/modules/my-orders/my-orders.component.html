@@ -1,0 +1,18 @@
+<app-navbar></app-navbar>
+<section class="myorders">
+  <div *ngFor="let order of orders" class="myorder-row">
+    <div class="myorder-info">
+      <span class="cart-text">{{order.status}}</span>
+      <span class="cart-text">{{order.date}}</span>
+    </div>
+    <div class="order-details">
+      <span class="cart-text">{{order.price}} €</span>
+      <button type="button" class="cart-button">- Ver Encomenda</button>
+    </div>
+    <div #orderProducts class="order-products" >
+      <div class="order-products-shadow"></div>
+      <img *ngFor="let image of order.images" class="order-image" [src]="image" />
+      <div class="order-products-shadow"></div>
+    </div>
+  </div>
+</section>
