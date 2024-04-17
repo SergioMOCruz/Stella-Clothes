@@ -184,16 +184,16 @@ const update = async (req, res) => {
 
     let client = await Client.findById(id);
 
-    client.firstName = firstName;
-    client.lastName = lastName;
-    client.email = email;
-    client.phone = phone;
-    client.nif = nif;
-    client.address = address;
-    client.addressContinued = addressContinued;
-    client.city = city;
-    client.postalCode = postalCode;
-    client.country = country;
+    client.firstName = firstName || client.firstName;
+    client.lastName = lastName || client.lastName;
+    client.email = email || client.email;
+    client.phone = phone || client.phone;
+    client.nif = nif || client.nif;
+    client.address = address || client.address;
+    client.addressContinued = addressContinued || client.addressContinued;
+    client.city = city || client.city;
+    client.postalCode = postalCode || client.postalCode;
+    client.country = country || client.country;
 
     await client.save();
     res.status(200).json({ message: 'Client updated' });

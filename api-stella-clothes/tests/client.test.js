@@ -185,7 +185,10 @@ describe('Client Routes', () => {
       expect(response.status).toBe(409);
 
       // Ensure the response body contains the error message
-      expect(response.body).toEqual({ message: 'O NIF que introduziu já pertence a uma conta!', message: 'O email que introduziu já pertence a uma conta!' });
+      expect(response.body).toEqual({
+        message: 'O NIF que introduziu já pertence a uma conta!',
+        message: 'O email que introduziu já pertence a uma conta!',
+      });
 
       // Ensure the Client.findOne() method was called twice (for email and nif check)
       expect(Client.findOne).toHaveBeenCalledTimes(4);
@@ -282,6 +285,111 @@ describe('Client Routes', () => {
 
       // Restore the original console.error function after the test
       consoleErrorSpy.mockRestore();
+    });
+  });
+  
+  describe('PUT /clients', () => {
+    it('should update a client', async () => {
+      // Mock request parameters and body
+      const req = {
+        params: { id: 'mockClientId' },
+        body: {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'johndoe@example.com',
+          phone: '1234567890',
+          nif: '123456789',
+          address: '123 Main St',
+          addressContinued: 'Apt 4B',
+          city: 'New York',
+          postalCode: '12345',
+          country: 'USA',
+        },
+      };
+
+      // Mock the Client.findById() method to return a client
+      const mockClient = {
+        _id: 'mockClientId',
+        firstName: 'Old',
+        lastName: 'Client',
+        email: 'oldclient@example.com',
+        phone: '0987654321',
+        nif: '987654321',
+        address: '456 Elm St',
+        addressContinued: 'Apt 2C',
+        city: 'Los Angeles',
+        postalCode: '54321',
+        country: 'USA',
+        save: jest.fn(),
+      };
+      jest.spyOn(Client, 'findById').mockResolvedValue(mockClient);
+
+      // Make the request to update the client
+      await update(req, res);
+
+      // Ensure the Client.findById() method was called once with the correct id
+      expect(Client.findById).toHaveBeenCalledTimes(1);
+      expect(Client.findById).toHaveBeenCalledWith('mockClientId');
+
+      // Ensure the client properties were updated correctly
+      expect(mockClient.firstName).toBe('John');
+      expect(mockClient.lastName).toBe('Doe');
+      expect(mockClient.email).toBe('johndoe@example.com');
+      expect(mockClient.phone).toBe('1234567890');
+      expect(mockClient.nif).toBe('123456789');
+      expect(mockClient.address).toBe('123 Main St');
+      expect(mockClient.addressContinued).toBe('Apt 4B');
+      expect(mockClient.city).toBe('New York');
+      expect(mockClient.postalCode).toBe('12345');
+      expect(mockClient.country).toBe('USA');
+
+      // Ensure the client.save() method was called once
+      expect(mockClient.save).toHaveBeenCalledTimes(1);
+
+      // Ensure the response status is 200 OK
+      expect(res.status).toHaveBeenCalledWith(200);
+      // Ensure the response body contains the success message
+      expect(res.json).toHaveBeenCalledWith({ message: 'Client updated' });
+    });
+
+    it('should handle errors and return 500 if an error occurs', async () => {
+      // Mock request parameters and body
+      const req = {
+        params: { id: 'mockClientId' },
+        body: {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'johndoe@example.com',
+          phone: '1234567890',
+          nif: '123456789',
+          address: '123 Main St',
+          addressContinued: 'Apt 4B',
+          city: 'New York',
+          postalCode: '12345',
+          country: 'USA',
+        },
+      };
+
+      // Spy on console.error before the test
+      const consoleErrorSpy = jest.spyOn(console, 'error');
+
+      // Mock the Client.findById() method to throw an error
+      jest.spyOn(Client, 'findById').mockRejectedValue(new Error('Database error'));
+
+      // Make the request to update the client
+      await update(req, res);
+
+      // Ensure the Client.findById() method was called once with the correct id
+      expect(Client.findById).toHaveBeenCalledTimes(1);
+      expect(Client.findById).toHaveBeenCalledWith('mockClientId');
+
+      // Ensure console.error was called with the correct error message
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Update Client Error:', 'Database error');
+
+      // Ensure the response status is 500 Internal Server Error
+      expect(res.status).toHaveBeenCalledWith(500);
+      // Ensure the response body contains the error message
+      expect(res.json).toHaveBeenCalledWith({ message: 'Internal server error' });
     });
   });
 });
