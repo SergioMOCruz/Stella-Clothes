@@ -1,6 +1,5 @@
 const express = require('express');
 const connectDB = require('./db');
-const connectFirebase = require('./firebase');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 require('dotenv').config();
@@ -44,13 +43,13 @@ app.use(express.json());
 // Connect to MongoDB
 connectDB();
 
-// Firebase
-connectFirebase();
-
 // Routes
 app.use('/clients', require('./routes/client'));
 app.use('/employees', require('./routes/employee'));
 app.use('/products', require('./routes/product'));
+app.use('/orders', require('./routes/order'));
+app.use('/cart', require('./routes/cart'));
+app.use('/categories', require('./routes/category'));
 
 // Start the server
 app.listen(port, () => {

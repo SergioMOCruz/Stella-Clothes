@@ -26,17 +26,21 @@ const getById = async (req, res) => {
 // Create a new order
 const create = async (req, res) => {
   try {
-    const { employeeId, clientId, cartId, productsId, paymentId, status, date } = req.body;
+    const { employeeId, clientId, cartId, productsId, paymentId, status } = req.body;
+
+    // Check if all fields are filled
+    if (!employeeId || !clientId || !cartId || !productsId || !paymentId || !status) {
+      return res.status(400).json({ message: 'All fields must be filled' });
+    }
 
     // Body of order
     const order = new Order({
-      employeeId: employeeId,
-      clientId: clientId,
-      cartId: cartId,
-      productsId: productsId,
-      paymentId: paymentId,
-      status: status,
-      date: date,
+      employeeId,
+      clientId,
+      cartId,
+      productsId,
+      paymentId,
+      status,
     });
 
     await order.save();
@@ -59,21 +63,19 @@ const update = async (req, res) => {
       cartId, 
       productsId, 
       paymentId, 
-      status, 
-      date
+      status
      } = req.body;
 
     // Find order by id
     let order = await Order.findById(id);
 
-    // Update order
-    order.employeeId = employeeId;
-    order.clientId = clientId;
-    order.cartId = cartId;
-    order.productsId = productsId;
-    order.paymentId = paymentId;
-    order.status = status;
-    order.date = date;
+    // Update order and verify if all fields are filled
+    order.employeeId = employeeId || order.employeeId;
+    order.clientId = clientId || order.clientId;
+    order.cartId = cartId || order.cartId;
+    order.productsId = productsId || order.productsId;
+    order.paymentId = paymentId || order.paymentId;
+    order.status = status || order.status;
 
     await order.save();
     res.status(200).json({ message: 'Order updated' });

@@ -5,6 +5,9 @@
   margin: 0;
   border: 0;
   box-sizing: border-box;
+}
+
+body, html {
   overflow-x: hidden;
 }
 
@@ -14,6 +17,22 @@ a, a:visited, a:hover, a:active {
 
 p, label, input, a, div {
   font-family: $font-telex;
+}
+
+.hideDisplay {
+  display: none;
+}
+
+.showWarning {
+  display: block;
+}
+
+.invalidData {
+  color: red;
+}
+
+.validData {
+  color: green;
 }
 
 .white-button {

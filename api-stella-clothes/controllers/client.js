@@ -1,4 +1,41 @@
+require('dotenv').config();
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const Client = require('../models/client');
+
+// Login an client
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const client = await Client.findOne({ email });
+
+    if (!client) {
+      return res.status(204).json({ message: 'Client not found' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, client.password);
+
+    if (passwordMatch) {
+      const jwtSecret = process.env.JWT_SECRET;
+
+      const token = jwt.sign({ id: client._id, email: client.email }, jwtSecret, {
+        expiresIn: '30d',
+      });
+
+      res.status(200).json({
+        token,
+        accID: client._id,
+      });
+    } else {
+      res.status(403).json({ message: 'Incorrect Password' });
+    }
+  } catch (error) {
+    console.error('Client Login Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 // Get all clients
 const getAll = async (req, res) => {
@@ -26,13 +63,89 @@ const getById = async (req, res) => {
 // Create a new client
 const create = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, nif, address, addressContinued, city, postalCode, country } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      nif,
+      address,
+      addressContinued,
+      city,
+      postalCode,
+      country,
+    } = req.body;
+
+    // Check if all fields are filled
+    if (!firstName) {
+      return res.status(406).json({ message: 'O campo primeiro nome é obrigatório!' });
+    }
+    if (!lastName) {
+      return res.status(406).json({ message: 'O campo último nome é obrigatório!' });
+    }
+    if (!email) {
+      return res.status(406).json({ message: 'O campo email é obrigatório!' });
+    }
+    if (!password) {
+      return res.status(406).json({ message: 'O campo password é obrigatório!' });
+    }
+    if (!phone) {
+      return res.status(406).json({ message: 'O campo telefone é obrigatório!' });
+    }
+    if (!nif) {
+      return res.status(406).json({ message: 'O campo NIF é obrigatório!' });
+    }
+    if (!address) {
+      return res.status(406).json({ message: 'O campo morada é obrigatório!' });
+    }
+    if (!city) {
+      return res.status(406).json({ message: 'O campo cidade é obrigatório!' });
+    }
+    if (!postalCode) {
+      return res.status(406).json({ message: 'O campo código postal é obrigatório!' });
+    }
+    if (!country) {
+      return res.status(406).json({ message: 'O campo país é obrigatório!' });
+    }
+
+    // if any of the fields don't have the same name as the variable return an error
+    if (
+      !req.body.firstName ||
+      !req.body.lastName ||
+      !req.body.email ||
+      !req.body.password ||
+      !req.body.phone ||
+      !req.body.nif ||
+      !req.body.address ||
+      !req.body.city ||
+      !req.body.postalCode ||
+      !req.body.country
+    ) {
+      return res.status(406).json({ message: 'Invalid field name' });
+    }
+
+    // Check if client already exists
+    const clientExists = await Client.findOne({ email });
+    if (clientExists) {
+      return res.status(409).json({ message: 'O email que introduziu já pertence a uma conta!' });
+    }
+
+    // Check if nif already exists
+    const nifExists = await Client.findOne({ nif });
+    if (nifExists) {
+      return res.status(409).json({ message: 'O NIF que introduziu já pertence a uma conta!' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Body of client
     const client = new Client({
       firstName,
       lastName,
       email,
+      password: hashedPassword,
       phone,
       nif,
       address,
@@ -56,20 +169,31 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, phone, nif, address, addressContinued, city, postalCode, country } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      nif,
+      address,
+      addressContinued,
+      city,
+      postalCode,
+      country,
+    } = req.body;
 
     let client = await Client.findById(id);
 
-    client.firstName = firstName;
-    client.lastName = lastName;
-    client.email = email;
-    client.phone = phone;
-    client.nif = nif;
-    client.address = address;
-    client.addressContinued = addressContinued;
-    client.city = city;
-    client.postalCode = postalCode;
-    client.country = country;
+    client.firstName = firstName || client.firstName;
+    client.lastName = lastName || client.lastName;
+    client.email = email || client.email;
+    client.phone = phone || client.phone;
+    client.nif = nif || client.nif;
+    client.address = address || client.address;
+    client.addressContinued = addressContinued || client.addressContinued;
+    client.city = city || client.city;
+    client.postalCode = postalCode || client.postalCode;
+    client.country = country || client.country;
 
     await client.save();
     res.status(200).json({ message: 'Client updated' });
@@ -91,4 +215,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { login, getAll, getById, create, update, remove };

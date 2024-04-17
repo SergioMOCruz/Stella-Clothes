@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const Category = require('../models/category');
 
 // Get all products
 const getAll = async (req, res) => {
@@ -54,10 +55,65 @@ const getStock = async (req, res) => {
   }
 };
 
+// Get the last 4 products added
+const getLastFour = async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 }).limit(4);
+
+    if (!products.length) return res.status(500).json({ message: 'No products ' });
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Get Last Products Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Get products by category
+const getByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    // Check if the category exists
+    const cat = await Category.find({ description: category });
+    if (!cat) return res.status(400).json({ message: 'Category not found' });
+
+    const products = await Product.find({ category: cat[0]._id });
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Get Products By Category Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Create a new product
 const create = async (req, res) => {
   try {
-    const { ref, description, price, size, stock } = req.body;
+    const { ref, description, price, size, stock, category } = req.body;
+    const image = req.file.path;
+
+    // Check if the fields are empty
+    if (!ref || !description || !price || !size || !stock || !category)
+      //|| !image)
+      return res.status(400).json({ message: 'All fields are required' });
+
+    // Check if image is empty
+    //if (!image) return res.status(400).json({ message: 'Image is required' });
+
+    // Check if the category exists
+    const cat = await Category.find({ description: category });
+    if (!cat) return res.status(400).json({ message: 'Category not found' });
+
+    // Check if the product already exists
+    const productExists = await Product.findOne({
+      ref,
+      description,
+      price,
+      size,
+      stock,
+    });
+    if (productExists) return res.status(400).json({ message: 'Product already exists' });
 
     // Body of product
     const product = new Product({
@@ -66,6 +122,8 @@ const create = async (req, res) => {
       price,
       size,
       stock,
+      category: cat[0]._id,
+      image: image ? image : '',
     });
 
     await product.save();
@@ -78,19 +136,38 @@ const create = async (req, res) => {
   }
 };
 
+// Upload image to a product
+const uploadImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const imagePath = req.file.path;
+
+    let product = await Product.findById(id);
+    product.image = imagePath ? imagePath : '';
+
+    res.status(200).json({ message: 'Image uploaded' });
+  } catch (error) {
+    console.error('Upload Image Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Update a product
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { ref, description, price, size, stock } = req.body;
+    const { ref, description, price, size, stock, category } = req.body;
+    const image = req.file.path;
 
     let product = await Product.findById(id);
 
-    product.ref = ref;
-    product.description = description;
-    product.price = price;
-    product.size = size;
-    product.stock = stock;
+    product.ref = ref ? ref : product.ref;
+    product.description = description ? description : product.description;
+    product.price = price ? price : product.price;
+    product.size = size ? size : product.size;
+    product.stock = stock ? stock : product.stock;
+    product.category = category ? category : product.category;
+    product.image = image ? image : product.image;
 
     await product.save();
     res.status(200).json({ message: 'Product updated' });
@@ -112,4 +189,14 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, getByRef, getStock, create, update, remove };
+module.exports = {
+  getAll,
+  getById,
+  getByRef,
+  getByCategory,
+  getStock,
+  getLastFour,
+  create,
+  update,
+  remove,
+};

@@ -1,30 +1,45 @@
 const express = require('express');
-const router = express.Router();
+const multer = require('multer');
+const { authenticateToken } = require('../middleware/authenticate');
 const {
   getAll,
   getById,
+  getByRef,
+  getByCategory,
+  getStock,
+  getLastFour,
   create,
   update,
   remove,
 } = require('../controllers/product');
-const { authenticateUser } = require('../middleware/authenticate');
+const router = express.Router();
+const upload = multer();
 
-// GET /service
-// Get all services
-router.get('/', authenticateUser, getAll);
-// Get service by id
-router.get('/:id', authenticateUser, getById);
+// GET /product
+// Get product stock by ref and size
+router.get('/stock', authenticateToken, getStock);
+// Get the last 4 products added
+router.get('/lastFour', authenticateToken, getLastFour);
+// Get all products
+router.get('/', authenticateToken, getAll);
+// Get product by id
+router.get('/:id', authenticateToken, getById);
+// Get product by reference
+router.get('/ref/:ref', authenticateToken, getByRef);
+// Get product by category
+router.get('/category/:category', authenticateToken, getByCategory);
 
-// POST /service
-// Create a new service
-router.post('/', authenticateUser, create);
 
-// PUT /service
-// Update a service
-router.put('/:id', authenticateUser, update);
+// POST /product
+// Create a new product
+router.post('/', authenticateToken, upload.single('image'), create);
 
-// DELETE /service
-// Delete a service
-router.delete('/:id', authenticateUser, remove);
+// PUT /product
+// Update a product
+router.put('/:id', authenticateToken, upload.single('image'), update);
+
+// DELETE /product
+// Delete a product
+router.delete('/:id', authenticateToken, remove);
 
 module.exports = router;

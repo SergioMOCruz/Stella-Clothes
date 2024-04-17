@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -9,11 +9,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   templateUrl: './four-o-four.component.html',
   styleUrl: './four-o-four.component.scss'
 })
-export class FourOFourComponent implements OnInit {
+export class FourOFourComponent {
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }
