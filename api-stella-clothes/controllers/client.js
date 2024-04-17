@@ -63,8 +63,19 @@ const getById = async (req, res) => {
 // Create a new client
 const create = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phone, nif, address, addressContinued, city, postalCode, country } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      nif,
+      address,
+      addressContinued,
+      city,
+      postalCode,
+      country,
+    } = req.body;
 
     // Check if all fields are filled
     if (!firstName) {
@@ -98,6 +109,22 @@ const create = async (req, res) => {
       return res.status(406).json({ message: 'O campo país é obrigatório!' });
     }
 
+    // if any of the fields don't have the same name as the variable return an error
+    if (
+      !req.body.firstName ||
+      !req.body.lastName ||
+      !req.body.email ||
+      !req.body.password ||
+      !req.body.phone ||
+      !req.body.nif ||
+      !req.body.address ||
+      !req.body.city ||
+      !req.body.postalCode ||
+      !req.body.country
+    ) {
+      return res.status(406).json({ message: 'Invalid field name' });
+    }
+
     // Check if client already exists
     const clientExists = await Client.findOne({ email });
     if (clientExists) {
@@ -112,11 +139,6 @@ const create = async (req, res) => {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // if any of the fields don't have the same name as the variable return an error
-    if (!req.body.firstName || !req.body.lastName || !req.body.email || !req.body.password || !req.body.phone || !req.body.nif || !req.body.address || !req.body.city || !req.body.postalCode || !req.body.country) {
-      return res.status(406).json({ message: 'Invalid field name' });
-    }
 
     // Body of client
     const client = new Client({
@@ -147,7 +169,18 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, phone, nif, address, addressContinued, city, postalCode, country } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      nif,
+      address,
+      addressContinued,
+      city,
+      postalCode,
+      country,
+    } = req.body;
 
     let client = await Client.findById(id);
 
