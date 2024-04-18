@@ -5,6 +5,7 @@ const {
   getAll,
   getById,
   getByRef,
+  getByCategory,
   getStock,
   getLastFour,
   create,
@@ -25,6 +26,8 @@ router.get('/', authenticateToken, getAll);
 router.get('/:id', authenticateToken, getById);
 // Get product by reference
 router.get('/ref/:ref', authenticateToken, getByRef);
+// Get product by category
+router.get('/category/:category', authenticateToken, getByCategory);
 
 
 // POST /product
