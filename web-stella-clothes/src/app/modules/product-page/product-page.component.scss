@@ -2,6 +2,7 @@
 
 #product {
   width: 100vw;
+  min-height: 60vh;
   display: flex;
   flex-direction: row;
   font-family: $font-telex;
@@ -52,6 +53,10 @@
   align-items: center;
   margin: 6rem 0 1rem 0;
 
+  p {
+    margin: 0;
+  }
+
   select {
     width: 10rem;
     color: #8F8F8F;
@@ -64,6 +69,7 @@
 #add-to-cart {
   width: 15.3rem;
   display: block;
+  text-align: center;
   background-color: #000;
   margin-top: 2rem;
   padding: 0.5rem 1rem;

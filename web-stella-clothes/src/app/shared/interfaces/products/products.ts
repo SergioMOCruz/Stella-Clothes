@@ -1,3 +1,5 @@
+import { Size } from "../../enum/size";
+
 export interface Product {
   ref: string,
   name: string,
@@ -5,7 +7,7 @@ export interface Product {
   description: string,
   price: number,
   quantity?: number,
-  size: string,
+  size: Size,
   stock: number,
   image: string
 }

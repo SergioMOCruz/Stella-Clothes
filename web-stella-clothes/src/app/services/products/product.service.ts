@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable, catchError, map, of } from 'rxjs';
 import { flush } from '@angular/core/testing';
+import { Size } from '../../shared/enum/size';
+import { Product } from '../../shared/interfaces/products/products';
 
 @Injectable({
   providedIn: 'root'
@@ -33,5 +35,16 @@ export class ProductService {
 
   getLastFour(): Observable<any> {
     return this._http.get(`${environment.apiUrl}/products/lastFour`);
+  }
+
+  getProductByRef(ref: string) {
+    return this._http.get<Product>(`${environment.apiUrl}/products/ref/${ref}`);
+  }
+
+  getProductStock(ref: string, size: Size) {
+    const options = {
+      params: { ref, size }
+    };
+    return this._http.get(`${environment.apiUrl}/products/stock`, options);
   }
 }

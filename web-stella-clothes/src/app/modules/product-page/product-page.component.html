@@ -1,17 +1,21 @@
 <app-navbar></app-navbar>
-<section id="product">
+<section id="product" *ngIf="infoProduct">
   <div id="product-images">
-    <img [src]="product.image" [alt]="product.name" />
+    <img [src]="infoProduct.image" [alt]="infoProduct.name" />
   </div>
   <div id="product-description">
     <div id="product-description-char">
-      <p id="product-description-type">{{ product.category }}</p>
-      <p id="product-description-name">{{ product.name }}</p>
-      <p id="product-description-price">€ {{ product.price }}</p>
+      <p id="product-description-type">{{ infoProduct.category }}</p>
+      <p id="product-description-name">{{ infoProduct.name }}</p>
+      <p id="product-description-price">€ {{ infoProduct.price }}</p>
     </div>
     <div id="product-sizes">
       <p>Tamanho</p>
-      <select id="product-sizes-select"></select>
+      <select id="product-sizes-select">
+        <ng-container *ngFor="let product of organizedProducts">
+          <option value=""  [disabled]="product.stock <= 0">{{ product.size }} <a *ngIf="product.stock <= 0">- Esgotado</a></option>
+        </ng-container>
+      </select>
     </div>
     <a id="add-to-cart">ADICIONAR AO CARRINHO</a>
   </div>

@@ -72,12 +72,28 @@ const getLastFour = async (req, res) => {
 // Create a new product
 const create = async (req, res) => {
   try {
-    const { ref, description, price, size, stock } = req.body;
+    const { ref, name, description, price, size, stock } = req.body;
+
+    if (!ref || !name || !description || !price || !size || !stock) {
+      return res.status(400).json({ message: 'Missing required fields in the request' });
+    }
+
+    const allowedSizes = ['XS', 'S', 'M', 'L', 'XL'];
+    if (!allowedSizes.includes(size)) {
+      return res.status(400).json({ message: 'Invalid size value. Allowed values: XS, S, M, L, XL' });
+    }
+
     const image = req.file.path;
 
-    // Body of product
+    const existingProduct = await Product.findOne({ ref, size });
+
+    if (existingProduct) {
+      return res.status(409).json({ message: `Product with ref '${ref}' and size '${size}' already exists` });
+    }
+
     const product = new Product({
       ref,
+      name,
       description,
       price,
       size,
