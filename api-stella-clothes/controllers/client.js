@@ -172,9 +172,7 @@ const update = async (req, res) => {
     const {
       firstName,
       lastName,
-      email,
       phone,
-      nif,
       address,
       addressContinued,
       city,
@@ -186,9 +184,7 @@ const update = async (req, res) => {
 
     client.firstName = firstName || client.firstName;
     client.lastName = lastName || client.lastName;
-    client.email = email || client.email;
     client.phone = phone || client.phone;
-    client.nif = nif || client.nif;
     client.address = address || client.address;
     client.addressContinued = addressContinued || client.addressContinued;
     client.city = city || client.city;
