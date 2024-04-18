@@ -27,7 +27,7 @@ export class LoginComponent {
   user: User = null;
 
   constructor(
-    public router: Router,
+    private _router: Router,
     private _loginService: LoginService,
     private _userSession: UserSessionHandlerService
   ) {

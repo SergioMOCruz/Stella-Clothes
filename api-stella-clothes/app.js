@@ -48,6 +48,8 @@ app.use('/clients', require('./routes/client'));
 app.use('/employees', require('./routes/employee'));
 app.use('/products', require('./routes/product'));
 app.use('/orders', require('./routes/order'));
+app.use('/cart', require('./routes/cart'));
+app.use('/categories', require('./routes/category'));
 
 // Start the server
 app.listen(port, () => {

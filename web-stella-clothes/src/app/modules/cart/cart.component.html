@@ -1,6 +1,11 @@
 <app-navbar></app-navbar>
 <section id="cart" *ngIf="isLoggedIn">
-  <div id="cart-box">
+  <div id="emptyCart" *ngIf="cartItems.length == 0">
+    <p>Página não encontrada</p>
+    <p>Lamentamos, mas esta página já não está disponível no nosso site</p>
+    <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
+  </div>
+  <div id="cart-box" *ngIf="cartItems.length > 0">
     <div class="cart-title-row">
       <span class="cart-title">PRODUTO</span>
       <span class="cart-title">PREÇO</span>

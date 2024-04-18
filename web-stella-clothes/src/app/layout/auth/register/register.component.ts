@@ -24,7 +24,7 @@ export class RegisterComponent {
   showWarning: boolean = false;
 
   constructor(
-    public router: Router,
+    private _router: Router,
     private _registerService: RegisterService,
     private _userSession: UserSessionHandlerService,
     private _loginService: LoginService

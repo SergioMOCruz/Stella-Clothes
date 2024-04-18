@@ -21,7 +21,6 @@ export class CartComponent {
 
   constructor(
     private _userSession: UserSessionHandlerService,
-    public router: Router,
   ) {
     this.isLoggedIn = this._userSession.isLoggedIn();
   }

@@ -15,4 +15,8 @@ export class UserService {
   getCurrentUser() {
     return this._http.get<User>(`${environment.apiUrl}/clients/token`);
   }
+
+  updateUserInfo(id, data) {
+    return this._http.put(`${environment.apiUrl}/clients/${id}`, data);
+  }
 }
