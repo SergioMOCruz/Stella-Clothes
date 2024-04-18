@@ -3,11 +3,13 @@ import { UserSessionHandlerService } from '../../auth/services/helpers/user-sess
 import { LoginService } from '../../auth/services/login.service';
 import { User } from '../../shared/interfaces/users/user';
 import { NavigationExtras, Router } from '@angular/router';
+import { ChangeDataComponent } from '../change-data/change-data.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-profile-navbar',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, ChangeDataComponent],
   templateUrl: './profile-navbar.component.html',
   styleUrl: './profile-navbar.component.scss'
 })
@@ -15,6 +17,8 @@ import { NavigationExtras, Router } from '@angular/router';
 export class ProfileNavbarComponent {
 
   user: User;
+  showMyAccountMenu: boolean = true;
+  showChangeDataMenu: boolean = false;
 
   constructor(
     private _router: Router,
@@ -37,5 +41,10 @@ export class ProfileNavbarComponent {
     this._router.navigate(['/'], navigationExtras).then(() => {
       window.location.reload();
     });
+  }
+
+  toggleForm(formType: string) {
+    this.showMyAccountMenu = formType === 'my-account';
+    this.showChangeDataMenu = formType === 'change-data';
   }
 }
