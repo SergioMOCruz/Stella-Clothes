@@ -98,6 +98,16 @@ const create = async (req, res) => {
       //|| !image)
       return res.status(400).json({ message: 'All fields are required' });
 
+    const allowedSizes = ['XS', 'S', 'M', 'L', 'XL'];
+    if (!allowedSizes.includes(size)) {
+      return res.status(400).json({ message: 'Invalid size value. Allowed values: XS, S, M, L, XL' });
+    }
+
+    const existingProduct = await Product.findOne({ ref, size });
+    if (existingProduct) {
+      return res.status(409).json({ message: `Product with ref '${ref}' and size '${size}' already exists` });
+    }
+
     // Check if image is empty
     //if (!image) return res.status(400).json({ message: 'Image is required' });
 
@@ -105,19 +115,10 @@ const create = async (req, res) => {
     const cat = await Category.find({ description: category });
     if (!cat) return res.status(400).json({ message: 'Category not found' });
 
-    // Check if the product already exists
-    const productExists = await Product.findOne({
-      ref,
-      description,
-      price,
-      size,
-      stock,
-    });
-    if (productExists) return res.status(400).json({ message: 'Product already exists' });
-
     // Body of product
     const product = new Product({
       ref,
+      name,
       description,
       price,
       size,

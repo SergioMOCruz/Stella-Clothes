@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const productSchema = new mongoose.Schema({
-  ref : {
+  ref: {
+    type: String,
+    required: true,
+  },
+  name: {
     type: String,
     required: true,
   },
@@ -16,10 +20,11 @@ const productSchema = new mongoose.Schema({
   },
   size: {
     type: String,
+    enum: ['XS', 'S', 'M', 'L', 'XL'],
     required: true,
   },
   stock: {
-    type: String,
+    type: Number,
     required: true,
   },
   category: {
