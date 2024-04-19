@@ -1,6 +1,6 @@
 <section id="my-account-container" *ngIf="showMyAccountMenu">
     <span id="my-account-title">OLÁ {{ user.firstName + ' ' + user.lastName  }}</span>
-    <div id="my-account-items">
+    <div id="my-account-items" (click)="toggleForm('my-orders')">
       <i class="icons fa-solid fa-box-open"></i> AS MINHAS COMPRAS
     </div>
     <div id="my-account-items" (click)="toggleForm('change-data')">

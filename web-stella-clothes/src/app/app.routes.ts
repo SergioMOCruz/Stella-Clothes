@@ -15,7 +15,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'product/:ref', component: ProductPageComponent, canActivate: [ProductExistsGuard] },
   { path: 'cart', component: CartComponent },
-  { path: 'myorders', component: MyOrdersComponent },
+  { path: 'my-orders', component: MyOrdersComponent, canActivate: [AuthGuard] },
   { path: '404', component: FourOFourComponent },
   { path: '**', redirectTo: '/404' },
 ];

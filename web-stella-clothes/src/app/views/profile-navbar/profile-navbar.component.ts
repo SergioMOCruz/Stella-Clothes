@@ -44,6 +44,11 @@ export class ProfileNavbarComponent {
   }
 
   toggleForm(formType: string) {
+    if (formType == 'my-orders') {
+      this._router.navigate(['/my-orders']);
+      return;
+    }
+
     this.showMyAccountMenu = formType === 'my-account';
     this.showChangeDataMenu = formType === 'change-data';
   }
