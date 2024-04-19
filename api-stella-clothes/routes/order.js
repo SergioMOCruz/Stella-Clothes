@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAll, getById, create, update, remove } = require('../controllers/order');
+const { getAll, getById, getByClientId, create, update, remove } = require('../controllers/order');
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /order
@@ -8,6 +8,8 @@ const { authenticateToken } = require('../middleware/authenticate');
 router.get('/', authenticateToken, getAll);
 // Get order by id
 router.get('/:id', authenticateToken, getById);
+// Get order by client id
+router.get('/client', authenticateToken, getByClientId);
 
 // POST /order
 // Create a new order

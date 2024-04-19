@@ -23,6 +23,18 @@ const getById = async (req, res) => {
   }
 };
 
+// Get order by client id
+const getByClientId = async (req, res) => {
+  try {
+    const { user } = req.user;
+    const orders = await Order.find({ clientId: user._id });
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Get Order By Client Id Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Create a new order
 const create = async (req, res) => {
   try {
@@ -97,4 +109,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getAll, getById, getByClientId, create, update, remove };
