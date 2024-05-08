@@ -1,8 +1,7 @@
 <app-navbar></app-navbar>
 <section id="cart" *ngIf="isLoggedIn">
   <div id="emptyCart" *ngIf="cartItems.length == 0">
-    <p>Página não encontrada</p>
-    <p>Lamentamos, mas esta página já não está disponível no nosso site</p>
+    <p>Lamentamos, não possuí nenhum item no seu carrinho</p>
     <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
   </div>
   <div id="cart-box" *ngIf="cartItems.length > 0">

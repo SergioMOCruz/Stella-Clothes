@@ -1,6 +1,7 @@
 <mat-drawer-container id="sidenav-container" autosize>
   <mat-drawer #drawer id="sidenav" mode="side" from="right">
-    <p>Auto-resizing sidenav</p>
+    <p class="category-title">Coleção</p>
+    <p class="category-description" *ngFor="let category of categories" (click)="redirectToCategory(category.description)">{{ category.description }}</p>
     <div id="close-menu" (click)="drawer.toggle(); toggleOverlay()">X</div>
   </mat-drawer>
 </mat-drawer-container>

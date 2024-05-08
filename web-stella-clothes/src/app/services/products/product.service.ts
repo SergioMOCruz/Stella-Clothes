@@ -19,8 +19,8 @@ export class ProductService {
 
   }
 
-  doesProductExist(ref): Observable<boolean> {
-    return this._http.get<boolean>(`${environment.apiUrl}/products/ref/${ref}`).pipe(
+  doesProductExist(reference): Observable<boolean> {
+    return this._http.get<boolean>(`${environment.apiUrl}/products/reference/${reference}`).pipe(
       map(data => {
         if (Object.keys(data).length !== 0) {
           return true;
@@ -37,14 +37,18 @@ export class ProductService {
     return this._http.get(`${environment.apiUrl}/products/lastFour`);
   }
 
-  getProductByRef(ref: string) {
-    return this._http.get<Product>(`${environment.apiUrl}/products/ref/${ref}`);
+  getProductByRef(reference: string) {
+    return this._http.get<Product>(`${environment.apiUrl}/products/reference/${reference}`);
   }
 
-  getProductStock(ref: string, size: Size) {
+  getProductStock(reference: string, size: Size) {
     const options = {
-      params: { ref, size }
+      params: { reference, size }
     };
     return this._http.get(`${environment.apiUrl}/products/stock`, options);
+  }
+
+  getProductsByCategory(category: string) {
+    return this._http.get<Product[]>(`${environment.apiUrl}/products/category/${category}`);
   }
 }

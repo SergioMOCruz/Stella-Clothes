@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { NavigationExtras, Router, RouterModule } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 
 import { RightSidebarComponent } from '../right-sidebar/right-sidebar.component';
@@ -11,6 +11,7 @@ import { ForgotPasswordComponent } from '../../auth/forgot-password/forgot-passw
 import { MiniCartComponent } from '../../../views/mini-cart/mini-cart.component';
 import { ProfileNavbarComponent } from '../../../views/profile-navbar/profile-navbar.component';
 import { SearchProductComponent } from '../../../modules/search-product/search-product.component';
+import { CategoryService } from '../../../services/categories/category.service';
 
 @Component({
   selector: 'app-navbar',
@@ -23,6 +24,8 @@ import { SearchProductComponent } from '../../../modules/search-product/search-p
 export class NavbarComponent {
   @ViewChild('rightSideBar') rightSidebar: RightSidebarComponent;
 
+  categories = null;
+
   isVisible: boolean = false;
   showLogin: boolean = false;
   showRegister: boolean = false;
@@ -33,9 +36,12 @@ export class NavbarComponent {
   isLoggedIn = null;
 
   constructor(
-    private _userSession: UserSessionHandlerService
+    private _userSession: UserSessionHandlerService,
+    private _categoryService: CategoryService,
+    private _router: Router,
   ) {
     this.isLoggedIn = this._userSession.isLoggedIn();
+    this._categoryService.getCategories().subscribe(data => this.categories = data);
   }
 
   toggleRightSidebar() {
@@ -62,5 +68,11 @@ export class NavbarComponent {
     this.showMiniCart = formType === 'mini-cart';
     this.showProfileMenu = formType === 'my-account';
     this.showSearchMenu = formType === 'search-product';
+  }
+
+  redirectToCategory(reference: number) {
+    this._router.navigate(['/category/' + reference]).then(() => {
+      window.location.reload();
+    });
   }
 }

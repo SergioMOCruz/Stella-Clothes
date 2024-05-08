@@ -26,8 +26,8 @@ const getById = async (req, res) => {
 // Get order by client id
 const getByClientId = async (req, res) => {
   try {
-    const { user } = req.user;
-    const orders = await Order.find({ clientId: user._id });
+    const orders = await Order.find({ clientId: req.user._id });
+
     res.status(200).json(orders);
   } catch (error) {
     console.error('Get Order By Client Id Error:', error.message);
@@ -38,21 +38,20 @@ const getByClientId = async (req, res) => {
 // Create a new order
 const create = async (req, res) => {
   try {
-    const { employeeId, clientId, cartId, productsId, paymentId, status } = req.body;
+    const { productsId, paymentId, status, total } = req.body;
 
     // Check if all fields are filled
-    if (!employeeId || !clientId || !cartId || !productsId || !paymentId || !status) {
+    if ( !productsId || !paymentId || !status || !total ) {
       return res.status(400).json({ message: 'All fields must be filled' });
     }
 
     // Body of order
     const order = new Order({
-      employeeId,
-      clientId,
-      cartId,
+      clientId: req.user._id,
       productsId,
       paymentId,
       status,
+      total
     });
 
     await order.save();
@@ -71,12 +70,12 @@ const update = async (req, res) => {
     const { id } = req.params;
     const { 
       employeeId, 
-      clientId, 
-      cartId, 
+      clientId,
       productsId, 
       paymentId, 
-      status
-     } = req.body;
+      status,
+      total
+    } = req.body;
 
     // Find order by id
     let order = await Order.findById(id);

@@ -6,6 +6,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Product } from '../../shared/interfaces/products/products';
 import { UserSessionHandlerService } from '../../auth/services/helpers/user-session-handler.service';
+import { CartItems } from '../../shared/interfaces/products/cart-items';
+import { CartService } from '../../services/cart/cart.service';
+import { ProductService } from '../../services/products/product.service';
 
 @Component({
   selector: 'app-cart',
@@ -17,18 +20,36 @@ import { UserSessionHandlerService } from '../../auth/services/helpers/user-sess
 export class CartComponent {
 
   isLoggedIn: boolean = true;
-  cartItems: Product[] = [];
+  cartItems = [];
 
   constructor(
     private _userSession: UserSessionHandlerService,
+    private _cartService: CartService,
+    private _productService: ProductService
   ) {
     this.isLoggedIn = this._userSession.isLoggedIn();
+
+    this._cartService.getCartByClient().subscribe(data => {
+      this.cartItems = data;
+
+      if (this.cartItems.length) {
+        this.cartItems.forEach(product => {
+          this._productService.getProductByRef(product.productReference).subscribe((data) => {
+            product.price = data[0].price;
+            this.getSubtotal();
+          });
+        });
+      }
+    });
   }
 
-  removeItem(item: any): void {
-    const index = this.cartItems.indexOf(item);
+  async removeItem(product: any) {
+    const index = this.cartItems.indexOf(product);
     if (index !== -1) {
-      this.cartItems.splice(index, 1);
+      await this._cartService.removeItemfromCart(product).subscribe(data => {
+        this.cartItems.splice(index, 1);
+        this.getSubtotal();
+      });
     }
   }
 

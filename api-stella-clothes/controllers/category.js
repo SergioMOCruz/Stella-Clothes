@@ -37,6 +37,34 @@ const create = async (req, res) => {
   }
 };
 
+// Get category by id
+const getById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const category = await Category.findById(id);
+
+    res.status(200).json(category);
+  } catch (error) {
+    console.error('Get Category By Id Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Get category by description
+const getByDescription = async (req, res) => {
+  try {
+    const { description } = req.params;
+    
+    const category = await Category.findOne({ description });;
+
+    res.status(200).json(category);
+  } catch (error) {
+    console.error('Get Category By Description Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Update a category
 const update = async (req, res) => {
   try {
@@ -75,4 +103,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, create, update, remove };
+module.exports = { getAll, getById, getByDescription, create, update, remove };

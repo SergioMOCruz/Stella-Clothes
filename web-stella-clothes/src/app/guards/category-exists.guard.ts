@@ -2,20 +2,21 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { ProductService } from '../services/products/product.service';
 import { Observable, map, tap } from 'rxjs';
+import { CategoryService } from '../services/categories/category.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProductExistsGuard implements CanActivate {
+export class CategoryExistsGuard implements CanActivate {
 
   constructor(
     private _router: Router,
-    private _productService: ProductService,
+    private _categoryService: CategoryService
   ) {}
 
   canActivate(next: ActivatedRouteSnapshot): Observable<boolean> {
-    const reference = next.params['reference'];
-    return this._productService.doesProductExist(reference).pipe(
+    const description = next.params['description'];
+    return this._categoryService.doesCategoryExist(description).pipe(
       map(isValid => {
         if (isValid)
           return true;

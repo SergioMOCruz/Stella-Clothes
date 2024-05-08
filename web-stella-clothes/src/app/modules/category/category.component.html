@@ -1,0 +1,14 @@
+<app-navbar></app-navbar>
+<section id="category-container">
+  <p id="category-title">{{ category }}</p>
+  <div id="product-container">
+    <div id="product-item" *ngFor="let product of categoryProducts" [routerLink]="['/product/' + product.reference]">
+      <img id="product-image" [src]="product.image" alt="">
+      <div id="product-description">
+        <p>{{ product.name }}</p>
+        <p>{{ product.price }} €</p>
+      </div>
+    </div>
+  </div>
+</section>
+<app-footer></app-footer>

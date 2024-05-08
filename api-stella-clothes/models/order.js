@@ -1,30 +1,26 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  employeeId: {
-    type: String,
-    required: true,
-  },
   clientId: {
-    type: String,
-    required: true,
-  },
-  cartId: {
     type: String,
     required: true,
   },
   productsId: [
     {
-      type: String,
+      type: Number,
       required: true,
     },
   ],
   paymentId: {
-    type: String,
+    type: Number,
     required: true,
   },
   status: {
     type: String,
+    required: true,
+  },
+  total: {
+    type: Number,
     required: true,
   },
   createdAt: {

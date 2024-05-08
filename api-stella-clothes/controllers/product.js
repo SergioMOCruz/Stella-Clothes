@@ -26,31 +26,31 @@ const getById = async (req, res) => {
   }
 };
 
-// Get products by ref
+// Get products by reference
 const getByRef = async (req, res) => {
   try {
-    const { ref } = req.params;
-    const products = await Product.find({ ref });
+    const { reference } = req.params;
+    const products = await Product.find({ reference });
 
     res.status(200).json(products);
   } catch (error) {
-    console.error('Get Product By Ref Error:', error.message);
+    console.error('Get Product By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// Get stock by ref and size
+// Get stock by reference and size
 const getStock = async (req, res) => {
   try {
-    const { ref, size } = req.body;
-    const products = await Product.find({ ref });
+    const { reference, size } = req.body;
+    const products = await Product.find({ reference });
 
     const product = products.filter((product) => product.size === size);
     const stock = product[0].stock;
 
     res.status(200).json({ stock });
   } catch (error) {
-    console.error('Get Stock By Ref Error:', error.message);
+    console.error('Get Stock By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -90,11 +90,11 @@ const getByCategory = async (req, res) => {
 // Create a new product
 const create = async (req, res) => {
   try {
-    const { ref, description, price, size, stock, category } = req.body;
-    const image = req.file.path;
+    const { reference, name, description, price, size, stock, category } = req.body;
+    // const image = req.file.path;
 
     // Check if the fields are empty
-    if (!ref || !description || !price || !size || !stock || !category)
+    if (!reference || !name || !description || !price || !size || !stock || !category)
       //|| !image)
       return res.status(400).json({ message: 'All fields are required' });
 
@@ -103,9 +103,9 @@ const create = async (req, res) => {
       return res.status(400).json({ message: 'Invalid size value. Allowed values: XS, S, M, L, XL' });
     }
 
-    const existingProduct = await Product.findOne({ ref, size });
+    const existingProduct = await Product.findOne({ reference, size });
     if (existingProduct) {
-      return res.status(409).json({ message: `Product with ref '${ref}' and size '${size}' already exists` });
+      return res.status(409).json({ message: `Product with reference '${reference}' and size '${size}' already exists` });
     }
 
     // Check if image is empty
@@ -117,14 +117,14 @@ const create = async (req, res) => {
 
     // Body of product
     const product = new Product({
-      ref,
+      reference,
       name,
       description,
       price,
       size,
       stock,
       category: cat[0]._id,
-      image: image ? image : '',
+      // image: image ? image : '',
     });
 
     await product.save();
@@ -157,12 +157,12 @@ const uploadImage = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { ref, description, price, size, stock, category } = req.body;
+    const { reference, description, price, size, stock, category } = req.body;
     const image = req.file.path;
 
     let product = await Product.findById(id);
 
-    product.ref = ref ? ref : product.ref;
+    product.reference = reference ? reference : product.reference;
     product.description = description ? description : product.description;
     product.price = price ? price : product.price;
     product.size = size ? size : product.size;

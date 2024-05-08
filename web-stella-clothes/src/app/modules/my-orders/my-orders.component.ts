@@ -28,46 +28,54 @@ interface MyOrder {
 
 export class MyOrdersComponent implements AfterViewInit {
 
-  orders: MyOrder[]
+  orders: Order[]
 
-  @ViewChild('orderProducts') orderProducts: ElementRef;
+  // @ViewChild('orderProducts') orderProducts: ElementRef;
 
   constructor(
     private _userService: UserService,
     private _orderService: OrderService
   ) {
-    // this._orderService.getUserOrders().subscribe(
-    //   data => this.orders = data
-    // );
+    this._orderService.getUserOrders().subscribe(
+      data => { this.orders = data; this.formatDate(this.orders); },
+    );
+  }
+
+  formatDate(orders) {
+    for (let i = 0; i < orders.length; i++) {
+      const dt = new Date(orders[i].createdAt);
+
+      orders[i].createdAt = `${dt.getUTCHours().toString().padStart(2, '0')}:${dt.getUTCMinutes().toString().padStart(2, '0')} ${dt.getUTCDate().toString().padStart(2, '0')}-${(dt.getUTCMonth() + 1).toString().padStart(2, '0')}-${dt.getUTCFullYear()}`;
+    }
   }
 
   ngAfterViewInit() {
-    this.checkShadow();
+    // this.checkShadow();
   }
 
-  checkShadow() {
-    const orderWidth = this.orderProducts.nativeElement.clientWidth;
-    const imageWidth = 250;
-    const totalImagesWidth = this.orders.reduce((acc, order) => acc + order.images.length * imageWidth, 0);
+  // checkShadow() {
+  //   const orderWidth = this.orderProducts.nativeElement.clientWidth;
+  //   const imageWidth = 250;
+  //   const totalImagesWidth = this.orders.reduce((acc, order) => acc + order.images.length * imageWidth, 0);
 
-    if (totalImagesWidth > orderWidth) {
-      this.showShadow();
-    } else {
-      this.hideShadow();
-    }
-  }
+  //   if (totalImagesWidth > orderWidth) {
+  //     this.showShadow();
+  //   } else {
+  //     this.hideShadow();
+  //   }
+  // }
 
-  showShadow() {
-    const shadowElements = this.orderProducts.nativeElement.getElementsByClassName("order-products-shadow");
-    for (let i = 0; i < shadowElements.length; i++) {
-      shadowElements[i].style.display = "block";
-    }
-  }
+  // showShadow() {
+  //   const shadowElements = this.orderProducts.nativeElement.getElementsByClassName("order-products-shadow");
+  //   for (let i = 0; i < shadowElements.length; i++) {
+  //     shadowElements[i].style.display = "block";
+  //   }
+  // }
 
-  hideShadow() {
-    const shadowElements = this.orderProducts.nativeElement.getElementsByClassName("order-products-shadow");
-    for (let i = 0; i < shadowElements.length; i++) {
-      shadowElements[i].style.display = "none";
-    }
-  }
+  // hideShadow() {
+  //   const shadowElements = this.orderProducts.nativeElement.getElementsByClassName("order-products-shadow");
+  //   for (let i = 0; i < shadowElements.length; i++) {
+  //     shadowElements[i].style.display = "none";
+  //   }
+  // }
 }

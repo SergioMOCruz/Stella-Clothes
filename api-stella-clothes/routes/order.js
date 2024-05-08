@@ -6,10 +6,10 @@ const { authenticateToken } = require('../middleware/authenticate');
 // GET /order
 // Get all orders
 router.get('/', authenticateToken, getAll);
-// Get order by id
-router.get('/:id', authenticateToken, getById);
 // Get order by client id
 router.get('/client', authenticateToken, getByClientId);
+// Get order by id
+router.get('/:id', authenticateToken, getById);
 
 // POST /order
 // Create a new order

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const productSchema = new mongoose.Schema({
-  ref: {
+  reference: {
     type: String,
     required: true,
   },
@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: Schema.Types.ObjectId,
-    ref: 'Category',
+    reference: 'Category',
     required: true,
   },
   image: {

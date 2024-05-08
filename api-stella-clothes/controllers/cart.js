@@ -1,48 +1,72 @@
 const Cart = require('../models/cart');
+const Product = require('../models/product');
 
-// Get all carts
-const getAll = async (req, res) => {
+const getCartByClientId = async (req, res) => {
   try {
-    const carts = await Cart.find();
-    res.status(200).json(carts);
-  } catch (error) {
-    console.error('Get All Carts Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
+    const clientId = req.user.id;
+    
+    const cart = await Cart.find({ clientId: clientId });
 
-// Get cart by id
-const getById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const cart = await Cart.findById(id);
-    res.status(200).json(cart);
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    return res.status(200).json(cart);
   } catch (error) {
-    console.error('Get Cart By Id Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error retrieving cart:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 // Create a new cart
 const create = async (req, res) => {
   try {
-    const { clientId, productsId } = req.body;
+    const clientId = req.user.id;
+    const products = req.body;
 
-    // Check if all fields are filled
-    if (!clientId || !productsId) {
-      return res.status(400).json({ message: 'All fields must be filled' });
+    if (!products || products.length === 0) {
+      return res.status(400).json({ message: 'No products provided' });
     }
 
-    // Body of cart
-    const cart = new Cart({
-      clientId,
-      productsId,
-    });
+    for (const product of products) {
+      const { productReference, quantity, size } = product;
 
-    await cart.save();
-    console.log('Cart created with success!\nCart Id:', cart._id);
+      const allowedSizes = ['XS', 'S', 'M', 'L', 'XL'];
+      if (!allowedSizes.includes(size)) {
+        return res.status(400).json({ message: `Invalid size value for product ${productReference}. Allowed values: XS, S, M, L, XL` });
+      }
 
-    res.status(201).json({ message: 'Cart registered!' });
+      const existingProduct = await Product.findOne({ reference: productReference, size: size });
+      if (!existingProduct) {
+        return res.status(409).json({ message: `Product with reference '${productReference}' and size '${size}' doesn't exist` });
+      }
+
+      if (!productReference || !quantity || !size) {
+        return res.status(400).json({ message: 'All fields must be filled for each product' });
+      }
+    }
+
+    for (const product of products) {
+      const { productReference, quantity, size } = product;
+
+      const existingCartItem = await Cart.findOne({ clientId: clientId, productReference: productReference, size: size });
+      if (existingCartItem) {
+        existingCartItem.quantity += product.quantity;
+
+        await existingCartItem.save();
+        res.status(201).json({ message: 'Product quantity updated with success!\n'});
+      } else {
+        const newCartItem = new Cart({
+          clientId,
+          productReference,
+          quantity,
+          size
+        });
+        
+        await newCartItem.save();
+        res.status(201).json({ message: 'Product added to cart with success!\n'});
+      }
+    }
   } catch (error) {
     console.error('Cart Registration Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -52,13 +76,12 @@ const create = async (req, res) => {
 // Update a cart
 const update = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { clientId, productsId } = req.body;
+    const { productReference, size } = req.body;
+    const clientId = req.user.id;
 
-    // Find cart by id
-    let cart = await Cart.findById(id);
+    const existingCart = await Product.findOne({ reference: productReference, size: size });
+    let cart = await Cart.findOne({ productReference, size });
 
-    // Update cart
     cart.clientId = clientId || cart.clientId;
     cart.productsId = productsId || cart.productsId;
 
@@ -73,8 +96,10 @@ const update = async (req, res) => {
 // Delete a cart
 const remove = async (req, res) => {
   try {
-    const { id } = req.params;
-    await Cart.findByIdAndDelete(id);
+    const clientId = req.user.id;
+    const { productReference, size } = req.body;
+    
+    await Cart.findOneAndRemove({ clientId, productReference, size });
     res.status(200).json({ message: 'Cart deleted' });
   } catch (error) {
     console.error('Delete Cart Error:', error.message);
@@ -82,4 +107,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getCartByClientId, create, update, remove };
