@@ -8,6 +8,7 @@ const {
   getByCategory,
   getStock,
   getLastFour,
+  searchProducts,
   create,
   update,
   remove,
@@ -20,6 +21,8 @@ const upload = multer();
 router.get('/stock', authenticateToken, getStock);
 // Get the last 4 products added
 router.get('/lastFour', authenticateToken, getLastFour);
+// Get products by name
+router.get('/search', authenticateToken, searchProducts);
 // Get all products
 router.get('/', authenticateToken, getAll);
 // Get product by id

@@ -30,7 +30,7 @@
         </div>
 
         <div class="cart-item-quantity-row">
-          <input type="number" class="cart-item-quantity-input" [(ngModel)]="item.quantity"/>
+          <input type="number" class="cart-item-quantity-input" [(ngModel)]="item.quantity" (ngModelChange)="onQuantityChange($event, item)"/>
         </div>
 
         <div class="cart-item-total-row">
@@ -44,7 +44,7 @@
         <span class="cart-subtotal-title">Subtotal</span>
         <span class="cart-subtotal-value">{{ getSubtotal() }} €</span>
       </div>
-      <button class="cart-payment">PAGAMENTO</button>
+      <button class="cart-payment" [routerLink]="['/checkout']">PAGAMENTO</button>
     </div>
   </div>
 </section>

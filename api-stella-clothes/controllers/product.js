@@ -87,6 +87,19 @@ const getByCategory = async (req, res) => {
   }
 };
 
+// Search products by name
+const searchProducts = async (req, res) => {
+  try {
+    const searchTerm = req.query.searchTerm;
+    const products = await Product.find({ name: { $regex: searchTerm, $options: 'i' } }).limit(16);
+    console.log(products);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Search Products Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Create a new product
 const create = async (req, res) => {
   try {
@@ -113,7 +126,7 @@ const create = async (req, res) => {
 
     // Check if the category exists
     const cat = await Category.find({ description: category });
-    if (!cat) return res.status(400).json({ message: 'Category not found' });
+    if (!cat.length) return res.status(400).json({ message: 'Category not found' });
 
     // Body of product
     const product = new Product({
@@ -197,6 +210,7 @@ module.exports = {
   getByCategory,
   getStock,
   getLastFour,
+  searchProducts,
   create,
   update,
   remove,

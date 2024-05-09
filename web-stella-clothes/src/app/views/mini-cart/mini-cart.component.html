@@ -22,8 +22,8 @@
       <p>Total</p>
       <p>{{ total }}€</p>
     </div>
-    <div id="mini-cart-products-footer-more" (click)="redirectToMenu('cart')">  Ver Carrinho </div>
-    <div id="mini-cart-products-footer-checkout" (click)="redirectToMenu('checkout')"> Pagamento </div>
+    <div id="mini-cart-products-footer-more" [routerLink]="['/cart']">  Ver Carrinho </div>
+    <div id="mini-cart-products-footer-checkout" [routerLink]="['/checkout']"> Pagamento </div>
   </div>
 </section>
 

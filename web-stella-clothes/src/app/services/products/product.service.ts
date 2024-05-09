@@ -51,4 +51,8 @@ export class ProductService {
   getProductsByCategory(category: string) {
     return this._http.get<Product[]>(`${environment.apiUrl}/products/category/${category}`);
   }
+
+  searchProducts(searchTerm: string) {
+    return this._http.get<Product[]>(`${environment.apiUrl}/products/search?searchTerm=${searchTerm}`);
+  }
 }

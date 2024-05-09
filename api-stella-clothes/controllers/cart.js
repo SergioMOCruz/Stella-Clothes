@@ -74,18 +74,16 @@ const create = async (req, res) => {
 };
 
 // Update a cart
-const update = async (req, res) => {
+const updateQuantityInCart = async (req, res) => {
   try {
-    const { productReference, size } = req.body;
+    const { item, quantity } = req.body;
     const clientId = req.user.id;
 
-    const existingCart = await Product.findOne({ reference: productReference, size: size });
-    let cart = await Cart.findOne({ productReference, size });
+    const existingCart = await Cart.findOne({ clientId, productReference: item.productReference });
 
-    cart.clientId = clientId || cart.clientId;
-    cart.productsId = productsId || cart.productsId;
+    existingCart.quantity = quantity;
 
-    await cart.save();
+    await existingCart.save();
     res.status(200).json({ message: 'Cart updated' });
   } catch (error) {
     console.error('Update Cart Error:', error.message);
@@ -94,7 +92,7 @@ const update = async (req, res) => {
 };
 
 // Delete a cart
-const remove = async (req, res) => {
+const removeItemfromCart = async (req, res) => {
   try {
     const clientId = req.user.id;
     const { productReference, size } = req.body;
@@ -107,4 +105,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getCartByClientId, create, update, remove };
+module.exports = { getCartByClientId, create, updateQuantityInCart, removeItemfromCart };

@@ -17,7 +17,7 @@ export class CartService {
     return this._http.get(`${environment.apiUrl}/cart`);
   }
 
-  updateCart(cart: CartItems[]) : Observable<any> {
+  changeItemsInCart(cart: CartItems[]) : Observable<any> {
     return this._http.post(`${environment.apiUrl}/cart`, cart);
   }
 
@@ -32,4 +32,8 @@ export class CartService {
     return this._http.delete(`${environment.apiUrl}/cart`, options);
   }
 
+  updateQuantityInCart(product) : Observable<any> {
+    console.log(product)
+    return this._http.put(`${environment.apiUrl}/cart`, product);
+  }
 }

@@ -1,0 +1,55 @@
+<app-navbar></app-navbar>
+<section id="checkout">
+  <div id="checkout-container">
+    <div id="checkout-rst-half">
+      <div id="info-container">
+        <form id="info-block" [formGroup]="checkoutInfoForm">
+          <span>Informações de contacto</span>
+          <input type="text" placeholder="E-mail ou número de telemóvel" formControlName="contact" />
+          <span id="shipping-title">Morada de envio</span>
+          <div class="half-inputs">
+            <input type="text" placeholder="Nome Próprio" formControlName="first_name" />
+            <input type="text" placeholder="Apelido" formControlName="surname" />
+          </div>
+          <input type="text" placeholder="Morada" formControlName="address" />
+          <input type="text" placeholder="Apartamento, suíte, etc. (opcional)" formControlName="address_plus" />
+          <input type="text" placeholder="Cidade" formControlName="city" />
+          <div class="half-inputs">
+            <input type="text" placeholder="País" formControlName="country" />
+            <input type="text" placeholder="Código Postal" formControlName="postalcode" />
+          </div>
+        </form>
+        <div id="actions" class="half-inputs">
+          <span id="go-back" [routerLink]="['/cart']"><i class="fa-solid fa-less-than"></i>Voltar Atrás</span>
+          <button id="go-to-pay">Pagamento</button>
+        </div>
+      </div>
+    </div>
+    <div id="checkout-nd-half">
+      <div id="products-list-item-container">
+        <div id="products-list-item" *ngFor="let product of cartItems">
+          <div id="products-list-item-image">
+            <img [src]="product.image" [alt]="product.name" />
+            <span id="products-list-item-quantity">{{ product.quantity }}</span>
+          </div>
+          <div id="products-list-item-details">
+            <p id="products-list-item-details-name">
+              {{ product.name }}
+            </p>
+            <p id="products-list-item-details-size">
+              Tamanho {{ product.size }}
+            </p>
+          </div>
+          <div id="products-list-item-price">
+            {{ product.price }} €
+          </div>
+        </div>
+      </div>
+
+      <div id="expenses" *ngIf="cartItems.length">
+        <span>Total</span>
+        <span>{{ getSubtotal() }} €</span>
+      </div>
+    </div>
+  </div>
+</section>

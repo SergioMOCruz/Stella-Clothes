@@ -9,6 +9,8 @@ import { UserSessionHandlerService } from '../../auth/services/helpers/user-sess
 import { CartItems } from '../../shared/interfaces/products/cart-items';
 import { CartService } from '../../services/cart/cart.service';
 import { ProductService } from '../../services/products/product.service';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { QuantityUpdate } from '../../shared/interfaces/products/quantity-update';
 
 @Component({
   selector: 'app-cart',
@@ -21,6 +23,8 @@ export class CartComponent {
 
   isLoggedIn: boolean = true;
   cartItems = [];
+  private destroy$ = new Subject<void>();
+  private quantityChange$ = new Subject<QuantityUpdate>();
 
   constructor(
     private _userSession: UserSessionHandlerService,
@@ -41,6 +45,19 @@ export class CartComponent {
         });
       }
     });
+
+    this.quantityChange$
+      .pipe(
+        debounceTime(1000),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(async update => {
+        await this._cartService.updateQuantityInCart(update).subscribe();
+      });
+  }
+
+  onQuantityChange(quantity: number, item: any): void {
+    this.quantityChange$.next({ quantity, item });
   }
 
   async removeItem(product: any) {

@@ -1,17 +1,14 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ProductService } from '../../services/products/product.service';
 import { UserSessionHandlerService } from '../../auth/services/helpers/user-session-handler.service';
 import { CartService } from '../../services/cart/cart.service';
-import { CartItems } from '../../shared/interfaces/products/cart-items';
 
 @Component({
   selector: 'app-mini-cart',
   standalone: true,
-  imports: [
-    CommonModule,
-  ],
+  imports: [ CommonModule, RouterOutlet, RouterLink, RouterLinkActive ],
   templateUrl: './mini-cart.component.html',
   styleUrl: './mini-cart.component.scss',
 })
@@ -24,7 +21,6 @@ export class MiniCartComponent {
   total: number = 0;
 
   constructor(
-    private _router: Router,
     private _productService: ProductService,
     private _userSession: UserSessionHandlerService,
     private _cartService: CartService
@@ -42,7 +38,6 @@ export class MiniCartComponent {
           });
         });
       }
-
     });
   }
 
@@ -61,10 +56,6 @@ export class MiniCartComponent {
       (acc, product) => acc + product.price * product.quantity,
       0
     );
-  }
-
-  redirectToMenu(page: string) {
-    this._router.navigate([`/${page}`]);
   }
 
   redirectToLogin() {

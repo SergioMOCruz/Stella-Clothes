@@ -98,6 +98,6 @@ export class ProductPageComponent {
       }
     });
 
-    await this._cartService.updateCart(this.cart).subscribe();
+    await this._cartService.changeItemsInCart(this.cart).subscribe();
   }
 }
