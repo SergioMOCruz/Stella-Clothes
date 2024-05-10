@@ -5,11 +5,11 @@ const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /category
 // Get all categories
-router.get('/', authenticateToken, getAll);
+router.get('/', getAll);
 
-router.get('/:id', authenticateToken, getById);
+router.get('/:id', getById);
 
-router.get('/description/:description', authenticateToken, getByDescription);
+router.get('/description/:description', getByDescription);
 
 // POST /category
 // Create a new category
