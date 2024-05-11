@@ -1,0 +1,224 @@
+@import './fontface.css';
+@import url('https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap');
+:root {
+  /* Colors */
+  --white: #fff;
+  --whitesmoke: #f5f5f5;
+  --black: #1d1d1f;
+  --lighter-gray: #eaeaea;
+  --light-gray: #dedede;
+  --medium-gray: #cfcfcf;
+  --gray: #b4b4b4;
+  --dark-gray: #5f5f5f;
+  --darker-gray: #434343;
+  --green: #65ab81;
+  --light-green: #5a9973;
+  --red: #d15c5c;
+  --light-red: #bc5151;
+  --yellow: #f5c518;
+  --gold: #c3a376;
+  --orange: #fc6e51;
+  --blue: #274e76;
+  --transparent-blue: #0071e34b;
+  --light-blue: #89b9ce;
+  --purple: #ac92ec;
+  --paper: #e5e2ce;
+  --darkened-paper: #d1cfc1;
+  --darker-paper: #c4c2b5;
+  --transparent: transparent;
+  --darkened-background: rgba(0, 0, 0, 0.5);
+  --shadow: rgba(0, 0, 0, 0.3);
+  --light-shadow: rgba(0, 0, 0, 0.1);
+  /* Fonts */
+  --font-family: 'SFPro', sans-serif;
+  --font-family-handwritten: 'Delicious Handrawn', cursive;
+  --font-size-title: 4rem;
+  --font-size-subtitle: 1.3rem;
+  --font-size-text: 1.1rem;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+  --font-weight-bolder: 700;
+  --p-size: 1rem;
+  --h1-size: 2.5rem;
+  --h2-size: 2rem;
+  --h3-size: 1.5rem;
+  --h4-size: 1.2rem;
+  --input-size: 1rem;
+  --button-size: 1.2rem;
+  --a-size: 1rem;
+  /* Spacing */
+  --line-height: 1.3;
+  --letter-spacing: 0.022em;
+  /* Border Radius */
+  --border-radius-button: 10rem;
+  --border-radius-input: 0.7rem;
+  /* Transition Time */
+  --fast-transition: 0.2s;
+  --transition: 0.3s;
+  --slow-transition: 0.5s;
+  --loading-transition: 1s;
+}
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+html {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family);
+  line-height: var(--line-height);
+  letter-spacing: var(--letter-spacing);
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--whitesmoke);
+}
+
+/* Hide arrows - Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide arrows - Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Defaults */
+main {
+  position: relative;
+  overflow-x: hidden;
+}
+
+button {
+  border-radius: var(--border-radius-button);
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--white);
+  background-color: var(--black);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-light);
+}
+
+del {
+  text-decoration: line-through;
+  color: var(--red);
+}
+
+a,
+a:visited {
+  text-decoration: none;
+  color: #06c;
+}
+
+a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+input {
+  outline: none;
+  border: 1px solid rgba(224, 224, 224, 0.5);
+  border-radius: var(--border-radius-input);
+  font-weight: var(--font-weight-regular);
+  padding: 0 1rem;
+  font-family: var(--font-family);
+  transition: var(--transition);
+}
+
+input:focus-visible {
+  transition: var(--transition);
+}
+
+textarea {
+  outline: none;
+  border: 1px solid rgba(224, 224, 224, 0.5);
+  border-radius: var(--border-radius-input);
+  font-weight: var(--font-weight-regular);
+  font-family: var(--font-family);
+  transition: var(--transition);
+}
+
+textarea:focus-visible {
+  transition: var(--transition);
+  box-shadow: 0 0 0 0.1rem var(--transparent-blue);
+}
+
+/* Loading animation */
+#loading {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  transition: var(--loading-transition);
+}
+
+#loading svg {
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+  margin: auto;
+  z-index: 3;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-element {
+  color: transparent !important;
+  background: linear-gradient(
+    100deg,
+    var(--whitesmoke) 30%,
+    var(--light-gray) 50%,
+    var(--whitesmoke) 70%
+  );
+  background-size: 400%;
+  animation: loading-element 1.2s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes loading-element {
+  0% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}

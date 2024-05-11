@@ -50,6 +50,7 @@ connectDB();
 
 // Routes
 app.use('/clients', require('./routes/client'));
+app.use('/accounts', require('./routes/account'));
 app.use('/employees', require('./routes/employee'));
 app.use('/products', require('./routes/product'));
 app.use('/orders', require('./routes/order'));
