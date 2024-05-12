@@ -4,7 +4,7 @@
   /* Colors */
   --white: #fff;
   --whitesmoke: #f5f5f5;
-  --black: #1d1d1f;
+  --black: #2c2c2c;
   --lighter-gray: #eaeaea;
   --light-gray: #dedede;
   --medium-gray: #cfcfcf;
@@ -69,7 +69,7 @@
 
 html {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
@@ -128,7 +128,7 @@ del {
 a,
 a:visited {
   text-decoration: none;
-  color: #06c;
+  color: var(--green);
 }
 
 a:hover {
