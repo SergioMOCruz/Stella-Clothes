@@ -28,9 +28,9 @@ router.get('/', authenticateToken, getAll);
 // Get product by id
 router.get('/:id', authenticateToken, getById);
 // Get product by reference
-router.get('/reference/:reference', authenticateToken, getByRef);
+router.get('/reference/:reference', getByRef);
 // Get product by category
-router.get('/category/:category', authenticateToken, getByCategory);
+router.get('/category/:category', getByCategory);
 
 
 // POST /product
