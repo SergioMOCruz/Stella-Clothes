@@ -1,9 +1,10 @@
 require('dotenv').config();
+const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Account = require('../models/account');
 
-// Login account
+// Login an account
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,30 +63,34 @@ const getById = async (req, res) => {
 // Create a new account
 const create = async (req, res) => {
   try {
-    const {
-      email,
-      password,
-      role,
-    } = req.body;
+    const { firstName, lastName, email, password, phone } = req.body;
 
     // Check if all fields are filled
+    if (!firstName) {
+      return res.status(406).json({ message: 'O campo primeiro nome é obrigatório!' });
+    }
+    if (!lastName) {
+      return res.status(406).json({ message: 'O campo último nome é obrigatório!' });
+    }
     if (!email) {
       return res.status(406).json({ message: 'O campo email é obrigatório!' });
     }
     if (!password) {
       return res.status(406).json({ message: 'O campo password é obrigatório!' });
     }
-    if (!role) {
-      return res.status(406).json({ message: 'O campo perfil é obrigatório!' });
+    if (!phone) {
+      return res.status(406).json({ message: 'O campo telefone é obrigatório!' });
     }
 
     // if any of the fields don't have the same name as the variable return an error
     if (
+      !req.body.firstName ||
+      !req.body.lastName ||
       !req.body.email ||
       !req.body.password ||
-      !req.body.role
+      !req.body.phone
     ) {
-      return res.status(406).json({ message: 'Campo com nome inválido' });
+      return res.status(406).json({ message: 'Invalid field name' });
     }
 
     // Check if account already exists
@@ -99,9 +104,59 @@ const create = async (req, res) => {
 
     // Body of account
     const account = new Account({
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
-      role,
+      phone,
+      role: 'user',
+    });
+
+    await account.save();
+    console.log('Account created with success!\nAccount Id:', account._id);
+
+    res.status(201).json({ message: 'Account registered!' });
+  } catch (error) {
+    console.error('Account Registration Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// TODO: Remove this route in production
+const createAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if all fields are filled
+    if (!email) {
+      return res.status(406).json({ message: 'O campo email é obrigatório!' });
+    }
+    if (!password) {
+      return res.status(406).json({ message: 'O campo password é obrigatório!' });
+    }
+
+    // if any of the fields don't have the same name as the variable return an error
+    if (!req.body.email || !req.body.password) {
+      return res.status(406).json({ message: 'Invalid field name' });
+    }
+
+    // Check if account already exists
+    const accountExists = await Account.findOne({ email });
+    if (accountExists) {
+      return res.status(409).json({ message: 'O email que introduziu já pertence a uma conta!' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Body of account
+    const account = new Account({
+      firstName: 'Admin',
+      lastName: 'Admin',
+      email,
+      password: hashedPassword,
+      phone: '000000000',
+      role: 'admin',
     });
 
     await account.save();
@@ -118,17 +173,13 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      email,
-      password,
-      role,
-    } = req.body;
+    const { firstName, lastName, phone } = req.body;
 
     let account = await Account.findById(id);
 
-    account.email = email || account.email;
-    account.password = password || account.password;
-    account.role = role || account.role;
+    account.firstName = firstName || account.firstName;
+    account.lastName = lastName || account.lastName;
+    account.phone = phone || account.phone;
 
     await account.save();
     res.status(200).json({ message: 'Account updated' });
@@ -150,4 +201,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { login, getAll, getById, create, update, remove };
+module.exports = { login, getAll, getById, create, createAdmin, update, remove };
