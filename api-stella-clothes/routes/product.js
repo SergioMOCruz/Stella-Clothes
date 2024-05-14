@@ -20,7 +20,7 @@ const upload = multer();
 // Get product stock by reference and size
 router.get('/stock', authenticateToken, getStock);
 // Get the last 4 products added
-router.get('/lastFour', authenticateToken, getLastFour);
+router.get('/lastFour', getLastFour);
 // Get products by name
 router.get('/search', authenticateToken, searchProducts);
 // Get all products

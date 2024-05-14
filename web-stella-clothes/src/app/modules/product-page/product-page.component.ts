@@ -25,6 +25,9 @@ export class ProductPageComponent {
   organizedProducts: Product[];
   infoProduct: Product;
   cart: CartItems[] = [];
+  showValidWarning: boolean = false;
+  showInvalidWarning: boolean = false;
+
 
   constructor(
     private _route: ActivatedRoute,
@@ -98,6 +101,21 @@ export class ProductPageComponent {
       }
     });
 
-    await this._cartService.changeItemsInCart(this.cart).subscribe();
+    await this._cartService.changeItemsInCart(this.cart).subscribe(
+      data => {
+        this.showValidWarning = true;
+
+        setTimeout(() => {
+          this.showValidWarning = false;
+        }, 2000);
+      },
+      error => {
+        this.showInvalidWarning = true;
+
+        setTimeout(() => {
+          this.showInvalidWarning = false;
+        }, 2000);
+      }
+    );
   }
 }
