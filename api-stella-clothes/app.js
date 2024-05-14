@@ -20,6 +20,7 @@ app.use(limiter);
 const port = process.env.PORT || 5001;
 
 // Middleware
+// TODO: Remove this before deploying to production
 // const allowedOrigins = ['http://localhost:4200', 'http://127.0.0.1:4200'];
 // app.use(cors({
 //   origin: function (origin, callback) {
@@ -49,9 +50,7 @@ app.use(express.json());
 connectDB();
 
 // Routes
-app.use('/clients', require('./routes/client'));
 app.use('/accounts', require('./routes/account'));
-app.use('/employees', require('./routes/employee'));
 app.use('/products', require('./routes/product'));
 app.use('/orders', require('./routes/order'));
 app.use('/cart', require('./routes/cart'));
