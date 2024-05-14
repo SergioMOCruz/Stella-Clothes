@@ -1,15 +1,13 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { FooterComponent } from "../../layout/shared/footer/footer.component";
 import { NavbarComponent } from "../../layout/shared/navbar/navbar.component";
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {  RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Product } from '../../shared/interfaces/products/products';
 import { UserSessionHandlerService } from '../../auth/services/helpers/user-session-handler.service';
-import { CartItems } from '../../shared/interfaces/products/cart-items';
 import { CartService } from '../../services/cart/cart.service';
 import { ProductService } from '../../services/products/product.service';
-import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
 import { QuantityUpdate } from '../../shared/interfaces/products/quantity-update';
 
 @Component({
@@ -21,8 +19,9 @@ import { QuantityUpdate } from '../../shared/interfaces/products/quantity-update
 })
 export class CartComponent {
 
-  isLoggedIn: boolean = true;
+  isLoggedIn$: Observable<boolean>;
   cartItems = [];
+
   private destroy$ = new Subject<void>();
   private quantityChange$ = new Subject<QuantityUpdate>();
 
@@ -31,20 +30,22 @@ export class CartComponent {
     private _cartService: CartService,
     private _productService: ProductService
   ) {
-    this.isLoggedIn = this._userSession.isLoggedIn();
+    this.isLoggedIn$ = this._userSession.isLoggedIn();
 
     this._cartService.getCartByClient().subscribe(data => {
-      this.cartItems = data;
+        this.cartItems = data;
 
-      if (this.cartItems.length) {
-        this.cartItems.forEach(product => {
-          this._productService.getProductByRef(product.productReference).subscribe((data) => {
-            product.price = data[0].price;
-            this.getSubtotal();
+        if (this.cartItems.length) {
+          this.cartItems.forEach(product => {
+            this._productService.getProductByRef(product.productReference).subscribe((data) => {
+              product.price = data[0].price;
+              this.getSubtotal();
+            });
           });
-        });
-      }
-    });
+        }
+      },
+      error => console.log(error)
+    );
 
     this.quantityChange$
       .pipe(

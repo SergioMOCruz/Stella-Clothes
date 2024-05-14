@@ -18,9 +18,4 @@ export class UtilsAuthService {
         window.alert(error);
       });
   }
-
-  sendVerificationMail() {
-    return this.afAuth.currentUser
-      .then((u: any) => u.sendEmailVerification())
-  }
 }

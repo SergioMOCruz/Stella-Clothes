@@ -14,7 +14,7 @@ export class LoginService {
   ) { }
 
   authLogin(data: LoginInterface) {
-    return this._http.post(`${environment.apiUrl}/clients/login`, data);
+    return this._http.post(`${environment.apiUrl}/accounts/login`, data);
   }
 
   signOut() {

@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { login, getAll, getById, create, update, remove } = require('../controllers/account');
-const { authenticateAccount } = require('../middleware/authenticate');
+const { login, getAll, getById, create, createAdmin, update, remove } = require('../controllers/account');
+const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /account
 // Get account by token
-router.get('/token', authenticateAccount, (req, res) => {
+router.get('/token', authenticateToken, (req, res) => {
   res.status(200).json(req.user);
 });
 // Get all accounts
-router.get('/', authenticateAccount, getAll);
+router.get('/', authenticateToken, getAll);
 // Get account by id
-router.get('/:id', authenticateAccount, getById);
+router.get('/:id', authenticateToken, getById);
 
 // POST /account
 // LOGIN /account/login
@@ -19,14 +19,16 @@ router.get('/:id', authenticateAccount, getById);
 router.post('/login', login);
 // REGISTER /account/register
 // Create a new account
-router.post('/create', authenticateAccount, create);
+router.post('/register', create);
+// TODO: Remove this route in production
+router.post('/create', createAdmin);
 
 // PUT /account
 // Update a account
-router.put('/:id', authenticateAccount, update);
+router.put('/:id', authenticateToken, update);
 
 // DELETE /account
 // Delete a account
-router.delete('/:id', authenticateAccount, remove);
+router.delete('/:id', authenticateToken, remove);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NavigationExtras, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { RegisterService } from '../../../auth/services/register.service';
 import { RegisterInterface } from '../../../shared/interfaces/auth/register-interface';
 import { UserSessionHandlerService } from '../../../auth/services/helpers/user-session-handler.service';
@@ -35,12 +35,7 @@ export class RegisterComponent {
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required),
       phone: new FormControl('', Validators.required),
-      nif: new FormControl('', Validators.required),
-      address: new FormControl('', Validators.required),
-      addressContinued: new FormControl(''),
-      city: new FormControl('', Validators.required),
-      postalCode: new FormControl('', Validators.required),
-      country: new FormControl('', Validators.required)
+      nif: new FormControl('', Validators.required)
     });
   }
 
@@ -63,12 +58,7 @@ export class RegisterComponent {
         email: this.registerForm.get('email').value,
         password: this.registerForm.get('password').value,
         phone: this.registerForm.get('phone').value,
-        nif: this.registerForm.get('nif').value,
-        address: this.registerForm.get('address').value,
-        addressContinued: this.registerForm.get('addressContinued').value ?? '',
-        city: this.registerForm.get('city').value,
-        postalCode: this.registerForm.get('postalCode').value,
-        country: this.registerForm.get('country').value
+        nif: this.registerForm.get('nif').value
       }
 
       this._registerService.authRegister(dataUser).subscribe(

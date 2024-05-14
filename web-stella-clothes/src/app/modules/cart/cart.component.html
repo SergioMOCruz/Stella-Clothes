@@ -1,5 +1,5 @@
 <app-navbar></app-navbar>
-<section id="cart" *ngIf="isLoggedIn">
+<section id="cart" *ngIf="(isLoggedIn$ | async)">
   <div id="emptyCart" *ngIf="cartItems.length == 0">
     <p>Lamentamos, não possuí nenhum item no seu carrinho</p>
     <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
@@ -49,7 +49,7 @@
   </div>
 </section>
 
-<section id="log-in-screen" *ngIf="!isLoggedIn">
+<section id="log-in-screen" *ngIf="!(isLoggedIn$ | async)">
   <p>Lamentamos, mas para ver esta página necessita de iniciar sessão</p>
   <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
 </section>

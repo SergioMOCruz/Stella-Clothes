@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { NavigationExtras, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 
 import { RightSidebarComponent } from '../right-sidebar/right-sidebar.component';
@@ -12,6 +12,7 @@ import { MiniCartComponent } from '../../../views/mini-cart/mini-cart.component'
 import { ProfileNavbarComponent } from '../../../views/profile-navbar/profile-navbar.component';
 import { SearchProductComponent } from '../../../modules/search-product/search-product.component';
 import { CategoryService } from '../../../services/categories/category.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -33,14 +34,15 @@ export class NavbarComponent {
   showMiniCart: boolean = false;
   showProfileMenu: boolean = false;
   showSearchMenu: boolean = false;
-  isLoggedIn = null;
+  isLoggedIn$: Observable<boolean>;
 
   constructor(
     private _userSession: UserSessionHandlerService,
     private _categoryService: CategoryService,
     private _router: Router,
   ) {
-    this.isLoggedIn = this._userSession.isLoggedIn();
+    this.isLoggedIn$ = this._userSession.isLoggedIn();
+
     this._categoryService.getCategories().subscribe(data => this.categories = data);
   }
 

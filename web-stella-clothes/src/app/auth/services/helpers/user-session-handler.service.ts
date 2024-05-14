@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User } from '../../../shared/interfaces/users/user';
 import { NavigationExtras, Router } from '@angular/router';
 import { UserService } from '../../../services/users/user.service';
+import { Observable, catchError, map, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,25 +10,26 @@ import { UserService } from '../../../services/users/user.service';
 
 export class UserSessionHandlerService {
 
+  user: User;
+
   constructor(
     private _router: Router,
     private _userService: UserService
   ) { }
 
-  isLoggedIn(): boolean {
-    return this.getLocalUserData() !== null;
+  isLoggedIn(): Observable<boolean> {
+    return this._userService.getCurrentUser().pipe(
+      map(user => !!user),
+      catchError(() => of(false))
+    );
   }
 
   setLocalToken(data) {
     localStorage.setItem('token', data.token);
   }
 
-  getLocalUserData(): User {
-    return JSON.parse(localStorage.getItem('user'));
-  }
-
-  setLocalUserData(user: User) {
-    localStorage.setItem('user',  JSON.stringify(user));
+  getLocalToken(): string | boolean {
+    return localStorage.getItem('token') ?? false;
   }
 
   loginHelper(data) {
@@ -38,8 +40,6 @@ export class UserSessionHandlerService {
     this.setLocalToken(data);
     this._userService.getCurrentUser().subscribe(
       data => {
-        this.setLocalUserData(data);
-
         this._router.navigate(['/home'], navigationExtras).then(() => {
           window.location.reload();
         });

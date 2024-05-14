@@ -1,24 +1,65 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const orderSchema = new mongoose.Schema({
-  clientId: {
+  accountId: {
+    type: Schema.Types.ObjectId,
+    reference: 'Account',
+    required: true,
+  },
+  contactInfo: {
     type: String,
     required: true,
   },
-  productsId: [
-    {
-      type: Number,
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  address: {
+    street: {
+      type: String,
       required: true,
     },
-  ],
+    addressContinued: {
+      type: String,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+  },
   paymentId: {
     type: Number,
     required: true,
   },
-  status: {
+  nif: {
     type: String,
-    required: true,
   },
+  status: [
+    {
+      status: {
+        type: String,
+        enum: ['Em processo', 'Pago', 'Enviado', 'Entregue', 'Cancelado'],
+        required: true,
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
   total: {
     type: Number,
     required: true,
@@ -27,7 +68,7 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, { versionKey: false});
 
 const Order = mongoose.model('Order', orderSchema);
 

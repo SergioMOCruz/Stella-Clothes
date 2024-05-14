@@ -140,7 +140,7 @@ ul {
   list-style: none;
 }
 
-input {
+input, select {
   outline: none;
   border: 1px solid rgba(224, 224, 224, 0.5);
   border-radius: var(--border-radius-input);
@@ -148,6 +148,10 @@ input {
   padding: 0 1rem;
   font-family: var(--font-family);
   transition: var(--transition);
+}
+
+select {
+  padding: 0 0.5rem;
 }
 
 input:focus-visible {

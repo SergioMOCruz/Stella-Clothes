@@ -1,4 +1,6 @@
 const Order = require('../models/order');
+const Account = require('../models/account');
+const Product = require('../models/product');
 
 // Get all orders
 const getAll = async (req, res) => {
@@ -23,14 +25,14 @@ const getById = async (req, res) => {
   }
 };
 
-// Get order by client id
-const getByClientId = async (req, res) => {
+// Get order by account id
+const getByAccountId = async (req, res) => {
   try {
-    const orders = await Order.find({ clientId: req.user._id });
+    const orders = await Order.find({ accountId: req.user._id });
 
     res.status(200).json(orders);
   } catch (error) {
-    console.error('Get Order By Client Id Error:', error.message);
+    console.error('Get Order By Account Id Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -38,20 +40,23 @@ const getByClientId = async (req, res) => {
 // Create a new order
 const create = async (req, res) => {
   try {
-    const { productsId, paymentId, status, total } = req.body;
+    const { productsIds, address, nif } = req.body;
 
-    // Check if all fields are filled
-    if ( !productsId || !paymentId || !status || !total ) {
-      return res.status(400).json({ message: 'All fields must be filled' });
+    // Check if all fields are filled except nif (nif is optional)
+    if (!productsIds.length > 0 && !address.street && !address.city && !address.postalCode && !address.country) {
+      return res.status(400).json({ message: 'Todos os campos devem ser preenchidos!' });
     }
 
     // Body of order
     const order = new Order({
-      clientId: req.user._id,
-      productsId,
-      paymentId,
-      status,
-      total
+      accountId: req.user._id,
+      productsIds,
+      address,
+      nif: nif || null,
+      status : {
+        status: 'Em processo',
+      },
+      paymentId: 1, // TODO: Change this to the actual paymentId when the payment system is implemented
     });
 
     await order.save();
@@ -68,23 +73,20 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { 
-      employeeId, 
-      clientId,
-      productsId, 
+    const {
+      accountId,
+      productsIds, 
       paymentId, 
       status,
-      total
     } = req.body;
 
     // Find order by id
     let order = await Order.findById(id);
 
     // Update order and verify if all fields are filled
-    order.employeeId = employeeId || order.employeeId;
-    order.clientId = clientId || order.clientId;
+    order.accountId = accountId || order.accountId;
     order.cartId = cartId || order.cartId;
-    order.productsId = productsId || order.productsId;
+    order.productsIds = productsIds || order.productsIds;
     order.paymentId = paymentId || order.paymentId;
     order.status = status || order.status;
 
@@ -108,4 +110,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, getByClientId, create, update, remove };
+module.exports = { getAll, getById, getByAccountId, create, update, remove };

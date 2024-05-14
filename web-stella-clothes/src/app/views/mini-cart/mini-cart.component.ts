@@ -4,6 +4,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { ProductService } from '../../services/products/product.service';
 import { UserSessionHandlerService } from '../../auth/services/helpers/user-session-handler.service';
 import { CartService } from '../../services/cart/cart.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-mini-cart',
@@ -16,7 +17,7 @@ export class MiniCartComponent {
 
   @Output() redirectToLoginEvent = new EventEmitter<void>();
 
-  isLoggedIn: boolean = true;
+  isLoggedIn$: Observable<boolean>;
   products = [];
   total: number = 0;
 
@@ -25,7 +26,7 @@ export class MiniCartComponent {
     private _userSession: UserSessionHandlerService,
     private _cartService: CartService
   ) {
-    this.isLoggedIn = this._userSession.isLoggedIn();
+    this.isLoggedIn$ = this._userSession.isLoggedIn();
 
     this._cartService.getCartByClient().subscribe(data => {
       this.products = data;
@@ -38,7 +39,9 @@ export class MiniCartComponent {
           });
         });
       }
-    });
+      },
+      error => console.log(error)
+    );
   }
 
   async removeProductFromCart(product: any) {

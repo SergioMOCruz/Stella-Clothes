@@ -40,7 +40,7 @@ const productSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, { versionKey: false});
 
 const Product = mongoose.model('Product', productSchema);
 

@@ -6,19 +6,17 @@ import { ProductPageComponent } from './modules/product-page/product-page.compon
 import { CartComponent } from './modules/cart/cart.component';
 import { MyOrdersComponent } from './modules/my-orders/my-orders.component';
 import { ProductExistsGuard } from './guards/product-exists.guard';
-import { AuthGuard } from './auth/guards/auth.guard';
 import { CategoryComponent } from './modules/category/category.component';
 import { CategoryExistsGuard } from './guards/category-exists.guard';
 import { CheckoutComponent } from './modules/checkout/checkout.component';
 
 
 export const routes: Routes = [
-  // In routes needing of Authentication add { ..., canActivate: [AuthGuard] }
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'my-orders', component: MyOrdersComponent, canActivate: [AuthGuard] },
+  { path: 'my-orders', component: MyOrdersComponent },
   { path: 'cart', component: CartComponent },
-  { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
+  { path: 'checkout', component: CheckoutComponent },
   { path: 'category/:description', component: CategoryComponent, canActivate: [CategoryExistsGuard] },
   { path: 'product/:reference', component: ProductPageComponent, canActivate: [ProductExistsGuard] },
   { path: '404', component: FourOFourComponent },

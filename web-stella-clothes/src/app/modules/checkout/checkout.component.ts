@@ -25,18 +25,20 @@ export class CheckoutComponent {
     private _cartService: CartService
   ) {
     this._cartService.getCartByClient().subscribe(data => {
-      this.cartItems = data;
+        this.cartItems = data;
 
-      if (this.cartItems.length) {
-        this.cartItems.forEach(product => {
-          this._productService.getProductByRef(product.productReference).subscribe((data) => {
-            product.name = data[0].name;
-            product.price = data[0].price;
-            this.getSubtotal();
+        if (this.cartItems.length) {
+          this.cartItems.forEach(product => {
+            this._productService.getProductByRef(product.productReference).subscribe((data) => {
+              product.name = data[0].name;
+              product.price = data[0].price;
+              this.getSubtotal();
+            });
           });
-        });
-      }
-    });
+        }
+      },
+      error => console.log(error)
+    );
   }
   getSubtotal() {
     let total = 0;

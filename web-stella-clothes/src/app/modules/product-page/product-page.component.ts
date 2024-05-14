@@ -10,6 +10,7 @@ import { CategoryService } from '../../services/categories/category.service';
 import { FormsModule } from '@angular/forms';
 import { CartItems } from '../../shared/interfaces/products/cart-items';
 import { CartService } from '../../services/cart/cart.service';
+import { UserService } from '../../services/users/user.service';
 
 @Component({
   selector: 'app-product-page',
@@ -27,11 +28,13 @@ export class ProductPageComponent {
   cart: CartItems[] = [];
   showValidWarning: boolean = false;
   showInvalidWarning: boolean = false;
+  addToCartDisabled: boolean = true;
 
 
   constructor(
     private _route: ActivatedRoute,
     private _productService: ProductService,
+    private _userService: UserService,
     private _categoryService: CategoryService,
     private _cartService: CartService
   ) {
@@ -51,6 +54,13 @@ export class ProductPageComponent {
         }
       }
     });
+
+    this._userService.getCurrentUser().subscribe(
+      data => {
+        if (data) this.addToCartDisabled = false;
+      },
+      error => console.log(error)
+    )
   }
 
   sortBySizeAndStock(products: Product[]): Product[] {
@@ -72,8 +82,10 @@ export class ProductPageComponent {
     this.cart = [];
 
     await this._cartService.getCartByClient().subscribe((data) => {
-      if (data !== null) this.cart = data;
-    });
+        if (data !== null) this.cart = data;
+      },
+      error => console.log(error)
+    );
 
     this.organizedProducts.forEach(product => {
       if (product.size === this.selectedSize && product.stock > 0) {

@@ -17,7 +17,8 @@
         </ng-container>
       </select>
     </div>
-    <a id="add-to-cart" (click)="addToCart()">ADICIONAR AO CARRINHO</a>
+    <a id="add-to-cart" [ngClass]="{'disabled add-cart-disabled': addToCartDisabled}" (click)="addToCartDisabled ? null : addToCart()">ADICIONAR AO CARRINHO</a>
+    <span class="hideDisplay" [ngClass]="{'showWarning': addToCartDisabled}">Para adicionar ao carrinho precisa de iniciar sessão</span>
     <span class="hideDisplay" [ngClass]="{'showWarning validData': showValidWarning}">Produto adicionado ao carrinho</span>
     <span class="hideDisplay" [ngClass]="{'showWarning invalidData': showInvalidWarning}">Erro ao adicionar produto ao carrinho</span>
   </div>

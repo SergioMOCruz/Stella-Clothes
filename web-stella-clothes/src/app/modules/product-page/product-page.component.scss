@@ -79,3 +79,8 @@
 .showWarning {
   margin-top: 2rem;
 }
+
+.add-cart-disabled {
+  cursor: default !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
