@@ -1,7 +1,7 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const Client = require('../models/account');
+const Account = require('../models/account');
 
 // Middleware to authenticate user using JWT token.
 const authenticateToken = (req, res, next) => {
@@ -27,7 +27,7 @@ const authenticateToken = (req, res, next) => {
 
     // If token is valid, retrieve user from database
     try {
-      const userData = await Client.findById(user.id)
+      const userData = await Account.findById(user.id)
       if (!userData) {
         return res.sendStatus(404);
       }
