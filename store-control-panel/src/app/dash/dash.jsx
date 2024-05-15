@@ -273,6 +273,8 @@ function Dash() {
       console.log('Stock added:', response.data);
       // reload products
       handleLoadProducts();
+      // clear inputs
+      e.target[2].value = '';
     }
     ).catch((error) => {
       console.error(error);
