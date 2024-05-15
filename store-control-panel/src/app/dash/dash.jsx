@@ -345,8 +345,24 @@ function Dash() {
       .put(context.api + '/products/hide/' + product.reference, {}, context.headersCRUD)
       .then((response) => {
         console.log('Product deleted:', response.data);
-        // hide product details
-        hideProductDetails();
+        // reload products
+        handleLoadProducts();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  // show product
+  const handleShowProduct = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // show product
+    await axios
+      .put(context.api + '/products/show/' + product.reference, {}, context.headersCRUD)
+      .then((response) => {
+        console.log('Product deleted:', response.data);
         // reload products
         handleLoadProducts();
       })
@@ -639,9 +655,16 @@ function Dash() {
                 />
               </form>
               <div id='action-buttons'>
-                <button id='hide-button' onClick={handleHideProduct}>
-                  Esconder da loja
-                </button>
+                {console.log(product)}
+                {product.active ? (
+                  <button id='hide-button' onClick={handleHideProduct}>
+                    Esconder da loja
+                  </button>
+                ) : (
+                  <button id='show-button' onClick={handleShowProduct}>
+                    Mostrar na loja
+                  </button>
+                )}
               </div>
             </div>
           )}

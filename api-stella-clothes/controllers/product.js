@@ -59,6 +59,7 @@ const getAllbyRef = async (req, res) => {
         price: product.price,
         image: product.image,
         category: product.category,
+        active: product.active,
       };
     });
 
@@ -297,7 +298,7 @@ const updateStock = async (req, res) => {
   }
 };
 
-// hide all products with the same reference
+// Hide all products with the same reference
 const hideAllByRef = async (req, res) => {
   try {
     const { reference } = req.params;
@@ -312,6 +313,25 @@ const hideAllByRef = async (req, res) => {
     res.status(200).json({ message: 'Products hidden from store' });
   } catch (error) {
     console.error('Hide Products By Reference Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Show product by reference
+const showByRef = async (req, res) => {
+  try {
+    const { reference } = req.params;
+    const products = await Product.find({ reference });
+    if (!products) return res.status(404).json({ message: 'Products not found' });
+
+    products.forEach(async (product) => {
+      product.active = true;
+      await product.save();
+    });
+
+    res.status(200).json({ message: 'Products shown in store' });
+  } catch (error) {
+    console.error('Show Products By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -342,5 +362,6 @@ module.exports = {
   update,
   updateStock,
   hideAllByRef,
+  showByRef,
   remove,
 };

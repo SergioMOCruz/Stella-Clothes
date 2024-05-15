@@ -15,6 +15,7 @@ const {
   update,
   updateStock,
   hideAllByRef,
+  showByRef,
   remove,
 } = require('../controllers/product');
 const router = express.Router();
@@ -52,6 +53,8 @@ router.put('/:id', authenticateToken, upload.single('image'), update);
 router.put('/upload/:id', authenticateToken, upload.single('image'), uploadImage);
 // Hide all products with the same reference
 router.put('/hide/:reference', authenticateToken, hideAllByRef);
+// Show all products with the same reference
+router.put('/show/:reference', authenticateToken, showByRef);
 
 // DELETE /product
 // Delete a product
