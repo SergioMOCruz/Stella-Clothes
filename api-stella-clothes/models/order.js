@@ -52,7 +52,6 @@ const orderSchema = new mongoose.Schema({
       status: {
         type: String,
         enum: ['Em processo', 'Pago', 'Enviado', 'Entregue', 'Cancelado'],
-        required: true,
       },
       date: {
         type: Date,

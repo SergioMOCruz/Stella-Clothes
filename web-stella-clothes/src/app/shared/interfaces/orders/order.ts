@@ -1,8 +1,25 @@
+import { Status } from "../../enum/status";
+
 export interface Order {
-  clientId,
-  productsId,
+  userId,
+  contactInfo,
+  firstName,
+  lastName,
+  address: {
+    street,
+    addressContinued,
+    city,
+    postalCode,
+    country,
+  },
   paymentId,
-  status,
+  nif,
+  status: [
+    {
+      status: Status,
+      date,
+    },
+  ],
   total,
   createdAt
 }

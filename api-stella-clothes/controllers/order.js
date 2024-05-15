@@ -1,6 +1,7 @@
 const Order = require('../models/order');
-const Account = require('../models/account');
 const Product = require('../models/product');
+const Category = require('../models/category');
+const OrderData = require('../models/order_data');
 
 // Get all orders
 const getAll = async (req, res) => {
@@ -26,9 +27,21 @@ const getById = async (req, res) => {
 };
 
 // Get order by account id
-const getByAccountId = async (req, res) => {
+const getByAccount = async (req, res) => {
   try {
-    const orders = await Order.find({ accountId: req.user._id });
+    let orders = await Order.find({ accountId: req.user._id });
+
+    // Convert each Mongoose document to a plain JavaScript object
+    orders = orders.map(order => order.toObject());
+
+    // Get order data for each order since this will be received by end user
+    for (let order of orders) {
+      const orderData = await OrderData.find({ orderId: order._id});
+
+      // Removing order account id for security measures
+      delete order.accountId;
+      order.orderData = orderData;
+    }
 
     res.status(200).json(orders);
   } catch (error) {
@@ -37,29 +50,90 @@ const getByAccountId = async (req, res) => {
   }
 };
 
+
 // Create a new order
 const create = async (req, res) => {
   try {
-    const { productsIds, address, nif } = req.body;
+    const { orderInfo, productsWithQuantity } = req.body;
 
     // Check if all fields are filled except nif (nif is optional)
-    if (!productsIds.length > 0 && !address.street && !address.city && !address.postalCode && !address.country) {
-      return res.status(400).json({ message: 'Todos os campos devem ser preenchidos!' });
+    if (
+      !orderInfo.contactInfo || 
+      !orderInfo.firstName || 
+      !orderInfo.lastName || 
+      !orderInfo.address.street || 
+      !orderInfo.address.city || 
+      !orderInfo.address.postalCode || 
+      !orderInfo.address.country ||
+      !orderInfo.total ||
+      !productsWithQuantity ||
+      !Array.isArray(productsWithQuantity) ||
+      !productsWithQuantity.every(product => product.reference && product.quantity && product.size)
+    ) {
+      return res.status(400).json({ message: 'All fields must be filled' });
     }
 
+    
+
+    // Check if product exists
+    for (const product of productsWithQuantity) {
+      const { reference, quantity, size } = product;
+
+      const existingProduct = await Product.findOne({ reference, size });
+      if (!existingProduct)
+        return res.status(409).json({ message: `Product with reference '${reference}' and size '${size}' doesn't exist` });
+      if (existingProduct.stock < quantity)
+        return res.status(409).json({ message: `Product with reference '${reference}' doesn't have enough stock` });
+    };
+    
     // Body of order
     const order = new Order({
       accountId: req.user._id,
-      productsIds,
-      address,
-      nif: nif || null,
-      status : {
-        status: 'Em processo',
+      contactInfo: orderInfo.contactInfo,
+      firstName: orderInfo.firstName,
+      lastName: orderInfo.lastName,
+      address: {
+        street: orderInfo.address.street,
+        addressContinued: orderInfo.address.addressContinued || null,
+        city: orderInfo.address.city,
+        postalCode: orderInfo.address.postalCode,
+        country: orderInfo.address.country,
       },
       paymentId: 1, // TODO: Change this to the actual paymentId when the payment system is implemented
+      nif: orderInfo.nif || null,
+      status: [
+        {
+          status: 'Em processo',
+          date: Date.now(),
+        }
+      ],
+      total: orderInfo.total
     });
-
     await order.save();
+    
+    // Create order data for each product and remove stock from products after order is made
+    for (const product of productsWithQuantity) {
+      const { reference, quantity, size } = product;
+      const existingProduct = await Product.findOne({ reference, size });
+      const productCategory = await Category.findOne({ _id: existingProduct.category });
+
+      const orderData = new OrderData({
+        orderId: order._id,
+        productId: existingProduct._id,
+        reference: existingProduct.reference,
+        name: existingProduct.name,
+        description: existingProduct.description,
+        category: productCategory.description,
+        quantity: quantity,
+        priceAtTime: existingProduct.price,
+        size: size
+      });
+      await orderData.save();  
+
+      existingProduct.stock -= quantity;
+      existingProduct.save();
+    }
+    
     console.log('Order created with success!\nOrder Id:', order._id);
 
     res.status(201).json({ message: 'Order registered!' });
@@ -110,4 +184,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, getByAccountId, create, update, remove };
+module.exports = { getAll, getById, getByAccount, create, update, remove };

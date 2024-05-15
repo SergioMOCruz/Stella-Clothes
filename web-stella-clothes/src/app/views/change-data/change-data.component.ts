@@ -28,12 +28,7 @@ export class ChangeDataComponent {
     this.updateInfoForm = new FormGroup({
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl('', Validators.required),
-      phone: new FormControl('', Validators.required),
-      address: new FormControl('', Validators.required),
-      addressContinued: new FormControl(''),
-      city: new FormControl('', Validators.required),
-      postalCode: new FormControl('', Validators.required),
-      country: new FormControl('', Validators.required)
+      phone: new FormControl('', Validators.required)
     });
 
     this._userService.getCurrentUser().subscribe(
@@ -42,12 +37,7 @@ export class ChangeDataComponent {
         this.updateInfoForm.patchValue({
           firstName: data.firstName,
           lastName: data.lastName,
-          phone: data.phone,
-          address: data.address,
-          addressContinued: data.addressContinued,
-          city: data.city,
-          postalCode: data.postalCode,
-          country: data.country
+          phone: data.phone
         });
       }
     );

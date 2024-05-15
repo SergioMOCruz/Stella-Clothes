@@ -12,6 +12,22 @@ const orderDataSchema = new mongoose.Schema({
     reference: "Product",
     required: true,
   },
+  reference: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
   quantity: {
     type: Number,
     required: true,

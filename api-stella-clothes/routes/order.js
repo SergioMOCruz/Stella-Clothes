@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { getAll, getById, getByAccountId, create, update, remove } = require('../controllers/order');
+const { getAll, getById, getByAccount, create, update, remove } = require('../controllers/order');
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /order
 // Get all orders
 router.get('/', authenticateToken, getAll);
 // Get order by account id
-router.get('/account', authenticateToken, getByAccountId);
+router.get('/account', authenticateToken, getByAccount);
 // Get order by id
 router.get('/:id', authenticateToken, getById);
 
