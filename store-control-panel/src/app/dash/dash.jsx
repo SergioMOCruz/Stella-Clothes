@@ -258,17 +258,25 @@ function Dash() {
     const productStock = e.target[2].value;
 
     // check if all fields are filled
-    if (!productSize || !productStock) {
+    if (!productStock) {
       return alert('Por favor, preencha todos os campos.');
     }
 
     // add stock to product
-    // JUST TESTING
-    const newStock = {
+    const body = {
+      reference: product.reference,
       size: productSize,
       stock: productStock,
     };
-    console.log('New stock:', newStock);
+
+    await axios.put(context.api + '/products/stock', body, context.headersCRUD).then((response) => {
+      console.log('Stock added:', response.data);
+      // reload products
+      handleLoadProducts();
+    }
+    ).catch((error) => {
+      console.error(error);
+    });
   };
 
   // add product
@@ -649,7 +657,10 @@ function Dash() {
                   <option value='L'>L</option>
                   <option value='XL'>XL</option>
                 </select>
-                <input type='number' placeholder='1' />
+                <input type='number' placeholder='1' 
+                // only numbers, no decimals or negative numbers or dots or commas
+                  pattern='[0-9]'
+                />
               </form>
               <div id='action-buttons'>
                 <button id='ok-button'>Guardar</button>

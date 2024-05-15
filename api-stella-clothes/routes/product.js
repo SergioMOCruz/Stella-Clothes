@@ -13,6 +13,7 @@ const {
   create,
   uploadImage,
   update,
+  updateStock,
   remove,
   removeAllByRef,
 } = require('../controllers/product');
@@ -43,6 +44,8 @@ router.get('/category/:category', getByCategory);
 router.post('/', authenticateToken, upload.single('image'), create);
 
 // PUT /product
+// Update stock of a product by reference
+router.put('/stock', authenticateToken, updateStock);
 // Update a product
 router.put('/:id', authenticateToken, upload.single('image'), update);
 // Upload an image

@@ -245,12 +245,31 @@ const update = async (req, res) => {
 const updateStock = async (req, res) => {
   try {
     const { reference, size, stock } = req.body;
-    const product = await Product.findOne({ reference });
 
-    if (!product) return res.status(404).json({ message: 'Produto não encontrado!' });
+    const products = await Product.find({ reference });
 
-    product.stock = stock;
+    if (!products) return res.status(404).json({ message: 'Produto não encontrado!' });
+
+    let product = products.filter((product) => product.size === size);
+    if (product.length > 0) {
+      product = product[0];
+      product.stock += parseInt(stock);
+    } else {
+      product = new Product({
+        reference: products[0].reference,
+        name: products[0].name,
+        description: products[0].description,
+        price: products[0].price,
+        size: size,
+        stock: stock,
+        category: products[0].category,
+        image: products[0].image,
+      });
+    }
+
+
     await product.save();
+
     res.status(200).json({ message: 'Stock Atualizado!' });
   } catch (error) {
     console.error('Update Stock Error:', error.message);
@@ -294,6 +313,7 @@ module.exports = {
   create,
   uploadImage,
   update,
+  updateStock,
   remove,
   removeAllByRef,
 };
