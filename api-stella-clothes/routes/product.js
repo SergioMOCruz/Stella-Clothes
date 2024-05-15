@@ -14,8 +14,8 @@ const {
   uploadImage,
   update,
   updateStock,
+  hideAllByRef,
   remove,
-  removeAllByRef,
 } = require('../controllers/product');
 const router = express.Router();
 const upload = multer();
@@ -50,11 +50,11 @@ router.put('/stock', authenticateToken, updateStock);
 router.put('/:id', authenticateToken, upload.single('image'), update);
 // Upload an image
 router.put('/upload/:id', authenticateToken, upload.single('image'), uploadImage);
+// Hide all products with the same reference
+router.put('/hide/:reference', authenticateToken, hideAllByRef);
 
 // DELETE /product
 // Delete a product
 router.delete('/:id', authenticateToken, remove);
-// Delete all products with the same reference
-router.delete('/reference/:reference', authenticateToken, removeAllByRef);
 
 module.exports = router;

@@ -8,6 +8,7 @@ const authenticateToken = (req, res, next) => {
   // Extract the JWT token from the Authorization header
   const token = req.headers.authorization?.split(' ')[1];
   if (token == null) {
+    console.error('Token is not provided');
     return res.sendStatus(401);
   }
 

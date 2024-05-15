@@ -6,7 +6,10 @@ const getAll = async (req, res) => {
   try {
     const products = await Product.find();
 
-    res.status(201).json(products);
+    // check if product are active
+    const activeProducts = products.filter((product) => product.active === true);
+
+    res.status(200).json(activeProducts);
   } catch (error) {
     console.error('Get All Products Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -18,6 +21,7 @@ const getById = async (req, res) => {
   try {
     const { id } = req.params;
     const product = await Product.findById(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
     res.status(200).json(product);
   } catch (error) {
@@ -32,7 +36,10 @@ const getByRef = async (req, res) => {
     const { reference } = req.params;
     const products = await Product.find({ reference });
 
-    res.status(200).json(products);
+    // check if product are active
+    const activeProducts = products.filter((product) => product.active === true);
+
+    res.status(200).json(activeProducts);
   } catch (error) {
     console.error('Get Product By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -108,7 +115,10 @@ const getLastFour = async (req, res) => {
 
     if (!products.length) return res.status(500).json({ message: 'No products ' });
 
-    res.status(200).json(products);
+    // check if product are active
+    const activeProducts = products.filter((product) => product.active === true);
+
+    res.status(200).json(activeProducts);
   } catch (error) {
     console.error('Get Last Products Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -126,7 +136,10 @@ const getByCategory = async (req, res) => {
 
     const products = await Product.find({ category: cat[0]._id });
 
-    res.status(200).json(products);
+    // check if product are active
+    const activeProducts = products.filter((product) => product.active === true);
+
+    res.status(200).json(activeProducts);
   } catch (error) {
     console.error('Get Products By Category Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -284,6 +297,25 @@ const updateStock = async (req, res) => {
   }
 };
 
+// hide all products with the same reference
+const hideAllByRef = async (req, res) => {
+  try {
+    const { reference } = req.params;
+    const products = await Product.find({ reference });
+    if (!products) return res.status(404).json({ message: 'Products not found' });
+
+    products.forEach(async (product) => {
+      product.active = false;
+      await product.save();
+    });
+
+    res.status(200).json({ message: 'Products hidden from store' });
+  } catch (error) {
+    console.error('Hide Products By Reference Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Delete a product
 const remove = async (req, res) => {
   try {
@@ -292,18 +324,6 @@ const remove = async (req, res) => {
     res.status(200).json({ message: 'Product deleted' });
   } catch (error) {
     console.error('Delete Product Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-// Delete all products with the same reference
-const removeAllByRef = async (req, res) => {
-  try {
-    const { reference } = req.params;
-    await Product.deleteMany({ reference });
-    res.status(200).json({ message: 'Products deleted' });
-  } catch (error) {
-    console.error('Delete Products By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -321,6 +341,6 @@ module.exports = {
   uploadImage,
   update,
   updateStock,
+  hideAllByRef,
   remove,
-  removeAllByRef,
 };

@@ -330,19 +330,19 @@ function Dash() {
       });
   };
 
-  // delete product
-  const handleDeleteProduct = async (e) => {
+  // hide product
+  const handleHideProduct = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     // check if the user is sure
-    if (!window.confirm('Tem a certeza que deseja apagar o produto?')) {
+    if (!window.confirm('Tem a certeza que deseja esconder o produto?')) {
       return;
     }
 
-    // delete product
+    // hide product
     await axios
-      .delete(context.api + '/products/reference/' + product.reference, context.headersCRUD)
+      .put(context.api + '/products/hide/' + product.reference, {}, context.headersCRUD)
       .then((response) => {
         console.log('Product deleted:', response.data);
         // hide product details
@@ -639,9 +639,8 @@ function Dash() {
                 />
               </form>
               <div id='action-buttons'>
-                <button id='ok-button'>Guardar</button>
-                <button id='cancel-button' onClick={handleDeleteProduct}>
-                  Apagar
+                <button id='hide-button' onClick={handleHideProduct}>
+                  Esconder da loja
                 </button>
               </div>
             </div>

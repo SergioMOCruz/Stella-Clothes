@@ -191,6 +191,13 @@ main {
   font-weight: var(--font-weight-regular) !important;
 }
 
+#hide-button {
+  width: 100%;
+  background-color: var(--white);
+  color: var(--black);
+  font-weight: var(--font-weight-regular) !important;
+}
+
 /* New Order */
 #new-order {
   width: 50%;
