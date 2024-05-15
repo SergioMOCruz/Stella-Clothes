@@ -5,13 +5,16 @@ const {
   getAll,
   getById,
   getByRef,
+  getAllbyRef,
   getByCategory,
   getStock,
   getLastFour,
   searchProducts,
   create,
+  uploadImage,
   update,
   remove,
+  removeAllByRef,
 } = require('../controllers/product');
 const router = express.Router();
 const upload = multer();
@@ -25,6 +28,8 @@ router.get('/lastFour', getLastFour);
 router.get('/search', authenticateToken, searchProducts);
 // Get all products
 router.get('/', authenticateToken, getAll);
+// Get product by reference with dash
+router.get('/allByReference', getAllbyRef);
 // Get product by id
 router.get('/:id', authenticateToken, getById);
 // Get product by reference
@@ -40,9 +45,13 @@ router.post('/', authenticateToken, upload.single('image'), create);
 // PUT /product
 // Update a product
 router.put('/:id', authenticateToken, upload.single('image'), update);
+// Upload an image
+router.put('/upload/:id', authenticateToken, upload.single('image'), uploadImage);
 
 // DELETE /product
 // Delete a product
 router.delete('/:id', authenticateToken, remove);
+// Delete all products with the same reference
+router.delete('/reference/:reference', authenticateToken, removeAllByRef);
 
 module.exports = router;

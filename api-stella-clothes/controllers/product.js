@@ -39,6 +39,52 @@ const getByRef = async (req, res) => {
   }
 };
 
+// Get products by reference for dash
+const getAllbyRef = async (req, res) => {
+  try {
+    const products = await Product.find();
+
+    let productsByRef = products.map((product) => {
+      return {
+        reference: product.reference,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+      };
+    });
+
+    // get the stock of each product by size and create an array of
+    // objects with the size and stock of each product
+    productsByRef = productsByRef.map((product) => {
+      const productRefs = products.filter((p) => p.reference === product.reference);
+      const sizes = productRefs.map((s) => {
+        return { size: s.size, stock: s.stock };
+      });
+      return { ...product, stock: sizes };
+    });
+
+    // remove duplicates
+    productsByRef = productsByRef.filter(
+      (product, index, self) => index === self.findIndex((t) => t.reference === product.reference)
+    );
+
+    // get the category of the product and return its name
+    productsByRef = productsByRef.map(async (product) => {
+      const category = await Category.findById(product.category);
+      return { ...product, category: category.description };
+    });
+
+    Promise.all(productsByRef).then((modifiedProducts) => {
+      res.status(200).json(modifiedProducts);
+    });
+  } catch (error) {
+    console.error('Get Product By Reference Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Get stock by reference and size
 const getStock = async (req, res) => {
   try {
@@ -113,12 +159,16 @@ const create = async (req, res) => {
 
     const allowedSizes = ['XS', 'S', 'M', 'L', 'XL'];
     if (!allowedSizes.includes(size)) {
-      return res.status(400).json({ message: 'Invalid size value. Allowed values: XS, S, M, L, XL' });
+      return res
+        .status(400)
+        .json({ message: 'Invalid size value. Allowed values: XS, S, M, L, XL' });
     }
 
     const existingProduct = await Product.findOne({ reference, size });
     if (existingProduct) {
-      return res.status(409).json({ message: `Product with reference '${reference}' and size '${size}' already exists` });
+      return res.status(409).json({
+        message: `Product with reference '${reference}' and size '${size}' already exists`,
+      });
     }
 
     // Check if image is empty
@@ -191,6 +241,23 @@ const update = async (req, res) => {
   }
 };
 
+// Update stock of a product by reference
+const updateStock = async (req, res) => {
+  try {
+    const { reference, size, stock } = req.body;
+    const product = await Product.findOne({ reference });
+
+    if (!product) return res.status(404).json({ message: 'Produto não encontrado!' });
+
+    product.stock = stock;
+    await product.save();
+    res.status(200).json({ message: 'Stock Atualizado!' });
+  } catch (error) {
+    console.error('Update Stock Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Delete a product
 const remove = async (req, res) => {
   try {
@@ -203,15 +270,30 @@ const remove = async (req, res) => {
   }
 };
 
+// Delete all products with the same reference
+const removeAllByRef = async (req, res) => {
+  try {
+    const { reference } = req.params;
+    await Product.deleteMany({ reference });
+    res.status(200).json({ message: 'Products deleted' });
+  } catch (error) {
+    console.error('Delete Products By Reference Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getAll,
   getById,
   getByRef,
+  getAllbyRef,
   getByCategory,
   getStock,
   getLastFour,
   searchProducts,
   create,
+  uploadImage,
   update,
   remove,
+  removeAllByRef,
 };
