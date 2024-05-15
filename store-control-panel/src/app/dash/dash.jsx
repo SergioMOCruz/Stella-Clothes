@@ -330,6 +330,107 @@ function Dash() {
       });
   };
 
+  // product states
+  const [productReference, setProductReference] = useState('');
+  const [productName, setProductName] = useState('');
+  const [productDescription, setProductDescription] = useState('');
+  const [productCategory, setProductCategory] = useState('');
+  const [productPrice, setProductPrice] = useState('');
+
+  // update product states when product changes
+  useEffect(() => {
+    if (product) {
+      setProductReference(product.reference);
+      setProductName(product.name);
+      setProductDescription(product.description);
+      setProductCategory(product.category);
+      setProductPrice(product.price);
+    }
+  }, [product]);
+
+  // update product
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // check which field was updated and if it was actually updated
+    switch (e.target.id) {
+      case 'pRef':
+        if (e.target.value === product.reference) {
+          return;
+        }
+        break;
+      case 'pCat':
+        if (e.target.value === product.category) {
+          return;
+        }
+        break;
+      case 'pName':
+        if (e.target.value === product.name) {
+          return;
+        }
+        break;
+      case 'pDesc':
+        if (e.target.value === product.description) {
+          return;
+        }
+        break;
+      case 'pPrice':
+        if (e.target.value == product.price) {
+          return;
+        }
+        break;
+      default:
+        return;
+    }
+
+    // check if all fields are filled
+    if (
+      !productReference ||
+      !productName ||
+      !productDescription ||
+      !productCategory ||
+      !productPrice
+    ) {
+      return alert('Por favor, preencha todos os campos.');
+    }
+
+    console.log(
+      'Reference:',
+      productReference,
+      'Name:',
+      productName,
+      'Description:',
+      productDescription,
+      'Category:',
+      productCategory,
+      'Price:',
+      productPrice
+    );
+
+    // update product
+    await axios
+      .put(
+        context.api + '/products/reference/' + product.reference,
+        {
+          ref: productReference,
+          name: productName,
+          description: productDescription,
+          category: productCategory,
+          price: productPrice,
+        },
+        context.headersCRUD
+      )
+      .then((response) => {
+        console.log('Product updated:', response.data);
+        // reload products
+        handleLoadProducts();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   // hide product
   const handleHideProduct = async (e) => {
     e.preventDefault();
@@ -371,7 +472,7 @@ function Dash() {
       });
   };
 
-  // cancel new order
+  // cancel new product
   const handleCancelNewProduct = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -537,7 +638,7 @@ function Dash() {
         </main>
       )}
 
-      {dashboard === 'products' && products.length > 0 && (
+      {dashboard === 'products' && (
         <main>
           <table id='products-table'>
             <thead>
@@ -548,21 +649,29 @@ function Dash() {
               </tr>
             </thead>
             <tbody>
-              {products.map((p) => (
-                <tr
-                  key={p.reference}
-                  onClick={(e) => handleClickProduct(e, p.reference)}
-                  className={p.reference === product.reference ? 'selected' : ''}
-                >
-                  <td>{p.reference}</td>
-                  <td>{p.name}</td>
-                  <td>{p.stock.reduce((acc, curr) => acc + curr.stock, 0)}</td>
+              {product &&
+                products.map((p) => (
+                  <tr
+                    key={p.reference}
+                    onClick={(e) => handleClickProduct(e, p.reference)}
+                    className={p.reference === product.reference ? 'selected' : ''}
+                  >
+                    <td>{p.reference}</td>
+                    <td>{p.name}</td>
+                    <td>{p.stock.reduce((acc, curr) => acc + curr.stock, 0)}</td>
+                  </tr>
+                ))}
+              {products.length === 0 ? (
+                <tr style={{ display: 'flex' }}>
+                  <td>Sem produtos</td>
                 </tr>
-              ))}
+              ) : (
+                <></>
+              )}
             </tbody>
           </table>
 
-          {panelProductDetails && (
+          {panelProductDetails && product && (
             <div id='product-details' ref={productDetails}>
               <h2>Detalhes do produto</h2>
               <div id='product-data'>
@@ -572,29 +681,49 @@ function Dash() {
                     <img src='https://via.placeholder.com/150' alt='Product image' />
                   </label>
                 </div>
-                <form id='product-description'>
+                <div id='product-description'>
                   <input
+                    id='pRef'
                     type='text'
-                    value={product.reference}
-                    onChange={(e) => setProduct({ ...product, reference: e.target.value })}
+                    value={productReference}
+                    onChange={(e) => setProductReference(e.target.value)}
+                    onBlur={handleUpdateProduct}
                   />
+                  <select
+                    name='product-category'
+                    id='pCat'
+                    value={productCategory}
+                    onChange={handleUpdateProduct}
+                  >
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.value}>
+                        {category.description}
+                      </option>
+                    ))}
+                  </select>
                   <input
+                    id='pPrice'
                     type='text'
-                    value={product.category}
-                    onChange={(e) => setProduct({ ...product, category: e.target.value })}
-                  />
-                  <input
-                    type='text'
-                    value={product.name}
-                    onChange={(e) => setProduct({ ...product, name: e.target.value })}
-                  />
-                  <input
-                    type='text'
-                    value={product.price + '€'}
+                    value={productPrice}
+                    onChange={(e) => setProductPrice(e.target.value)}
                     pattern='[0-9]+([.][0-9]+)?'
-                    onChange={(e) => setProduct({ ...product, price: e.target.value })}
+                    onBlur={handleUpdateProduct}
                   />
-                </form>
+                  <input
+                    id='pName'
+                    type='text'
+                    value={productName}
+                    onChange={(e) => setProductName(e.target.value)}
+                    onBlur={handleUpdateProduct}
+                  />
+                  <textarea
+                    id='pDesc'
+                    type='text'
+                    value={productDescription}
+                    onChange={(e) => setProductDescription(e.target.value)}
+                    onBlur={handleUpdateProduct}
+                  />
+                </div>
               </div>
               <div id='product-stock-table'>
                 <table>
@@ -655,7 +784,6 @@ function Dash() {
                 />
               </form>
               <div id='action-buttons'>
-                {console.log(product)}
                 {product.active ? (
                   <button id='hide-button' onClick={handleHideProduct}>
                     Esconder da loja
@@ -669,7 +797,7 @@ function Dash() {
             </div>
           )}
 
-          {!panelProductDetails && (
+          {(!panelProductDetails || products.length === 0) && (
             <div id='new-product' ref={newProduct}>
               <h2>Novo produto</h2>
               <form id='new-product-form' onSubmit={handleAddNewProduct}>

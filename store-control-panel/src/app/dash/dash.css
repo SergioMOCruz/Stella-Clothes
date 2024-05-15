@@ -362,17 +362,25 @@ main {
   gap: 0.3rem;
 }
 
-#product-description input {
+#product-description input, #product-description select, #product-description textarea{
   padding: 0.2rem 0.7rem;
   border-radius: 0.3rem;
   border: 0;
 }
 
-#product-description input:hover {
+#product-description select {
+  padding: 0.2rem 0.4rem;
+}
+
+#product-description textarea {
+  resize: none;
+}
+
+#product-description input:hover, #product-description select:hover, #product-description textarea:hover {
   cursor: pointer;
 }
 
-#product-description input:focus-visible {
+#product-description input:focus-visible, #product-description textarea:focus-visible{
   background-color: whitesmoke;
 }
 
@@ -471,15 +479,20 @@ main {
 #new-product-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+}
+
+#new-product-form div:not(#action-buttons) {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 #new-product-form label {
   font-weight: var(--font-weight-semibold);
-  margin-top: 2rem;
 }
 
-#new-product-form input {
+#new-product-form input, #new-product-form select{
   padding: 0.5rem 1rem;
 }
 
