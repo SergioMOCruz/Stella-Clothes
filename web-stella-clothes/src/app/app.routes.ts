@@ -4,7 +4,7 @@ import { HomeComponent } from './modules/home/home.component';
 import { FourOFourComponent } from './views/four-o-four/four-o-four.component';
 import { ProductPageComponent } from './modules/product-page/product-page.component';
 import { CartComponent } from './modules/cart/cart.component';
-import { MyOrdersComponent } from './modules/my-orders/my-orders.component';
+import { MyOrdersComponent } from './modules/order/my-orders/my-orders.component';
 import { ProductExistsGuard } from './guards/product-exists.guard';
 import { CategoryComponent } from './modules/category/category.component';
 import { CategoryExistsGuard } from './guards/category-exists.guard';

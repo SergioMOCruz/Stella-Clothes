@@ -1,6 +1,7 @@
 import { Status } from "../../enum/status";
 
 export interface Order {
+  _id,
   userId,
   contactInfo,
   firstName,

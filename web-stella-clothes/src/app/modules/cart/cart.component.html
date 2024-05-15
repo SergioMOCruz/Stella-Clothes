@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 <section id="cart" *ngIf="(isLoggedIn$ | async)">
-  <div id="emptyCart" *ngIf="cartItems.length == 0">
+  <div id="empty-cart" *ngIf="cartItems.length == 0">
     <p>Lamentamos, não possuí nenhum item no seu carrinho</p>
     <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
   </div>

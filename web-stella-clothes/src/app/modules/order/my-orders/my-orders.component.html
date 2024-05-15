@@ -1,0 +1,32 @@
+<app-navbar></app-navbar>
+<section id="orders" *ngIf="(isLoggedIn$ | async)">
+  <div id="empty-orders" *ngIf="orders.length == 0">
+    <p>Lamentamos, não possuí nenhuma encomenda</p>
+    <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
+  </div>
+
+  <div id="orders-row" *ngIf="orders">
+    <div id="orders-row" *ngFor="let order of orders">
+      <div id="order-details">
+        <div class="order-text">{{ getNewestStatus(order) }}</div>
+        <div>
+          <span class="order-text">{{order.total}} €</span>
+          <button type="button" class="order-button">- Ver Encomenda</button>
+        </div>
+      </div>
+      <div id="order-details-date">{{order.createdAt}}</div>
+      <div class="order-products">
+        <div class="order-products-shadow"></div>
+          <!-- <img *ngFor="let image of order.images" class="order-image" [src]="image" /> -->
+        <div class="order-products-shadow"></div>
+      </div>
+      <div id="order-details-id">Encomenda {{order._id}}</div>
+    </div>
+  </div>
+</section>
+
+<section id="log-in-screen" *ngIf="!(isLoggedIn$ | async)">
+  <p>Lamentamos, mas para ver esta página necessita de iniciar sessão</p>
+  <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
+</section>
+
