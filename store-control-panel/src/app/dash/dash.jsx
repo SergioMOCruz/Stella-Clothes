@@ -172,10 +172,8 @@ function Dash() {
   const newProductReference = useRef();
   const newProductName = useRef();
   const newProductDescription = useRef();
-  const newProductSize = useRef();
   const newProductCategory = useRef();
   const newProductPrice = useRef();
-  const newProductStock = useRef();
 
   // categories
   const [categories, setCategories] = useState([]);
@@ -204,8 +202,6 @@ function Dash() {
 
       // show product details
       showProductDetails();
-      // add selected class to first product line
-      document.querySelector('#products-table tbody tr').classList.add('selected');
     } catch (error) {
       console.error(error);
     }
@@ -226,18 +222,6 @@ function Dash() {
     const productData = products.find((product) => product.reference === ref);
     setProduct(productData);
 
-    // add selected class to clicked product line
-    const productLines = document.querySelectorAll('#products-table tbody tr');
-    productLines.forEach((line) => {
-      line.classList.remove('selected');
-    });
-    // check if the clicked element is text or the row itself
-    if (e.target.tagName === 'TD') {
-      e.target.parentElement.classList.add('selected');
-    } else {
-      e.target.classList.add('selected');
-    }
-
     // show product details
     showProductDetails();
   };
@@ -246,6 +230,8 @@ function Dash() {
   const handleNewProduct = async (e) => {
     // hide product details
     hideProductDetails();
+    // clear product
+    setProduct({});
   };
 
   // add more stock
@@ -269,16 +255,18 @@ function Dash() {
       stock: productStock,
     };
 
-    await axios.put(context.api + '/products/stock', body, context.headersCRUD).then((response) => {
-      console.log('Stock added:', response.data);
-      // reload products
-      handleLoadProducts();
-      // clear inputs
-      e.target[2].value = '';
-    }
-    ).catch((error) => {
-      console.error(error);
-    });
+    await axios
+      .put(context.api + '/products/stock', body, context.headersCRUD)
+      .then((response) => {
+        console.log('Stock added:', response.data);
+        // reload products
+        handleLoadProducts();
+        // clear inputs
+        e.target[2].value = '';
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   // add product
@@ -290,10 +278,8 @@ function Dash() {
     const productReference = newProductReference.current.value;
     const productName = newProductName.current.value;
     const productDescription = newProductDescription.current.value;
-    const productSize = newProductSize.current.value;
     const productCategory = newProductCategory.current.value;
     const productPrice = newProductPrice.current.value;
-    const productStock = newProductStock.current.value;
 
     console.log(
       'Reference:',
@@ -302,14 +288,10 @@ function Dash() {
       productName,
       'Description:',
       productDescription,
-      'Size:',
-      productSize,
       'Category:',
       productCategory,
       'Price:',
-      productPrice,
-      'Stock:',
-      productStock
+      productPrice
     );
 
     // check if all fields are filled
@@ -317,44 +299,35 @@ function Dash() {
       !productReference ||
       !productName ||
       !productDescription ||
-      !productSize ||
       !productCategory ||
-      !productPrice ||
-      !productStock
+      !productPrice
     ) {
       return alert('Por favor, preencha todos os campos.');
     }
 
-    // add product to database
-    // await axios
-    //   .post(
-    //     context.api + '/products',
-    //     {
-    //       reference: productReference,
-    //       name: productName,
-    //       description: productDescription,
-    //       price: productPrice,
-    //       size: productSize,
-    //       stock: [
-    //         {
-    //           size: productSize,
-    //           stock: productStock,
-    //         },
-    //       ],
-    //       category: productCategory,
-    //     },
-    //     context.headersCRUD
-    //   )
-    //   .then((response) => {
-    //     console.log('Product added:', response.data);
-    //     // hide new product form
-    //     setPanelProductDetails(true);
-    //     // reload products
-    //     handleLoadProducts();
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
+    //add product to database
+    await axios
+      .post(
+        context.api + '/products',
+        {
+          reference: productReference,
+          name: productName,
+          description: productDescription,
+          price: productPrice,
+          size: 'XS',
+          stock: 0,
+          category: productCategory,
+        },
+        context.headersCRUD
+      )
+      .then((response) => {
+        console.log('Product added:', response.data);
+        // reload products
+        handleLoadProducts();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   // delete product
@@ -389,6 +362,8 @@ function Dash() {
 
     // hide new product form
     setPanelProductDetails(true);
+    // set product to first product
+    setProduct(products[0]);
   };
 
   //// CLIENTS ////
@@ -557,18 +532,15 @@ function Dash() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {products.map((p) => (
                 <tr
-                  key={product.reference}
-                  onClick={(e) => handleClickProduct(e, product.reference)}
+                  key={p.reference}
+                  onClick={(e) => handleClickProduct(e, p.reference)}
+                  className={p.reference === product.reference ? 'selected' : ''}
                 >
-                  <td>{product.reference}</td>
-                  <td>{product.name}</td>
-                  <td>
-                    {product.stock.reduce((acc, s) => {
-                      return acc + s.stock;
-                    }, 0)}
-                  </td>
+                  <td>{p.reference}</td>
+                  <td>{p.name}</td>
+                  <td>{p.stock.reduce((acc, curr) => acc + curr.stock, 0)}</td>
                 </tr>
               ))}
             </tbody>
@@ -659,8 +631,10 @@ function Dash() {
                   <option value='L'>L</option>
                   <option value='XL'>XL</option>
                 </select>
-                <input type='number' placeholder='1' 
-                // only numbers, no decimals or negative numbers or dots or commas
+                <input
+                  type='number'
+                  placeholder='1'
+                  // only numbers, no decimals or negative numbers or dots or commas
                   pattern='[0-9]'
                 />
               </form>
@@ -699,20 +673,6 @@ function Dash() {
                     ref={newProductDescription}
                   />
                 </div>
-                <div id='new-product-size'>
-                  <label htmlFor='size'>Tamanho</label>
-                  <select
-                    name='new-product-sizes-select'
-                    id='new-product-sizes-select'
-                    ref={newProductSize}
-                  >
-                    <option value='XS'>XS</option>
-                    <option value='S'>S</option>
-                    <option value='M'>M</option>
-                    <option value='L'>L</option>
-                    <option value='XL'>XL</option>
-                  </select>
-                </div>
                 <div id='new-product-category'>
                   <label htmlFor='new-product-categories-select'>Categoria</label>
                   <select
@@ -729,11 +689,13 @@ function Dash() {
                 </div>
                 <div id='new-product-price'>
                   <label htmlFor='price'>Preço</label>
-                  <input type='number' id='price' placeholder='19.99' ref={newProductPrice} />
-                </div>
-                <div id='new-product-stock'>
-                  <label htmlFor='stock'>Stock</label>
-                  <input type='number' id='stock' placeholder='5' ref={newProductStock} />
+                  <input
+                    type='text'
+                    id='price'
+                    placeholder='19.99'
+                    ref={newProductPrice}
+                    pattern='[0-9]+([.][0-9]+)?'
+                  />
                 </div>
                 <div id='action-buttons'>
                   <button id='ok-button' type='submit'>

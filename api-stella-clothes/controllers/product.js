@@ -153,7 +153,15 @@ const create = async (req, res) => {
     // const image = req.file.path;
 
     // Check if the fields are empty
-    if (!reference || !name || !description || !price || !size || !stock || !category)
+    if (
+      !reference ||
+      !name ||
+      !description ||
+      !price ||
+      !size ||
+      typeof stock !== 'number' ||
+      !category
+    )
       //|| !image)
       return res.status(400).json({ message: 'All fields are required' });
 
@@ -266,7 +274,6 @@ const updateStock = async (req, res) => {
         image: products[0].image,
       });
     }
-
 
     await product.save();
 
