@@ -17,7 +17,7 @@ function Dash() {
       return context.navigate('/');
     }
     await getAccountData();
-    await handleLoadOrders();
+    //await handleLoadOrders();
   }, []);
 
   //// AUTH ////
@@ -65,6 +65,15 @@ function Dash() {
       _id: '834532',
       name: 'José Castro',
       state: 'Aberto',
+      products: [
+        {
+          reference: 'SCGL',
+          quantity: 2,
+          size: 'L',
+          name: 'Santa Cruz Godlike',
+          category: 'TSHIRT',
+        },
+      ],
     },
   ]);
 
@@ -84,7 +93,6 @@ function Dash() {
     // get orders
     try {
       const ordersResponse = await axios.get(context.api + '/orders', context.headersCRUD);
-      console.log('Orders without client data:', ordersResponse.data);
       setOrders(ordersResponse.data);
     } catch (error) {
       console.error(error);
@@ -151,7 +159,10 @@ function Dash() {
   };
 
   //// PRODUCTS ////
+  // products state
   const [products, setProducts] = useState([]);
+  // active product state
+  const [product, setProduct] = useState({});
 
   // product details div ref
   const productDetails = useRef();
@@ -176,27 +187,88 @@ function Dash() {
     // get categories
     try {
       const categoriesResponse = await axios.get(context.api + '/categories', context.headersCRUD);
-      setCategories(categoriesResponse.data.map((category) => category.description));
+      setCategories(categoriesResponse.data);
     } catch (error) {
       console.error(error);
     }
 
     // get products
     try {
-      const productsResponse = await axios.get(context.api + '/products', context.headersCRUD);
+      const productsResponse = await axios.get(
+        context.api + '/products/allByReference',
+        context.headersCRUD
+      );
       console.log('Products:', productsResponse.data);
       setProducts(productsResponse.data);
+      setProduct(productsResponse.data[0]);
+
+      // show product details
+      showProductDetails();
+      // add selected class to first product line
+      document.querySelector('#products-table tbody tr').classList.add('selected');
     } catch (error) {
       console.error(error);
     }
   };
 
+  // panel changing state
+  const [panelProductDetails, setPanelProductDetails] = useState(false);
+  const hideProductDetails = () => {
+    setPanelProductDetails(false);
+  };
+  const showProductDetails = () => {
+    setPanelProductDetails(true);
+  };
+
+  // click product
+  const handleClickProduct = async (e, ref) => {
+    // get product data
+    const productData = products.find((product) => product.reference === ref);
+    setProduct(productData);
+
+    // add selected class to clicked product line
+    const productLines = document.querySelectorAll('#products-table tbody tr');
+    productLines.forEach((line) => {
+      line.classList.remove('selected');
+    });
+    // check if the clicked element is text or the row itself
+    if (e.target.tagName === 'TD') {
+      e.target.parentElement.classList.add('selected');
+    } else {
+      e.target.classList.add('selected');
+    }
+
+    // show product details
+    showProductDetails();
+  };
+
   // new product
   const handleNewProduct = async (e) => {
-    // show new product form
-    newProduct.current.style.display = 'flex';
-    // hide products table
-    productDetails.current.style.display = 'none';
+    // hide product details
+    hideProductDetails();
+  };
+
+  // add more stock
+  const handleAddMoreStock = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // values from inputs
+    const productSize = e.target[1].value;
+    const productStock = e.target[2].value;
+
+    // check if all fields are filled
+    if (!productSize || !productStock) {
+      return alert('Por favor, preencha todos os campos.');
+    }
+
+    // add stock to product
+    // JUST TESTING
+    const newStock = {
+      size: productSize,
+      stock: productStock,
+    };
+    console.log('New stock:', newStock);
   };
 
   // add product
@@ -212,6 +284,7 @@ function Dash() {
     const productCategory = newProductCategory.current.value;
     const productPrice = newProductPrice.current.value;
     const productStock = newProductStock.current.value;
+
     console.log(
       'Reference:',
       productReference,
@@ -243,27 +316,69 @@ function Dash() {
     }
 
     // add product to database
-    // JUST TESTING
-    const newProduct = {
-      reference: productReference,
-      name: productName,
-      description: productDescription,
-      size: productSize,
-      category: productCategory,
-      price: productPrice,
-      stock: productStock,
-    };
-    console.log('New product:', newProduct);
+    // await axios
+    //   .post(
+    //     context.api + '/products',
+    //     {
+    //       reference: productReference,
+    //       name: productName,
+    //       description: productDescription,
+    //       price: productPrice,
+    //       size: productSize,
+    //       stock: [
+    //         {
+    //           size: productSize,
+    //           stock: productStock,
+    //         },
+    //       ],
+    //       category: productCategory,
+    //     },
+    //     context.headersCRUD
+    //   )
+    //   .then((response) => {
+    //     console.log('Product added:', response.data);
+    //     // hide new product form
+    //     setPanelProductDetails(true);
+    //     // reload products
+    //     handleLoadProducts();
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
+  };
+
+  // delete product
+  const handleDeleteProduct = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // check if the user is sure
+    if (!window.confirm('Tem a certeza que deseja apagar o produto?')) {
+      return;
+    }
+
+    // delete product
+    await axios
+      .delete(context.api + '/products/reference/' + product.reference, context.headersCRUD)
+      .then((response) => {
+        console.log('Product deleted:', response.data);
+        // hide product details
+        hideProductDetails();
+        // reload products
+        handleLoadProducts();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   // cancel new order
   const handleCancelNewProduct = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+
     // hide new product form
-    newProduct.current.style.display = 'none';
-    // show products table
-    productDetails.current.style.display = 'flex';
+    setPanelProductDetails(true);
   };
 
   //// CLIENTS ////
@@ -398,7 +513,7 @@ function Dash() {
               <div id='new-order-products-list'>
                 <ul>
                   {newOrderProductsList.map((product) => (
-                    <li id='product-line'>
+                    <li id='product-line' key={product.reference}>
                       <p id='product-quantity'>{product.quantity}x</p>
                       <p id='product-category'>{product.category}</p>
                       <p id='product-name'>{product.name}</p>
@@ -433,112 +548,191 @@ function Dash() {
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product._id}>
+                <tr
+                  key={product.reference}
+                  onClick={(e) => handleClickProduct(e, product.reference)}
+                >
                   <td>{product.reference}</td>
                   <td>{product.name}</td>
-                  {/* sum all the stocks with the same reference */}
                   <td>
-                    {products
-                      .filter((p) => p.reference === product.reference)
-                      .reduce((acc, p) => acc + p.stock, 0)}
+                    {product.stock.reduce((acc, s) => {
+                      return acc + s.stock;
+                    }, 0)}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div id='product-details' ref={productDetails}>
-            <h2>Detalhes do produto</h2>
-            <h3>Referência</h3>
-            <p>SCGL</p>
-
-            <h3>Nome</h3>
-            <p>Santa Cruz Godlike</p>
-
-            <h3>Categoria</h3>
-            <p>TSHIRT</p>
-
-            <h3>Preço</h3>
-            <p>€19.99</p>
-
-            <h3>Stock</h3>
-            <p>5</p>
-
-            <div id='action-buttons'>
-              <button id='ok-button'>Editar</button>
-              <button id='cancel-button'>Apagar</button>
-            </div>
-          </div>
-
-          <div id='new-product' ref={newProduct}>
-            <h2>Novo produto</h2>
-            <form id='new-product-form' onSubmit={handleAddNewProduct}>
-              <div id='new-product-reference'>
-                <label htmlFor='reference'>Referência</label>
-                <input type='text' id='reference' placeholder='SCGL' ref={newProductReference} />
+          {panelProductDetails && (
+            <div id='product-details' ref={productDetails}>
+              <h2>Detalhes do produto</h2>
+              <div id='product-data'>
+                <div id='product-image'>
+                  <label htmlFor='product-img'>
+                    <input type='file' id='product-img' style={{ display: 'none' }} />
+                    <img src='https://via.placeholder.com/150' alt='Product image' />
+                  </label>
+                </div>
+                <form id='product-description'>
+                  <input
+                    type='text'
+                    value={product.reference}
+                    onChange={(e) => setProduct({ ...product, reference: e.target.value })}
+                  />
+                  <input
+                    type='text'
+                    value={product.category}
+                    onChange={(e) => setProduct({ ...product, category: e.target.value })}
+                  />
+                  <input
+                    type='text'
+                    value={product.name}
+                    onChange={(e) => setProduct({ ...product, name: e.target.value })}
+                  />
+                  <input
+                    type='text'
+                    value={product.price + '€'}
+                    pattern='[0-9]+([.][0-9]+)?'
+                    onChange={(e) => setProduct({ ...product, price: e.target.value })}
+                  />
+                </form>
               </div>
-              <div id='new-product-name'>
-                <label htmlFor='name'>Nome</label>
-                <input
-                  type='text'
-                  id='name'
-                  placeholder='Santa Cruz Godlike'
-                  ref={newProductName}
-                />
+              <div id='product-stock-table'>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>XS</th>
+                      <th>S</th>
+                      <th>M</th>
+                      <th>L</th>
+                      <th>XL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        {product.stock.map((size, i) => {
+                          return size.size === 'XS' ? size.stock : '';
+                        })}
+                      </td>
+                      <td>
+                        {product.stock.map((size, i) => {
+                          return size.size === 'S' ? size.stock : '';
+                        })}
+                      </td>
+                      <td>
+                        {product.stock.map((size, i) => {
+                          return size.size === 'M' ? size.stock : '';
+                        })}
+                      </td>
+                      <td>
+                        {product.stock.map((size, i) => {
+                          return size.size === 'L' ? size.stock : '';
+                        })}
+                      </td>
+                      <td>
+                        {product.stock.map((size, i) => {
+                          return size.size === 'XL' ? size.stock : '';
+                        })}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div id='new-product-description'>
-                <label htmlFor='description'>Descrição</label>
-                <input
-                  type='text'
-                  id='description'
-                  placeholder='100% Algodão'
-                  ref={newProductDescription}
-                />
-              </div>
-              <div id='new-product-size'>
-                <label htmlFor='size'>Tamanho</label>
-                <select
-                  name='new-product-sizes-select'
-                  id='new-product-sizes-select'
-                  ref={newProductSize}
-                >
+              <form id='product-add-stock' onSubmit={handleAddMoreStock}>
+                <button type='submit'>+ Adicionar</button>
+                <select name='product-sizes' id='product-sizes'>
                   <option value='XS'>XS</option>
                   <option value='S'>S</option>
                   <option value='M'>M</option>
                   <option value='L'>L</option>
                   <option value='XL'>XL</option>
                 </select>
-              </div>
-              <div id='new-product-category'>
-                <label htmlFor='new-product-categories-select'>Categoria</label>
-                <select
-                  name='new-product-categories-select'
-                  id='new-product-categories-select'
-                  ref={newProductCategory}
-                >
-                  {categories.map((category) => (
-                    <option value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-              <div id='new-product-price'>
-                <label htmlFor='price'>Preço</label>
-                <input type='number' id='price' placeholder='19.99' ref={newProductPrice} />
-              </div>
-              <div id='new-product-stock'>
-                <label htmlFor='stock'>Stock</label>
-                <input type='number' id='stock' placeholder='5' ref={newProductStock} />
-              </div>
+                <input type='number' placeholder='1' />
+              </form>
               <div id='action-buttons'>
-                <button id='ok-button' type='submit'>
-                  Adicionar produto
-                </button>
-                <button id='cancel-button' onClick={handleCancelNewProduct}>
-                  Cancelar
+                <button id='ok-button'>Guardar</button>
+                <button id='cancel-button' onClick={handleDeleteProduct}>
+                  Apagar
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
+          )}
+
+          {!panelProductDetails && (
+            <div id='new-product' ref={newProduct}>
+              <h2>Novo produto</h2>
+              <form id='new-product-form' onSubmit={handleAddNewProduct}>
+                <div id='new-product-reference'>
+                  <label htmlFor='reference'>Referência</label>
+                  <input type='text' id='reference' placeholder='SCGL' ref={newProductReference} />
+                </div>
+                <div id='new-product-name'>
+                  <label htmlFor='name'>Nome</label>
+                  <input
+                    type='text'
+                    id='name'
+                    placeholder='Santa Cruz Godlike'
+                    ref={newProductName}
+                  />
+                </div>
+                <div id='new-product-description'>
+                  <label htmlFor='description'>Descrição</label>
+                  <input
+                    type='text'
+                    id='description'
+                    placeholder='100% Algodão'
+                    ref={newProductDescription}
+                  />
+                </div>
+                <div id='new-product-size'>
+                  <label htmlFor='size'>Tamanho</label>
+                  <select
+                    name='new-product-sizes-select'
+                    id='new-product-sizes-select'
+                    ref={newProductSize}
+                  >
+                    <option value='XS'>XS</option>
+                    <option value='S'>S</option>
+                    <option value='M'>M</option>
+                    <option value='L'>L</option>
+                    <option value='XL'>XL</option>
+                  </select>
+                </div>
+                <div id='new-product-category'>
+                  <label htmlFor='new-product-categories-select'>Categoria</label>
+                  <select
+                    name='new-product-categories-select'
+                    id='new-product-categories-select'
+                    ref={newProductCategory}
+                  >
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.description}>
+                        {category.description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div id='new-product-price'>
+                  <label htmlFor='price'>Preço</label>
+                  <input type='number' id='price' placeholder='19.99' ref={newProductPrice} />
+                </div>
+                <div id='new-product-stock'>
+                  <label htmlFor='stock'>Stock</label>
+                  <input type='number' id='stock' placeholder='5' ref={newProductStock} />
+                </div>
+                <div id='action-buttons'>
+                  <button id='ok-button' type='submit'>
+                    Adicionar produto
+                  </button>
+                  <button id='cancel-button' onClick={handleCancelNewProduct}>
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </main>
       )}
 
