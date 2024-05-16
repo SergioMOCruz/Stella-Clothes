@@ -55,6 +55,7 @@ app.use('/products', require('./routes/product'));
 app.use('/orders', require('./routes/order'));
 app.use('/cart', require('./routes/cart'));
 app.use('/categories', require('./routes/category'));
+app.use('/stripe', require('./routes/stripe'));
 
 // Start the server
 app.listen(port, () => {

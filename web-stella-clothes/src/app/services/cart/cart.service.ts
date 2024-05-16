@@ -17,6 +17,10 @@ export class CartService {
     return this._http.get(`${environment.apiUrl}/cart`);
   }
 
+  getCartByClientIdOrganized(): Observable<any> {
+    return this._http.get(`${environment.apiUrl}/cart/organized`);
+  }
+
   changeItemsInCart(cart: CartItems[]) : Observable<any> {
     return this._http.post(`${environment.apiUrl}/cart`, cart);
   }
@@ -33,7 +37,6 @@ export class CartService {
   }
 
   updateQuantityInCart(product) : Observable<any> {
-    console.log(product)
     return this._http.put(`${environment.apiUrl}/cart`, product);
   }
 }

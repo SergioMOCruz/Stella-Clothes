@@ -152,7 +152,7 @@ const searchProducts = async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
     const products = await Product.find({ name: { $regex: searchTerm, $options: 'i' } }).limit(16);
-    console.log(products);
+    
     res.status(200).json(products);
   } catch (error) {
     console.error('Search Products Error:', error.message);

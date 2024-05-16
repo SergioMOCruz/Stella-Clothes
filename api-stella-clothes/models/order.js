@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
-    addressContinued: {
+    addressExtra: {
       type: String,
     },
     city: {
@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema({
     },
   },
   paymentId: {
-    type: Number,
+    type: String,
     required: true,
   },
   nif: {

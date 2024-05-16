@@ -1,4 +1,6 @@
 const Order = require('../models/order');
+const Account = require('../models/account');
+const Cart = require('../models/cart');
 const Product = require('../models/product');
 const Category = require('../models/category');
 const OrderData = require('../models/order_data');
@@ -54,36 +56,47 @@ const getByAccount = async (req, res) => {
 // Create a new order
 const create = async (req, res) => {
   try {
-    const { orderInfo, productsWithQuantity } = req.body;
+    const accountId = req.user.id;
+    const paymentId = req.body.paymentId;
+    let total = 0;
+
+    if (!paymentId) return res.status(400).json({ message: 'Payment id is required' });
+
+    let account = await Account.findOne({ _id: accountId });
+    const orderInfo = account.orderInfo;
+
+    const productsWithQuantity = await Cart.find({ clientId: req.user.id });
 
     // Check if all fields are filled except nif (nif is optional)
     if (
       !orderInfo.contactInfo || 
       !orderInfo.firstName || 
       !orderInfo.lastName || 
-      !orderInfo.address.street || 
-      !orderInfo.address.city || 
-      !orderInfo.address.postalCode || 
-      !orderInfo.address.country ||
-      !orderInfo.total ||
+      !orderInfo.street || 
+      !orderInfo.addressExtra || 
+      !orderInfo.postalCode || 
+      !orderInfo.city || 
+      !orderInfo.country ||
       !productsWithQuantity ||
       !Array.isArray(productsWithQuantity) ||
-      !productsWithQuantity.every(product => product.reference && product.quantity && product.size)
+      !productsWithQuantity.every(product => product.productReference && product.quantity && product.size)
     ) {
       return res.status(400).json({ message: 'All fields must be filled' });
     }
 
-    
-
     // Check if product exists
     for (const product of productsWithQuantity) {
-      const { reference, quantity, size } = product;
+      const { productReference, quantity, size } = product;
+      const reference = productReference;
 
       const existingProduct = await Product.findOne({ reference, size });
       if (!existingProduct)
         return res.status(409).json({ message: `Product with reference '${reference}' and size '${size}' doesn't exist` });
       if (existingProduct.stock < quantity)
-        return res.status(409).json({ message: `Product with reference '${reference}' doesn't have enough stock` });
+        return res.status(409).json({ message: `Product with reference '${reference}' and size '${size}' doesn't have enough stock` });
+
+      const subTotal = quantity * existingProduct.price;
+      total += subTotal
     };
     
     // Body of order
@@ -93,27 +106,29 @@ const create = async (req, res) => {
       firstName: orderInfo.firstName,
       lastName: orderInfo.lastName,
       address: {
-        street: orderInfo.address.street,
-        addressContinued: orderInfo.address.addressContinued || null,
-        city: orderInfo.address.city,
-        postalCode: orderInfo.address.postalCode,
-        country: orderInfo.address.country,
+        street: orderInfo.street,
+        addressExtra: orderInfo.addressExtra || null,
+        city: orderInfo.city,
+        postalCode: orderInfo.postalCode,
+        country: orderInfo.country,
       },
-      paymentId: 1, // TODO: Change this to the actual paymentId when the payment system is implemented
+      paymentId: paymentId,
       nif: orderInfo.nif || null,
       status: [
         {
-          status: 'Em processo',
+          status: 'Pago',
           date: Date.now(),
         }
       ],
-      total: orderInfo.total
+      total: total
     });
     await order.save();
     
     // Create order data for each product and remove stock from products after order is made
     for (const product of productsWithQuantity) {
-      const { reference, quantity, size } = product;
+      const { productReference, quantity, size } = product;
+      const reference = productReference;
+
       const existingProduct = await Product.findOne({ reference, size });
       const productCategory = await Category.findOne({ _id: existingProduct.category });
 
@@ -133,6 +148,9 @@ const create = async (req, res) => {
       existingProduct.stock -= quantity;
       existingProduct.save();
     }
+
+    await Cart.deleteMany({ clientId: accountId });
+    await Account.updateOne({ _id: accountId }, { $unset: { orderInfo: "" } });
     
     console.log('Order created with success!\nOrder Id:', order._id);
 

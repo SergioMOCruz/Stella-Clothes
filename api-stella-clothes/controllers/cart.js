@@ -7,16 +7,31 @@ const getCartByClientId = async (req, res) => {
     
     const cart = await Cart.find({ clientId: clientId });
 
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
-
+    if (!cart) return res.status(404).json({ message: "Cart not found" });
+    
     return res.status(200).json(cart);
   } catch (error) {
     console.error("Error retrieving cart:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+const getCartByClientIdOrganized = async (req, res) => {
+  try {
+    const carts = await Cart.find({ clientId: req.user.id });
+
+    if (!carts) return res.status(404).json({ message: "Cart not found" });
+
+    const organizedCarts = carts.map(cart => cart.toObject())
+                                .sort((a, b) => a._id - b._id);
+
+    return res.status(200).json(organizedCarts);
+  } catch (error) {
+    console.error("Error retrieving cart:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 
 // Create a new cart
 const create = async (req, res) => {
@@ -105,4 +120,4 @@ const removeItemfromCart = async (req, res) => {
   }
 };
 
-module.exports = { getCartByClientId, create, updateQuantityInCart, removeItemfromCart };
+module.exports = { getCartByClientId, getCartByClientIdOrganized, create, updateQuantityInCart, removeItemfromCart };

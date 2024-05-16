@@ -157,3 +157,19 @@
   padding-top: 2rem;
   margin-top: 2rem;
 }
+
+#log-in-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  p {
+    text-transform: uppercase;
+  }
+}

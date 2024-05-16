@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { RegisterService } from '../../../auth/services/register.service';
 import { RegisterInterface } from '../../../shared/interfaces/auth/register-interface';
 import { UserSessionHandlerService } from '../../../auth/services/helpers/user-session-handler.service';
@@ -24,7 +23,6 @@ export class RegisterComponent {
   showWarning: boolean = false;
 
   constructor(
-    private _router: Router,
     private _registerService: RegisterService,
     private _userSession: UserSessionHandlerService,
     private _loginService: LoginService

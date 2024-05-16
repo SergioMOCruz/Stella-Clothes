@@ -47,7 +47,7 @@ export class SearchProductComponent {
       })
     ).subscribe((results: any[]) => {
       this.searchResults = results;
-      console.log("products", this.searchResults)
+
       this.loading = false;
     });
 

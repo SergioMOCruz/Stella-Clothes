@@ -20,6 +20,7 @@ export class MiniCartComponent {
   isLoggedIn$: Observable<boolean>;
   products = [];
   total: number = 0;
+  isCartEmpty: boolean = true;
 
   constructor(
     private _productService: ProductService,
@@ -32,13 +33,15 @@ export class MiniCartComponent {
       this.products = data;
 
       if (this.products.length) {
+        this.isCartEmpty = false;
         this.products.forEach(product => {
           this._productService.getProductByRef(product.productReference).subscribe((data) => {
             product.price = data[0].price;
             this.getSubtotal();
           });
         });
-      }
+      } else
+        this.isCartEmpty = true
       },
       error => console.log(error)
     );
@@ -50,6 +53,8 @@ export class MiniCartComponent {
       await this._cartService.removeItemfromCart(product).subscribe(data => {
         this.products.splice(index, 1);
         this.getSubtotal();
+
+        window.location.reload();
       });
     }
   }

@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { getCartByClientId, create, updateQuantityInCart, removeItemfromCart } = require('../controllers/cart');
+const { getCartByClientId, getCartByClientIdOrganized, create, updateQuantityInCart, removeItemfromCart } = require('../controllers/cart');
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /cart
 
 // Get cart by client id
 router.get('/', authenticateToken, getCartByClientId);
+router.get('/organized', authenticateToken, getCartByClientIdOrganized);
 
 // POST /cart
 // Create a new cart

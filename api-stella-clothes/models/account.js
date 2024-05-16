@@ -30,6 +30,38 @@ const accountSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  orderInfo: {
+    contactInfo: {
+      type: String
+    },
+    firstName: {
+      type: String
+    },
+    lastName: {
+      type: String
+    },
+    street: {
+      type: String
+    },
+    addressExtra: {
+      type: String
+    },
+    postalCode: {
+      type: String
+    },
+    city: {
+      type: String
+    },
+    country: {
+      type: String
+    },
+    nif: {
+      type: String
+    },
+    sessionId: {
+      type: String
+    }
+  },
   createdAt: {
     type: Date,
     default: Date.now,
