@@ -20,13 +20,34 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     const { id } = req.params;
-    const order = await Order.findById(id);
+    const accountId = req.user.id;
+    
+    let order = await Order.findOne({ _id: id, accountId: accountId });
+    
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    
+    let orderData = await OrderData.find({ orderId: id });
+
+    order = order.toObject();
+    delete order.accountId;
+    delete order.paymentId;
+
+    orderData = orderData.map(item => {
+      const obj = item.toObject();
+      delete obj._id;
+      return obj;
+    });
+
+    order.orderData = orderData;
+    
     res.status(200).json(order);
   } catch (error) {
     console.error('Get Order By Id Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
 
 // Get order by account id
 const getByAccount = async (req, res) => {
@@ -51,6 +72,22 @@ const getByAccount = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+const verifyOrder = async (req, res) => {
+  try {
+    const accountId = req.user.id;
+    const { id } = req.params;
+
+    const order = await Order.findOne({ _id: id, accountId: accountId });
+
+    res.status(200).json(order);
+
+    res.status(201);
+  } catch (error) {
+    console.error('Order Registration Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
 
 // Create a new order
@@ -140,6 +177,7 @@ const create = async (req, res) => {
         description: existingProduct.description,
         category: productCategory.description,
         quantity: quantity,
+        image: existingProduct.image,
         priceAtTime: existingProduct.price,
         size: size
       });
@@ -202,4 +240,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, getByAccount, create, update, remove };
+module.exports = { getAll, getById, verifyOrder, getByAccount, create, update, remove };

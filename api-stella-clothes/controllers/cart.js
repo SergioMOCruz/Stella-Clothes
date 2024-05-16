@@ -5,9 +5,15 @@ const getCartByClientId = async (req, res) => {
   try {
     const clientId = req.user.id;
     
-    const cart = await Cart.find({ clientId: clientId });
+    let cart = await Cart.find({ clientId: clientId });
 
     if (!cart) return res.status(404).json({ message: "Cart not found" });
+
+    cart = cart.map(item => {
+      const obj = item.toObject();
+      delete obj.clientId;
+      return obj;
+    });
     
     return res.status(200).json(cart);
   } catch (error) {
@@ -62,7 +68,7 @@ const create = async (req, res) => {
     }
 
     for (const product of products) {
-      const { productReference, quantity, size } = product;
+      const { productReference, name, image, quantity, size } = product;
 
       const existingCartItem = await Cart.findOne({ clientId: clientId, productReference: productReference, size: size });
       if (existingCartItem) {
@@ -74,6 +80,8 @@ const create = async (req, res) => {
         const newCartItem = new Cart({
           clientId,
           productReference,
+          name,
+          image,
           quantity,
           size
         });

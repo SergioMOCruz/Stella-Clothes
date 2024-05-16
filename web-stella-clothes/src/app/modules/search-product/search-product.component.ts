@@ -4,7 +4,7 @@ import { ProductService } from '../../services/products/product.service';
 import { Product } from '../../shared/interfaces/products/products';
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-search-product',
@@ -26,7 +26,8 @@ export class SearchProductComponent {
   private subscription: Subscription;
 
   constructor(
-    private _productService: ProductService
+    private _productService: ProductService,
+    private _router: Router
   ) {
     this._productService.getLastFour().subscribe(
       data => this.products = data,
@@ -64,5 +65,11 @@ export class SearchProductComponent {
 
   redirectToHome() {
     this.redirectToHomeEvent.emit();
+  }
+
+  redirectToProduct(reference: string) {
+    this._router.navigate(['/product/' + reference]).then(() => {
+      window.location.reload();
+    });
   }
 }

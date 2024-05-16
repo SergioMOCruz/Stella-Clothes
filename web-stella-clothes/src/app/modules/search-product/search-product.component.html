@@ -9,7 +9,7 @@
     <div id="recommendations-products">
       <div id="product-showcase" *ngFor="let product of products" [routerLink]="['/product/' + product.reference]">
         <img class="product-showcase-image" [src]="product.image" alt="roupa">
-        <p class="product-showcase-title">{{ product.description }}</p>
+        <p class="product-showcase-title">{{ product.name }}</p>
         <p class="product-showcase-price">{{ product.price }} €</p>
       </div>
     </div>
@@ -21,9 +21,9 @@
     </div>
 
     <ng-template #searchResultsBlock>
-      <div id="product-showcase" *ngFor="let product of searchResults" [routerLink]="['/product/' + product.reference]">
+      <div id="product-showcase" *ngFor="let product of searchResults" (click)="redirectToProduct(product.reference)">
         <div class="product-item">
-          <img class="product-showcase-image" src="https://static.zara.net/assets/public/2267/0007/2bfc4ce8ad4d/3ab6202f2a3a/05862406436-e1/05862406436-e1.jpg?ts=1706532212591&w=850" alt="roupa">
+          <img class="product-showcase-minis" [src]="product.image" alt="roupa">
           <p class="product-showcase-title">{{ product.name }}</p>
           <p class="product-showcase-price">{{ product.price }} €</p>
         </div>

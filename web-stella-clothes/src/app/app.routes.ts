@@ -11,6 +11,8 @@ import { CategoryExistsGuard } from './guards/category-exists.guard';
 import { CheckoutComponent } from './modules/checkout/checkout.component';
 import { UnsuccessfulPaymentComponent } from './views/unsuccessful-payment/unsuccessful-payment.component';
 import { SuccessfulPaymentComponent } from './views/successful-payment/successful-payment.component';
+import { OrderDetailsComponent } from './modules/order/order-details/order-details.component';
+import { OrderBelongsGuard } from './guards/order-belongs.guard';
 
 
 export const routes: Routes = [
@@ -21,6 +23,7 @@ export const routes: Routes = [
   { path: 'checkout', component: CheckoutComponent },
   { path: 'category/:description', component: CategoryComponent, canActivate: [CategoryExistsGuard] },
   { path: 'product/:reference', component: ProductPageComponent, canActivate: [ProductExistsGuard] },
+  { path: 'order-details/:id', component: OrderDetailsComponent, canActivate: [OrderBelongsGuard] },
   { path: 'successful-payment', component: SuccessfulPaymentComponent },
   { path: 'unsuccessful-payment', component: UnsuccessfulPaymentComponent },
   { path: '404', component: FourOFourComponent },

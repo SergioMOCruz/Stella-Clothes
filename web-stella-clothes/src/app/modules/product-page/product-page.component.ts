@@ -91,6 +91,8 @@ export class ProductPageComponent {
       if (product.size === this.selectedSize && product.stock > 0) {
         let newCartItem: CartItems = {
           productReference: product.reference,
+          name: product.name,
+          image: product.image,
           quantity: 1,
           size: product.size,
         };

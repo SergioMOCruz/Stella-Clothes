@@ -19,6 +19,7 @@ export class CategoryComponent {
   category: string = null;
   idCategory: number = null;
   categoryProducts: Product[] = null;
+  emptyCategory: boolean = true;
 
   constructor(
     private _route: ActivatedRoute,
@@ -30,5 +31,4 @@ export class CategoryComponent {
 
     this._productService.getProductsByCategory(this.category).subscribe(data => this.categoryProducts = data);
   }
-
 }

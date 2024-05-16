@@ -1,8 +1,9 @@
 import { Size } from "../../enum/size";
 
 export interface CartItems {
-  clientId?: string,
   productReference: string,
+  name: string,
   quantity: number,
+  image: string,
   size: Size
 }

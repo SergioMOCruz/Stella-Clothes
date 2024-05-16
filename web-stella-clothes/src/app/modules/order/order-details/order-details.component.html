@@ -1,1 +1,49 @@
-<p>order-details works!</p>
+<app-navbar></app-navbar>
+<section id="order-details" *ngIf="order">
+  <div id="order-details-info">
+    <div>
+      <p>Número encomenda</p>
+      <p>Estado</p>
+      <p id="order-details-info-date">Data de Compra</p>
+    </div>
+    <div>
+      <p>{{ order._id }}</p>
+      <p>{{ getNewestStatus(order).status }} &#64; {{ formatDate(getNewestStatus(order).time) }}</p>
+      <p id="order-details-info-date">{{ formatDate(order.createdAt) }}</p>
+    </div>
+  </div>
+  <div id="order-products-container">
+    <div id="order-products-details">
+      <div id="order-products" *ngFor="let product of order.orderData">
+        <div id="order-products-image-container">
+          <img id="order-products-image" [src]="product.image" alt="">
+        </div>
+        <div id="order-products-description">
+          <span>{{ product.name }}</span>
+          <span>{{ product.priceAtTime }} €</span>
+          <span>{{ product.size }}</span>
+          <span>REF {{ product.reference }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="order-resume-container">
+    <div id="order-resume-address">
+      <p>Morada de entrega</p>
+      <p>-</p>
+      <p>{{ order.address.street }}</p>
+      <p>{{ order.address.postalCode }}</p>
+      <p>{{ order.address.city }}</p>
+      <p>{{ order.address.country }}</p>
+    </div>
+    <div id="order-resume-total">
+      <p>{{ order.orderData.length }} artigos &#64; {{ order.total }} €</p>
+    </div>
+  </div>
+</section>
+
+
+<section id="log-in-screen" *ngIf="!order">
+  <p>Lamentamos, mas algo correu mal</p>
+  <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
+</section>

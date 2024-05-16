@@ -34,5 +34,4 @@
 
 <section id="empty-cart" *ngIf="(isLoggedIn$ | async) && isCartEmpty">
   <span id="empty-cart-message">Lamentamos, mas atualmente não possuí itens no carrinho</span>
-  <div id="empty-cart-button" [routerLink]="['/']">Regressar à página principal</div>
 </section>

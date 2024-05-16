@@ -29,28 +29,30 @@ export class SuccessfulPaymentComponent {
       this.sessionId  = params['sessionId'];
     })
 
-    this._cartService.getCartByClientIdOrganized().subscribe(
-      data => {
-        this.carts = data;
+    if (this.hashServer) {
+      this._cartService.getCartByClientIdOrganized().subscribe(
+        data => {
+          this.carts = data;
 
-        this.carts.forEach((element: any) => {
-          this.hashClient += element._id;
-        });
+          this.carts.forEach((element: any) => {
+            this.hashClient += element._id;
+          });
 
-        if (this.hashClient === this.hashServer) {
-          this._orderService.getPaymentId().subscribe(
-            data => {
-              let paymentId: any = data;
+          if (this.hashClient === this.hashServer) {
+            this._orderService.getPaymentId().subscribe(
+              data => {
+                let paymentId: any = data;
 
-              this._orderService.sendOrderRequest(paymentId).subscribe(
-                error => console.log(error)
-              )
-            },
-            error => console.log(error)
-          );
-        }
-      },
-      error => console.log(error)
-    );
+                this._orderService.sendOrderRequest(paymentId).subscribe(
+                  error => console.log(error)
+                )
+              },
+              error => console.log(error)
+            );
+          }
+        },
+        error => console.log(error)
+      );
+    } else this._router.navigate(['/404']);
   }
 }

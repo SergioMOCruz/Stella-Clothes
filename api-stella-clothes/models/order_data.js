@@ -41,6 +41,9 @@ const orderDataSchema = new mongoose.Schema({
     enum: ["XS", "S", "M", "L", "XL"],
     required: true,
   },
+  image: {
+    type: String
+  },
   createdAt: {
     type: Date,
     default: Date.now,

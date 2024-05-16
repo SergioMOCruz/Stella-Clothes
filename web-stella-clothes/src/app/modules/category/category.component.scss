@@ -66,3 +66,19 @@
     text-align: center;
   }
 }
+
+#redirect-screen {
+  width: 100vw;
+  height: 85vh;
+  padding-top: 5rem;
+  margin-bottom: 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  p {
+    text-transform: uppercase;
+  }
+}

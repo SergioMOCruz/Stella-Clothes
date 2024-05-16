@@ -39,7 +39,8 @@ export class ChangeDataComponent {
           lastName: data.lastName,
           phone: data.phone
         });
-      }
+      },
+      error => console.log(error)
     );
   }
 

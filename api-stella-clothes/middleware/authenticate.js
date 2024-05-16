@@ -8,22 +8,19 @@ const authenticateToken = (req, res, next) => {
   // Extract the JWT token from the Authorization header
   const token = req.headers.authorization?.split(' ')[1];
   if (token == null) {
-    console.error('Token is not provided');
-    return res.sendStatus(401);
+    return res.status(401).json({ message: 'Token is not provided' });
   }
 
   // Get the JWT secret from the environment variables
   const jwtSecret = process.env.JWT_SECRET;
   if (!jwtSecret) {
-    console.error('JWT secret is not provided');
-    return res.sendStatus(500);
+    return res.status(500).json({ message: 'JWT secret is not provided' });;
   }
 
   // Verify the token
   jwt.verify(token, jwtSecret, async (err, user) => {
     if (err) {
-      console.error('JWT Verification Error:', err);
-      return res.sendStatus(403);
+      return res.status(403).json({ message: 'JWT Verification Error:' + err });;
     }
 
     // If token is valid, retrieve user from database
@@ -36,8 +33,7 @@ const authenticateToken = (req, res, next) => {
       req.user = userData;
       next();
     } catch (err) {
-      console.error('Error finding user:', err);
-      return res.sendStatus(500);
+      return res.status(500).json({ message: 'Error finding user:' + err });;
     }
   });
 };

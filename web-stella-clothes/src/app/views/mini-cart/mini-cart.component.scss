@@ -76,7 +76,6 @@
   &-name {
     width: 100%;
     font-size: 1rem;
-    font-weight: bold;
     color: black;
   }
 
@@ -164,23 +163,5 @@
 
   &-message {
     margin-bottom: 32rem;
-  }
-
-  &-button {
-    background-color: black;
-    border: inset 0.1rem black;
-    color: white;
-    width: 100%;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    margin-top: 0.5rem;
-    text-align: center;
-    outline: none;
-    border: none;
-    transition: 0.3s;
-
-    &:hover {
-      filter: brightness(0.8);
-    }
   }
 }

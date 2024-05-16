@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Order } from '../../shared/interfaces/orders/order';
 import { environment } from '../../../environments/environment';
-import { switchMap } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 import { StripeService } from 'ngx-stripe';
 
 @Injectable({
@@ -16,7 +16,11 @@ export class OrderService {
   ) { }
 
   getUserOrders() {
-    return this._http.get<Order[]>(`${environment.apiUrl}/orders/account `);
+    return this._http.get<Order[]>(`${environment.apiUrl}/orders/account`);
+  }
+
+  getUserOrderById(orderId) {
+    return this._http.get<Order>(`${environment.apiUrl}/orders/${orderId}`);
   }
 
   sendCheckoutRequest(data) {
@@ -34,5 +38,19 @@ export class OrderService {
 
   getPaymentId() {
     return this._http.get(`${environment.apiUrl}/stripe/retrieve-payment-id`);
+  }
+
+  verifyOrder(orderId) {
+    return this._http.get<boolean>(`${environment.apiUrl}/orders/verify-orders/${orderId}`).pipe(
+      map(data => {
+        if (Object.keys(data).length !== 0) {
+          return true;
+        } else
+          return false;
+      }),
+      catchError(error => {
+        return of(false);
+      })
+    );
   }
 }

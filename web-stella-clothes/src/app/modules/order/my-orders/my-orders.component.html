@@ -11,13 +11,13 @@
         <div class="order-text">{{ getNewestStatus(order) }}</div>
         <div>
           <span class="order-text">{{order.total}} €</span>
-          <button type="button" class="order-button">- Ver Encomenda</button>
+          <button type="button" class="order-button" (click)="seeOrderDetails(order._id)">- Ver Encomenda</button>
         </div>
       </div>
       <div id="order-details-date">{{order.createdAt}}</div>
       <div class="order-products">
         <div class="order-products-shadow"></div>
-          <!-- <img *ngFor="let image of order.images" class="order-image" [src]="image" /> -->
+          <img *ngFor="let product of order.orderData" class="order-image" [src]="product.image" />
         <div class="order-products-shadow"></div>
       </div>
       <div id="order-details-id">Encomenda {{order._id}}</div>

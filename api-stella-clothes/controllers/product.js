@@ -153,7 +153,12 @@ const getByCategory = async (req, res) => {
 const searchProducts = async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
-    const products = await Product.find({ name: { $regex: searchTerm, $options: 'i' } }).limit(16);
+    const products = await Product.aggregate([
+      { $match: { name: { $regex: searchTerm, $options: 'i' } } },
+      { $group: { _id: '$reference', doc: { $first: '$$ROOT' } } },
+      { $replaceRoot: { newRoot: '$doc' } }
+    ]);
+
     if (!products) return res.status(404).json({ message: 'Products not found' });
 
     res.status(200).json(products);
