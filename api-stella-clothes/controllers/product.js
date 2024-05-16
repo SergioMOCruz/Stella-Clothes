@@ -163,7 +163,7 @@ const searchProducts = async (req, res) => {
 // Create a new product
 const create = async (req, res) => {
   try {
-    const { reference, name, description, price, size, stock, category } = req.body;
+    let { reference, name, description, price, size, stock, category } = req.body;
     // const image = req.file.path;
 
     // Check if the fields are empty
@@ -178,6 +178,9 @@ const create = async (req, res) => {
     )
       //|| !image)
       return res.status(400).json({ message: 'All fields are required' });
+
+    // convert price to number
+    price = parseFloat(price);
 
     const allowedSizes = ['XS', 'S', 'M', 'L', 'XL'];
     if (!allowedSizes.includes(size)) {
@@ -259,6 +262,46 @@ const update = async (req, res) => {
     res.status(200).json({ message: 'Product updated' });
   } catch (error) {
     console.error('Update Product Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Update a product by reference
+const updateByRef = async (req, res) => {
+  try {
+    const { reference } = req.params;
+    let { ref, name, description, price, category } = req.body;
+
+    let products = await Product.find({ reference });
+    if (!products) return res.status(404).json({ message: 'Product not found' });
+
+    // check if price is a number
+    if (isNaN(price)) {
+      // check if price has a comma
+      if (price.includes(',')) {
+        price = price.replace(',', '.');
+      }
+      // convert price to number
+      price = parseFloat(price);
+    }
+
+    // Check if the category exists
+    const cat = await Category.find({ description: category });
+    if (!cat.length) return res.status(400).json({ message: 'Category not found' });
+
+    products.forEach(async (product) => {
+      product.reference = ref ? ref : product.reference;
+      product.name = name ? name : product.name;
+      product.description = description ? description : product.description;
+      product.price = price ? price : product.price;
+      product.category = category ? cat[0]._id : product.category;
+
+      await product.save();
+    });
+
+    res.status(200).json({ message: 'Product updated' });
+  } catch (error) {
+    console.error('Update Product By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -360,6 +403,7 @@ module.exports = {
   create,
   uploadImage,
   update,
+  updateByRef,
   updateStock,
   hideAllByRef,
   showByRef,

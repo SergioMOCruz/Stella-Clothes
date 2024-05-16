@@ -13,6 +13,7 @@ const {
   create,
   uploadImage,
   update,
+  updateByRef,
   updateStock,
   hideAllByRef,
   showByRef,
@@ -49,6 +50,8 @@ router.post('/', authenticateToken, upload.single('image'), create);
 router.put('/stock', authenticateToken, updateStock);
 // Update a product
 router.put('/:id', authenticateToken, upload.single('image'), update);
+// Update a product by reference
+router.put('/reference/:reference', authenticateToken, updateByRef);
 // Upload an image
 router.put('/upload/:id', authenticateToken, upload.single('image'), uploadImage);
 // Hide all products with the same reference
