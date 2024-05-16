@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAll, getById, getByAccount, create, update, remove } = require('../controllers/order');
+const { getAll, getById, verifyOrder, getByAccount, getByOrderData, create, update, updateStatus, remove } = require('../controllers/order');
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /order
@@ -8,6 +8,10 @@ const { authenticateToken } = require('../middleware/authenticate');
 router.get('/', authenticateToken, getAll);
 // Get order by account id
 router.get('/account', authenticateToken, getByAccount);
+// Verify if order belongs to account
+router.get('/verify-orders/:id', authenticateToken, verifyOrder);
+// Get order by order data
+router.get('/orders', authenticateToken, getByOrderData);
 // Get order by id
 router.get('/:id', authenticateToken, getById);
 
@@ -18,6 +22,8 @@ router.post('/', authenticateToken, create);
 // PUT /order
 // Update a order
 router.put('/:id', authenticateToken, update);
+// Update order status
+router.put('/status/:id', authenticateToken, updateStatus);
 
 // DELETE /order
 // Delete a order

@@ -14,10 +14,11 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 0 5rem;
+  gap: 1rem;
 }
 
 nav button {
-  width: 30%;
+  width: 50%;
   background-color: var(--white);
   border-radius: 0.5rem;
   border: none;
@@ -92,6 +93,11 @@ main {
 #orders-table tbody tr {
   box-shadow: 0 0.2rem 0.5rem 0 var(--light-shadow);
   border-radius: 0.5rem;
+}
+
+#orders-table tbody tr.selected {
+  background-color: var(--green);
+  color: var(--white);
 }
 
 #orders-table thead tr th,
@@ -202,6 +208,10 @@ main {
   width: 100%;
   background-color: var(--green);
   color: var(--white);
+}
+
+#canceled-order {
+  color: var(--gray);
 }
 
 /* New Order */
