@@ -38,8 +38,8 @@ nav button.selected {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 1rem;
   padding: 0 5rem;
+  gap: 1rem;
 }
 
 #search {
@@ -362,7 +362,9 @@ main {
   gap: 0.3rem;
 }
 
-#product-description input, #product-description select, #product-description textarea{
+#product-description input,
+#product-description select,
+#product-description textarea {
   padding: 0.2rem 0.7rem;
   border-radius: 0.3rem;
   border: 0;
@@ -376,11 +378,14 @@ main {
   resize: none;
 }
 
-#product-description input:hover, #product-description select:hover, #product-description textarea:hover {
+#product-description input:hover,
+#product-description select:hover,
+#product-description textarea:hover {
   cursor: pointer;
 }
 
-#product-description input:focus-visible, #product-description textarea:focus-visible{
+#product-description input:focus-visible,
+#product-description textarea:focus-visible {
   background-color: whitesmoke;
 }
 
@@ -492,7 +497,8 @@ main {
   font-weight: var(--font-weight-semibold);
 }
 
-#new-product-form input, #new-product-form select{
+#new-product-form input,
+#new-product-form select {
   padding: 0.5rem 1rem;
 }
 

@@ -154,10 +154,61 @@ const searchProducts = async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
     const products = await Product.find({ name: { $regex: searchTerm, $options: 'i' } }).limit(16);
+    if (!products) return res.status(404).json({ message: 'Products not found' });
 
     res.status(200).json(products);
   } catch (error) {
     console.error('Search Products Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Search products by reference
+const searchProductsByRef = async (req, res) => {
+  try {
+    const { reference } = req.params;
+    const products = await Product.find({ reference });
+    if (!products) return res.status(404).json({ message: 'Produto não encontrado!' });
+
+    let productsByRef = products.map((product) => {
+      return {
+        reference: product.reference,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        active: product.active,
+        image: product.image,
+      };
+    });
+
+    // get the stock of each product by size and create an array of
+    // objects with the size and stock of each product
+    productsByRef = productsByRef.map((product) => {
+      const productRefs = products.filter((p) => p.reference === product.reference);
+      const sizes = productRefs.map((s) => {
+        return { size: s.size, stock: s.stock };
+      });
+      return { ...product, stock: sizes };
+    });
+
+    // remove duplicates
+    productsByRef = productsByRef.filter(
+      (product, index, self) => index === self.findIndex((t) => t.reference === product.reference)
+    );
+
+    // get the category of the product and return its name
+    productsByRef = productsByRef.map(async (product) => {
+      const category = await Category.findById(product.category);
+      return { ...product, category: category.description };
+    });
+
+    Promise.all(productsByRef).then((modifiedProducts) => {
+      res.status(200).json(modifiedProducts);
+    });
+  } catch (error) {
+    console.error('Search Products By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -411,6 +462,7 @@ module.exports = {
   getStock,
   getLastFour,
   searchProducts,
+  searchProductsByRef,
   create,
   update,
   updateByRef,

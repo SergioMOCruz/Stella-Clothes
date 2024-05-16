@@ -42,23 +42,6 @@ function Dash() {
   //// DASHBOARD ////
   const [dashboard, setDashboard] = useState('orders');
 
-  // search input ref
-  const searchInput = useRef();
-
-  // search
-  const handleSearch = async (e) => {
-    const search = searchInput.current.value;
-    if (search.length === 0) {
-      return alert('Digite algo para pesquisar.');
-    }
-    console.log('Searching for:', search);
-
-    // clear search input
-    searchInput.current.value = '';
-    // unfocus search input
-    searchInput.current.blur();
-  };
-
   //// ORDERS ////
   const [orders, setOrders] = useState([
     {
@@ -163,6 +146,40 @@ function Dash() {
   const [products, setProducts] = useState([]);
   // active product state
   const [product, setProduct] = useState({});
+
+  // search input ref
+  const searchProductInput = useRef();
+
+  // search
+  const handleSearchProduct = async (e) => {
+    const search = searchProductInput.current.value;
+    if (search.length === 0) {
+      return alert('Digite algo para pesquisar.');
+    }
+
+    // search for product
+    await axios
+      .get(context.api + '/products/search/' + search, context.headersCRUD)
+      .then((response) => {
+        console.log('Search results:', response.data);
+        if (response.data.length === 0) {
+          return alert('Nenhum produto encontrado.');
+        }
+        setProducts(response.data);
+        setProduct(response.data[0]);
+        // show product details
+        showProductDetails();
+      })
+      .catch((error) => {
+        console.error(error);
+        alert(error.response.data.message);
+      });
+
+    // clear search input
+    searchProductInput.current.value = '';
+    // unfocus search input
+    searchProductInput.current.blur();
+  };
 
   // product details div ref
   const productDetails = useRef();
@@ -547,27 +564,34 @@ function Dash() {
           Clientes
         </button>
       </nav>
-      <section id='menu'>
-        <div id='search'>
-          <input
-            type='text'
-            placeholder='Pesquisar...'
-            ref={searchInput}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSearch();
-              }
-            }}
-          />
-        </div>
-        {dashboard === 'orders' && orders.length > 0 && <a onClick={handleNewOrder}>+ Adicionar</a>}
-        {dashboard === 'products' && products.length > 0 && (
+
+      {dashboard === 'orders' && orders.length > 0 && (
+        <section id='menu'>
+          <a onClick={handleNewOrder}>+ Adicionar</a>
+        </section>
+      )}
+      {dashboard === 'products' && products.length > 0 && (
+        <section id='menu'>
+          <div id='search'>
+            <input
+              type='text'
+              placeholder='Pesquisar...'
+              ref={searchProductInput}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchProduct();
+                }
+              }}
+            />
+          </div>
           <a onClick={handleNewProduct}>+ Adicionar</a>
-        )}
-        {dashboard === 'clients' && clients.length > 0 && (
+        </section>
+      )}
+      {dashboard === 'clients' && clients.length > 0 && (
+        <section id='menu'>
           <a onClick={handleNewClient}>+ Adicionar</a>
-        )}
-      </section>
+        </section>
+      )}
       {dashboard === 'orders' && orders.length > 0 && (
         <main>
           <table id='orders-table'>

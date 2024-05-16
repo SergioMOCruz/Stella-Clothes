@@ -10,6 +10,7 @@ const {
   getStock,
   getLastFour,
   searchProducts,
+  searchProductsByRef,
   create,
   update,
   updateByRef,
@@ -29,6 +30,8 @@ router.get('/stock', authenticateToken, getStock);
 router.get('/lastFour', getLastFour);
 // Get products by name
 router.get('/search', authenticateToken, searchProducts);
+// Get products by reference
+router.get('/search/:reference', authenticateToken, searchProductsByRef);
 // Get all products
 router.get('/', authenticateToken, getAll);
 // Get product by reference with dash
