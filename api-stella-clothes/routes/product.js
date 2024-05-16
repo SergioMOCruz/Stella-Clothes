@@ -11,9 +11,9 @@ const {
   getLastFour,
   searchProducts,
   create,
-  uploadImage,
   update,
   updateByRef,
+  updateImage,
   updateStock,
   hideAllByRef,
   showByRef,
@@ -40,20 +40,19 @@ router.get('/reference/:reference', getByRef);
 // Get product by category
 router.get('/category/:category', getByCategory);
 
-
 // POST /product
 // Create a new product
-router.post('/', authenticateToken, upload.single('image'), create);
+router.post('/', authenticateToken, create);
 
 // PUT /product
 // Update stock of a product by reference
 router.put('/stock', authenticateToken, updateStock);
 // Update a product
-router.put('/:id', authenticateToken, upload.single('image'), update);
+router.put('/:id', authenticateToken, update);
 // Update a product by reference
 router.put('/reference/:reference', authenticateToken, updateByRef);
-// Upload an image
-router.put('/upload/:id', authenticateToken, upload.single('image'), uploadImage);
+// Update a product image
+router.put('/image/:reference', authenticateToken, upload.single('image'), updateImage);
 // Hide all products with the same reference
 router.put('/hide/:reference', authenticateToken, hideAllByRef);
 // Show all products with the same reference

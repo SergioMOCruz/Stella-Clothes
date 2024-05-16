@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 const Category = require('../models/category');
+const { uploadSingleFile } = require('../utils/google-storage');
 
 // Get all products
 const getAll = async (req, res) => {
@@ -60,6 +61,7 @@ const getAllbyRef = async (req, res) => {
         image: product.image,
         category: product.category,
         active: product.active,
+        image: product.image,
       };
     });
 
@@ -152,7 +154,7 @@ const searchProducts = async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
     const products = await Product.find({ name: { $regex: searchTerm, $options: 'i' } }).limit(16);
-    
+
     res.status(200).json(products);
   } catch (error) {
     console.error('Search Products Error:', error.message);
@@ -164,7 +166,6 @@ const searchProducts = async (req, res) => {
 const create = async (req, res) => {
   try {
     let { reference, name, description, price, size, stock, category } = req.body;
-    // const image = req.file.path;
 
     // Check if the fields are empty
     if (
@@ -176,7 +177,6 @@ const create = async (req, res) => {
       typeof stock !== 'number' ||
       !category
     )
-      //|| !image)
       return res.status(400).json({ message: 'All fields are required' });
 
     // convert price to number
@@ -196,9 +196,6 @@ const create = async (req, res) => {
       });
     }
 
-    // Check if image is empty
-    //if (!image) return res.status(400).json({ message: 'Image is required' });
-
     // Check if the category exists
     const cat = await Category.find({ description: category });
     if (!cat.length) return res.status(400).json({ message: 'Category not found' });
@@ -212,7 +209,6 @@ const create = async (req, res) => {
       size,
       stock,
       category: cat[0]._id,
-      // image: image ? image : '',
     });
 
     await product.save();
@@ -225,28 +221,11 @@ const create = async (req, res) => {
   }
 };
 
-// Upload image to a product
-const uploadImage = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const imagePath = req.file.path;
-
-    let product = await Product.findById(id);
-    product.image = imagePath ? imagePath : '';
-
-    res.status(200).json({ message: 'Image uploaded' });
-  } catch (error) {
-    console.error('Upload Image Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
 // Update a product
 const update = async (req, res) => {
   try {
     const { id } = req.params;
     const { reference, description, price, size, stock, category } = req.body;
-    const image = req.file.path;
 
     let product = await Product.findById(id);
 
@@ -256,7 +235,6 @@ const update = async (req, res) => {
     product.size = size ? size : product.size;
     product.stock = stock ? stock : product.stock;
     product.category = category ? category : product.category;
-    product.image = image ? image : product.image;
 
     await product.save();
     res.status(200).json({ message: 'Product updated' });
@@ -302,6 +280,39 @@ const updateByRef = async (req, res) => {
     res.status(200).json({ message: 'Product updated' });
   } catch (error) {
     console.error('Update Product By Reference Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Update a image of a product
+const updateImage = async (req, res) => {
+  try {
+    const { reference } = req.params;
+    const image = req.file;
+
+    const products = await Product.find({ reference });
+
+    if (!products) {
+      return res.status(404).json({ message: 'Menu não encontrado! Tente novamente mais tarde.' });
+    }
+
+    if (!image) {
+      return res.status(400).json({ message: 'Erro ao ler a imagem.' });
+    }
+
+    // Upload image to Google Cloud Storage
+    const imageURL = await uploadSingleFile(image, reference);
+    console.log('Image URL:', imageURL);
+
+    // Update image of all the products
+    products.forEach(async (product) => {
+      product.image = imageURL;
+      await product.save();
+    });
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Update Logo Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -401,9 +412,9 @@ module.exports = {
   getLastFour,
   searchProducts,
   create,
-  uploadImage,
   update,
   updateByRef,
+  updateImage,
   updateStock,
   hideAllByRef,
   showByRef,

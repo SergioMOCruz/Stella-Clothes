@@ -348,35 +348,73 @@ function Dash() {
     }
   }, [product]);
 
+  // update product image
+  const handleProductImageUpload = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.target.files[0];
+    // check if file is empty
+    if (!file) return;
+
+    // create form data
+    const body = new FormData();
+
+    // compress image
+    await context
+      .handleImageUpload(file)
+      .then(async (compressedFile) => {
+        // append compressed file to form data
+        body.append('image', compressedFile);
+
+        // update product image
+        await axios
+          .put(context.api + '/products/image/' + product.reference, body, context.headersFORM)
+          .then((response) => {
+            console.log('Image updated:', response.data);
+            // reload products
+            handleLoadProducts();
+          })
+          .catch((error) => {
+            console.error('Error updating image:', error);
+            alert(error.response.data.message);
+          });
+      })
+      .catch(() => {
+        alert('Erro ao comprimir a imagem!');
+      });
+  };
+
   // update product
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
+    console.log('Updating product...');
+
     // check which field was updated and if it was actually updated
     switch (e.target.id) {
       case 'pRef':
-        if (e.target.value === product.reference) {
+        if (productReference === product.reference) {
           return;
         }
         break;
       case 'pCat':
-        if (e.target.value === product.category) {
+        if (productCategory === product.category) {
           return;
         }
         break;
       case 'pName':
-        if (e.target.value === product.name) {
+        if (productName === product.name) {
           return;
         }
         break;
       case 'pDesc':
-        if (e.target.value === product.description) {
+        if (productDescription === product.description) {
           return;
         }
         break;
       case 'pPrice':
-        if (e.target.value == product.price) {
+        if (productPrice == product.price) {
           return;
         }
         break;
@@ -677,8 +715,23 @@ function Dash() {
               <div id='product-data'>
                 <div id='product-image'>
                   <label htmlFor='product-img'>
-                    <input type='file' id='product-img' style={{ display: 'none' }} />
-                    <img src='https://via.placeholder.com/150' alt='Product image' />
+                    <input
+                      type='file'
+                      id='product-img'
+                      name='product-img'
+                      style={{ display: 'none' }}
+                      accept='image/jpeg, image/png, image/jpg'
+                      onChange={handleProductImageUpload}
+                    />
+                    {product.image ? (
+                      <img src={product.image} alt='Product' />
+                    ) : (
+                      // placeholder image
+                      <img
+                        src='https://static.bulco.nl/production/public/model_preview/51941/6605658/default-image.jpg'
+                        alt='Product'
+                      />
+                    )}
                   </label>
                 </div>
                 <div id='product-description'>
@@ -693,7 +746,10 @@ function Dash() {
                     name='product-category'
                     id='pCat'
                     value={productCategory}
-                    onChange={handleUpdateProduct}
+                    onChange={(e) => {
+                      setProductCategory(e.target.value);
+                    }}
+                    onBlur={handleUpdateProduct}
                   >
                     {categories.map((category) => (
                       <option key={category._id} value={category.value}>
