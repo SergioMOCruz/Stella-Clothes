@@ -27,6 +27,9 @@
 
   &-nd-half {
     padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -148,6 +151,7 @@
 }
 
 #expenses {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   border-top: 1px solid #E2E2E2;
@@ -155,6 +159,10 @@
   font-weight: bold;
   font-family: $font-graphik;
   padding-top: 2rem;
+  margin-top: 2rem;
+}
+
+#warning-message {
   margin-top: 2rem;
 }
 

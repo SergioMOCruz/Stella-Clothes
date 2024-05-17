@@ -51,6 +51,7 @@
         <span>Total</span>
         <span>{{ getSubtotal() }} €</span>
       </div>
+      <span id="warning-message" class="hideDisplay" [ngClass]="{'showWarning invalidData': showWarning}">Quantidade de produtos inválida</span>
     </div>
   </div>
 </section>

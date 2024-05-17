@@ -2,6 +2,7 @@ const Stripe = require('stripe');
 const stripeSecretKey = process.env.STRIPE_KEY;
 const Cart = require('../models/cart');
 const Account = require('../models/account');
+const Product = require('../models/product');
 const stripe = require('stripe')(stripeSecretKey);
 
 const retrievePaymentId = async (req, res) => {
@@ -44,8 +45,18 @@ const createCheckoutSession = async (req, res) => {
     if (!deliveryInfo) return res.status(400).send('Delivery information is required');
 
     const carts = await Cart.find({ clientId: req.user.id });
-
     if (!carts) return res.status(404).json({ message: "Cart not found" });
+
+    let wrongOrderQuantity = false;
+    for (const cart of carts ){
+        const product = await Product.findOne({ reference: cart.productReference, size: cart.size });
+        
+        if (cart.quantity > product.stock) {
+            wrongOrderQuantity = true;
+            break;
+        }
+    }
+    if (wrongOrderQuantity == true) return res.status(400).send('Item quantity is higher than stock');
 
     let orderInfo = {
         contactInfo: deliveryInfo.contactInfo,

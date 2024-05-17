@@ -25,6 +25,7 @@ export class CheckoutComponent {
   checkoutInfoForm: FormGroup;
   isLoggedIn$: Observable<boolean>;
   isCartEmpty: boolean;
+  showWarning: boolean = false;
 
   constructor(
     private _productService: ProductService,
@@ -95,7 +96,17 @@ export class CheckoutComponent {
     }
 
     this._orderService.sendCheckoutRequest(dataCheckout).subscribe(
-      error => console.log(error)
+      data => {
+        console.log(data)
+      },
+      error => {
+        console.log(error)
+        this.showWarning = true;
+
+        setTimeout(() => {
+          this.showWarning = false;
+        }, 2000);
+      }
     );
   }
 }
