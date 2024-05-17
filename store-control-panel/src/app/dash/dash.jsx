@@ -73,6 +73,38 @@ function Dash() {
     setOrder(orderData);
   };
 
+  // search input ref for orders
+  const searchOrderInput = useRef();
+
+  // search order
+  const handleSearchOrder = async (e) => {
+    const search = searchOrderInput.current.value;
+    if (search.length === 0) {
+      return alert('Escreva algo para pesquisar.');
+    }
+
+    // search for order
+    await axios
+      .get(context.api + '/orders/search/' + search, context.headersCRUD)
+      .then((response) => {
+        console.log('Search results:', response.data);
+        if (response.data.length === 0) {
+          return alert('Nenhuma encomenda encontrada.');
+        }
+        setOrders(response.data);
+        setOrder(response.data[0]);
+      })
+      .catch((error) => {
+        console.error(error);
+        alert(error.response.data.message);
+      });
+
+    // clear search input
+    searchOrderInput.current.value = '';
+    // unfocus search input
+    searchOrderInput.current.blur();
+  };
+
   //// PRODUCTS ////
   // products state
   const [products, setProducts] = useState([]);
@@ -86,7 +118,7 @@ function Dash() {
   const handleSearchProduct = async (e) => {
     const search = searchProductInput.current.value;
     if (search.length === 0) {
-      return alert('Digite algo para pesquisar.');
+      return alert('Escreva algo para pesquisar.');
     }
 
     // search for product
@@ -505,10 +537,10 @@ function Dash() {
             <input
               type='text'
               placeholder='Pesquisar...'
-              ref={searchProductInput}
+              ref={searchOrderInput}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleSearchProduct();
+                  handleSearchOrder();
                 }
               }}
             />

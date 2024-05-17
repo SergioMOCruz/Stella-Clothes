@@ -110,6 +110,36 @@ const verifyOrder = async (req, res) => {
   }
 };
 
+// Search order by name
+const search = async (req, res) => {
+  try {
+    const { name } = req.params;
+
+    // Get all orders that have the name or a part of the name in the order data
+    let orders = await Order.find({
+      $or: [
+        { firstName: { $regex: name, $options: 'i' } },
+        { lastName: { $regex: name, $options: 'i' } },
+      ],
+    });
+
+    // Convert each Mongoose document to a plain JavaScript object
+    orders = orders.map((order) => order.toObject());
+
+    // Get order data for each order since this will be received by end user
+    for (let order of orders) {
+      const orderData = await OrderData.find({ orderId: order._id });
+
+      order.products = orderData;
+    }
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Search Order Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Create a new order
 const create = async (req, res) => {
   try {
@@ -344,6 +374,7 @@ module.exports = {
   getByAccount,
   getByOrderData,
   verifyOrder,
+  search,
   create,
   update,
   updateStatus,

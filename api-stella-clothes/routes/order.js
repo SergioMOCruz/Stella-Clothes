@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAll, getById, verifyOrder, getByAccount, getByOrderData, create, update, updateStatus, remove } = require('../controllers/order');
+const { getAll, getById, verifyOrder, getByAccount, getByOrderData, search, create, update, updateStatus, remove } = require('../controllers/order');
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /order
@@ -14,6 +14,8 @@ router.get('/verify-orders/:id', authenticateToken, verifyOrder);
 router.get('/orders', authenticateToken, getByOrderData);
 // Get order by id
 router.get('/:id', authenticateToken, getById);
+// Search order by name
+router.get('/search/:name', authenticateToken, search);
 
 // POST /order
 // Create a new order
