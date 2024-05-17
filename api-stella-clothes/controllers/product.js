@@ -114,7 +114,10 @@ const getStock = async (req, res) => {
 // Get the last 4 products added
 const getLastFour = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 }).limit(4);
+    const products = await Product.aggregate([
+      { $group: { _id: '$reference', doc: { $first: '$$ROOT' } } },
+      { $replaceRoot: { newRoot: '$doc' } }
+    ]).limit(4);
 
     if (!products.length) return res.status(500).json({ message: 'No products ' });
 

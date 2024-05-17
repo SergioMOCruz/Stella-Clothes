@@ -58,7 +58,8 @@ export class CartComponent {
   }
 
   onQuantityChange(quantity: number, item: any): void {
-    this.quantityChange$.next({ quantity, item });
+    if (quantity === 0) this.removeItem(item);
+    else this.quantityChange$.next({ quantity, item });
   }
 
   async removeItem(product: any) {
