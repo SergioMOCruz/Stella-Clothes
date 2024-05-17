@@ -17,7 +17,7 @@ function Dash() {
       return context.navigate('/');
     }
     await getAccountData();
-    //await handleLoadOrders();
+    await handleLoadOrders();
   }, []);
 
   //// AUTH ////
@@ -43,31 +43,10 @@ function Dash() {
   const [dashboard, setDashboard] = useState('orders');
 
   //// ORDERS ////
-  const [orders, setOrders] = useState([
-    {
-      _id: '834532',
-      name: 'José Castro',
-      state: 'Aberto',
-      products: [
-        {
-          reference: 'SCGL',
-          quantity: 2,
-          size: 'L',
-          name: 'Santa Cruz Godlike',
-          category: 'TSHIRT',
-        },
-      ],
-    },
-  ]);
+  const [orders, setOrders] = useState([]);
 
   // order details div ref
   const orderDetails = useRef();
-  // new order div ref
-  const newOrder = useRef();
-  // new order product refs
-  const newOrderProductRef = useRef();
-  const newOrderProductQnt = useRef();
-  const newOrderProductSize = useRef();
 
   // load orders
   const handleLoadOrders = async (e) => {
@@ -75,70 +54,55 @@ function Dash() {
 
     // get orders
     try {
-      const ordersResponse = await axios.get(context.api + '/orders', context.headersCRUD);
+      const ordersResponse = await axios.get(context.api + '/orders/orders', context.headersCRUD);
+      console.log('Orders:', ordersResponse.data);
       setOrders(ordersResponse.data);
+      setOrder(ordersResponse.data[0]);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // new order
-  const handleNewOrder = async (e) => {
-    // show new order form
-    newOrder.current.style.display = 'flex';
-    // hide orders table
-    orderDetails.current.style.display = 'none';
+  // active order state
+  const [order, setOrder] = useState({});
+
+  // click order
+  const handleClickOrder = async (e, id) => {
+    // get order data
+    const orderData = orders.find((order) => order._id === id);
+    setOrder(orderData);
   };
 
-  // add product to order
-  const [newOrderProductsList, setNewOrderProductsList] = useState([
-    {
-      reference: 'SCGL',
-      quantity: 2,
-      size: 'L',
-      name: 'Santa Cruz Godlike',
-      category: 'TSHIRT',
-    },
-  ]);
+  // search input ref for orders
+  const searchOrderInput = useRef();
 
-  // add product to order
-  const handleAddProductToOrder = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // values from inputs
-    const productRef = newOrderProductRef.current.value;
-    const productQnt = newOrderProductQnt.current.value;
-    const productSize = newOrderProductSize.current.value;
-    console.log('Product:', productRef, 'Quantity:', productQnt, 'Size:', productSize);
-
-    // check if all fields are filled
-    if (!productRef || !productQnt || !productSize) {
-      return alert('Por favor, preencha todos os campos.');
+  // search order
+  const handleSearchOrder = async (e) => {
+    const search = searchOrderInput.current.value;
+    if (search.length === 0) {
+      return alert('Escreva algo para pesquisar.');
     }
 
-    // search for product in database by reference
-    // JUST TESTING
-    setNewOrderProductsList([
-      ...newOrderProductsList,
-      {
-        reference: productRef,
-        quantity: productQnt,
-        size: productSize,
-        name: 'Carhartt WIP Hoodie',
-        category: 'SWEATSHIRT',
-      },
-    ]);
-  };
+    // search for order
+    await axios
+      .get(context.api + '/orders/search/' + search, context.headersCRUD)
+      .then((response) => {
+        console.log('Search results:', response.data);
+        if (response.data.length === 0) {
+          return alert('Nenhuma encomenda encontrada.');
+        }
+        setOrders(response.data);
+        setOrder(response.data[0]);
+      })
+      .catch((error) => {
+        console.error(error);
+        alert(error.response.data.message);
+      });
 
-  // cancel new order
-  const handleCancelNewOrder = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // hide new order form
-    newOrder.current.style.display = 'none';
-    // show orders table
-    orderDetails.current.style.display = 'flex';
+    // clear search input
+    searchOrderInput.current.value = '';
+    // unfocus search input
+    searchOrderInput.current.blur();
   };
 
   //// PRODUCTS ////
@@ -154,7 +118,7 @@ function Dash() {
   const handleSearchProduct = async (e) => {
     const search = searchProductInput.current.value;
     if (search.length === 0) {
-      return alert('Digite algo para pesquisar.');
+      return alert('Escreva algo para pesquisar.');
     }
 
     // search for product
@@ -527,6 +491,24 @@ function Dash() {
       });
   };
 
+  // update order status
+  const updateOrderStatus = async (e, status) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // update order status
+    await axios
+      .put(context.api + '/orders/status/' + order._id, { status }, context.headersCRUD)
+      .then((response) => {
+        console.log('Order status updated:', response.data);
+        // reload orders
+        handleLoadOrders();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   // cancel new product
   const handleCancelNewProduct = async (e) => {
     e.preventDefault();
@@ -538,19 +520,6 @@ function Dash() {
     setProduct(products[0]);
   };
 
-  //// CLIENTS ////
-  const [clients, setClients] = useState([1]);
-
-  // load clients
-  const handleLoadClients = async (e) => {
-    setDashboard('clients');
-  };
-
-  // new client
-  const handleNewClient = async (e) => {
-    console.log('New client');
-  };
-
   return (
     <div className='dash'>
       <nav>
@@ -560,14 +529,22 @@ function Dash() {
         <button className={dashboard === 'products' ? 'selected' : ''} onClick={handleLoadProducts}>
           Produtos
         </button>
-        <button className={dashboard === 'clients' ? 'selected' : ''} onClick={handleLoadClients}>
-          Clientes
-        </button>
       </nav>
 
       {dashboard === 'orders' && orders.length > 0 && (
         <section id='menu'>
-          <a onClick={handleNewOrder}>+ Adicionar</a>
+          <div id='search'>
+            <input
+              type='text'
+              placeholder='Pesquisar...'
+              ref={searchOrderInput}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchOrder();
+                }
+              }}
+            />
+          </div>
         </section>
       )}
       {dashboard === 'products' && products.length > 0 && (
@@ -587,11 +564,6 @@ function Dash() {
           <a onClick={handleNewProduct}>+ Adicionar</a>
         </section>
       )}
-      {dashboard === 'clients' && clients.length > 0 && (
-        <section id='menu'>
-          <a onClick={handleNewClient}>+ Adicionar</a>
-        </section>
-      )}
       {dashboard === 'orders' && orders.length > 0 && (
         <main>
           <table id='orders-table'>
@@ -603,100 +575,77 @@ function Dash() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
-                <tr key={order._id}>
-                  <td>{order._id.slice(-4)}</td>
-                  <td style={{ fontWeight: 'var(--font-weight-semibold)' }}>{order.name}</td>
-                  <td>
-                    {order.status == 1 ? 'Aberto' : order.status == 2 ? 'Separado' : 'Cancelado'}
-                  </td>
-                </tr>
-              ))}
+              {orders &&
+                orders.map((orderMap) => (
+                  <tr
+                    key={orderMap._id}
+                    className={orderMap._id === order._id ? 'selected' : ''}
+                    onClick={(e) => handleClickOrder(e, orderMap._id)}
+                  >
+                    <td>{orderMap._id.slice(-4)}</td>
+                    <td style={{ fontWeight: 'var(--font-weight-semibold)' }}>
+                      {orderMap.firstName + ' ' + orderMap.lastName}
+                    </td>
+                    <td>{orderMap.status && orderMap.status[orderMap.status.length - 1].status}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
 
-          <div id='order-details' ref={orderDetails}>
-            <h2>Detalhes da encomenda</h2>
-            <h3>Destinatário</h3>
-            <p>José Castro</p>
+          {order && order.address && (
+            <div id='order-details' ref={orderDetails}>
+              <h2>Detalhes da encomenda</h2>
+              <h3>Destinatário</h3>
+              <p>{order.firstName + ' ' + order.lastName}</p>
 
-            <h3>Morada</h3>
-            <p>Rua de Cima, 45</p>
-            <p>4710-765 Carcavelinhos</p>
+              <h3>Morada</h3>
+              <p>{order.address.street}</p>
+              <p>{order.address.addressExtra}</p>
+              <p>{order.address.postalCode + ' ' + order.address.city}</p>
+              <p>{order.address.country}</p>
 
-            <h3>Produtos</h3>
-            <ul>
-              <li id='product-line'>
-                <p id='product-quantity'>2x</p>
-                <p id='product-category'>TSHIRT</p>
-                <p id='product-name'>Santa Cruz Godlike</p>
-                <p id='product-size-text'>Tamanho:</p>
-                <p id='product-size'>L</p>
-              </li>
-            </ul>
-            <div id='action-buttons'>
-              <button id='ok-button'>Separar encomenda</button>
-              <button id='cancel-button'>Cancelar</button>
-            </div>
-          </div>
-
-          <div id='new-order' ref={newOrder}>
-            <h2>Nova encomenda</h2>
-            <form id='new-order-form'>
-              <div id='new-order-destinatary'>
-                <label htmlFor='destinatary'>Destinatário</label>
-                <input type='text' id='destinatary' placeholder='Nome Completo' />
-              </div>
-              <div id='new-order-address'>
-                <label htmlFor='address'>Morada</label>
-                <input type='text' id='address' placeholder='Rua' />
-                <input type='text' id='address' placeholder='Nº da porta' />
-                <input type='text' id='postal-code' placeholder='Código Postal' />
-                <input type='text' id='city' placeholder='Cidade' />
-              </div>
-              <div id='new-order-products'>
-                <label htmlFor='products'>Produtos</label>
-                <div id='new-order-products-inputs'>
-                  <input
-                    type='text'
-                    id='products'
-                    placeholder='Referência'
-                    ref={newOrderProductRef}
-                  />
-                  <input type='number' id='products' placeholder='99' ref={newOrderProductQnt} />
-                  <select id='products' ref={newOrderProductSize}>
-                    <option value='XS'>XS</option>
-                    <option value='S'>S</option>
-                    <option value='M'>M</option>
-                    <option value='L'>L</option>
-                    <option value='XL'>XL</option>
-                  </select>
-                  <button onClick={handleAddProductToOrder}>+</button>
+              <h3>Produtos</h3>
+              <ul>
+                {order.products.map((product) => (
+                  <li key={product.reference} id='product-line'>
+                    <p id='product-quantity'>{product.quantity + 'x'}</p>
+                    <p id='product-category'>{product.category}</p>
+                    <p id='product-name'>{product.name}</p>
+                    <p id='product-size-text'>Tamanho:</p>
+                    <p id='product-size'>{product.size}</p>
+                  </li>
+                ))}
+              </ul>
+              {order.status && order.status[order.status.length - 1].status === 'Enviado' ? (
+                <div id='action-buttons'>
+                  <button
+                    id='cancel-button'
+                    style={{ width: '100%' }}
+                    onClick={(e) => updateOrderStatus(e, 'Cancelado')}
+                  >
+                    Cancelar
+                  </button>
                 </div>
-              </div>
-              <div id='new-order-products-list'>
-                <ul>
-                  {newOrderProductsList.map((product) => (
-                    <li id='product-line' key={product.reference}>
-                      <p id='product-quantity'>{product.quantity}x</p>
-                      <p id='product-category'>{product.category}</p>
-                      <p id='product-name'>{product.name}</p>
-                      <p id='product-size-text'>Tamanho:</p>
-                      <p id='product-size'>{product.size}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div id='action-buttons'>
-                <button id='ok-button' type='submit'>
-                  Adicionar encomenda
-                </button>
-                <button id='cancel-button' onClick={handleCancelNewOrder}>
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
+              ) : order.status[order.status.length - 1].status === 'Pago' ? (
+                <div id='action-buttons'>
+                  <button id='ok-button' onClick={(e) => updateOrderStatus(e, 'Enviado')}>
+                    Separar encomenda
+                  </button>
+                  <button id='cancel-button' onClick={(e) => updateOrderStatus(e, 'Cancelado')}>
+                    Cancelar
+                  </button>
+                </div>
+              ) : order.status[order.status.length - 1].status === 'Cancelado' ? (
+                <div id='action-buttons'>
+                  <p id='canceled-order'>
+                    Cancelada em {order.status[order.status.length - 1].date.slice(0, 10)}
+                  </p>
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
+          )}
         </main>
       )}
 
@@ -940,8 +889,6 @@ function Dash() {
           )}
         </main>
       )}
-
-      {dashboard === 'clients' && clients.length > 0 && <p>Not implemented yet!</p>}
     </div>
   );
 }

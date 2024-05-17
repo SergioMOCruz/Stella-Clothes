@@ -64,6 +64,8 @@ export class MiniCartComponent {
       (acc, product) => acc + product.price * product.quantity,
       0
     );
+
+    this.total = parseFloat(this.total.toFixed(2));
   }
 
   redirectToLogin() {

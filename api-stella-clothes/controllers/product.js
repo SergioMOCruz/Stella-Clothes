@@ -137,7 +137,19 @@ const getByCategory = async (req, res) => {
     const cat = await Category.find({ description: category });
     if (!cat) return res.status(400).json({ message: 'Category not found' });
 
-    const products = await Product.find({ category: cat[0]._id });
+    const products = await Product.aggregate([{
+      $addFields: {
+        categoryString: { $toString: "$category" }
+      }
+    },
+    { $match: { categoryString: { $regex: cat[0]._id.toString(), $options: 'i' } } },
+    {
+      $group: {
+        _id: '$reference',
+        doc: { $first: '$$ROOT' }
+      }
+    },
+    { $replaceRoot: { newRoot: '$doc' } }]);
 
     // check if product are active
     const activeProducts = products.filter((product) => product.active === true);
