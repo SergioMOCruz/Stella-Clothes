@@ -464,7 +464,6 @@ function Dash() {
     await axios
       .put(context.api + '/products/hide/' + product.reference, {}, context.headersCRUD)
       .then((response) => {
-        console.log('Product deleted:', response.data);
         // reload products
         handleLoadProducts();
       })
@@ -482,7 +481,6 @@ function Dash() {
     await axios
       .put(context.api + '/products/show/' + product.reference, {}, context.headersCRUD)
       .then((response) => {
-        console.log('Product deleted:', response.data);
         // reload products
         handleLoadProducts();
       })

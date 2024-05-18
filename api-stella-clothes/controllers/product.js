@@ -22,7 +22,7 @@ const getById = async (req, res) => {
   try {
     const { id } = req.params;
     const product = await Product.findById(id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product) return res.status(404).json({ message: 'Produto não encontrado' });
 
     res.status(200).json(product);
   } catch (error) {
@@ -100,8 +100,11 @@ const getStock = async (req, res) => {
   try {
     const { reference, size } = req.body;
     const products = await Product.find({ reference });
+    if (!products) return res.status(404).json({ message: 'Produto não encontrado!' });
 
     const product = products.filter((product) => product.size === size);
+    if (!product)
+      return res.status(404).json({ message: 'Não existem tamanhos para a referência indicada!' });
     const stock = product[0].stock;
 
     res.status(200).json({ stock });
@@ -116,7 +119,7 @@ const getLastFour = async (req, res) => {
   try {
     const products = await Product.aggregate([
       { $group: { _id: '$reference', doc: { $first: '$$ROOT' } } },
-      { $replaceRoot: { newRoot: '$doc' } }
+      { $replaceRoot: { newRoot: '$doc' } },
     ]).limit(4);
 
     if (!products.length) return res.status(500).json({ message: 'No products ' });
@@ -140,19 +143,21 @@ const getByCategory = async (req, res) => {
     const cat = await Category.find({ description: category });
     if (!cat) return res.status(400).json({ message: 'Category not found' });
 
-    const products = await Product.aggregate([{
-      $addFields: {
-        categoryString: { $toString: "$category" }
-      }
-    },
-    { $match: { categoryString: { $regex: cat[0]._id.toString(), $options: 'i' } } },
-    {
-      $group: {
-        _id: '$reference',
-        doc: { $first: '$$ROOT' }
-      }
-    },
-    { $replaceRoot: { newRoot: '$doc' } }]);
+    const products = await Product.aggregate([
+      {
+        $addFields: {
+          categoryString: { $toString: '$category' },
+        },
+      },
+      { $match: { categoryString: { $regex: cat[0]._id.toString(), $options: 'i' } } },
+      {
+        $group: {
+          _id: '$reference',
+          doc: { $first: '$$ROOT' },
+        },
+      },
+      { $replaceRoot: { newRoot: '$doc' } },
+    ]);
 
     // check if product are active
     const activeProducts = products.filter((product) => product.active === true);
@@ -171,12 +176,16 @@ const searchProducts = async (req, res) => {
     const products = await Product.aggregate([
       { $match: { name: { $regex: searchTerm, $options: 'i' } } },
       { $group: { _id: '$reference', doc: { $first: '$$ROOT' } } },
-      { $replaceRoot: { newRoot: '$doc' } }
+      { $replaceRoot: { newRoot: '$doc' } },
     ]);
 
-    if (!products) return res.status(404).json({ message: 'Products not found' });
+    // check if product are active
+    const activeProducts = products.filter((product) => product.active === true);
 
-    res.status(200).json(products);
+    if (!activeProducts)
+      return res.status(404).json({ message: 'Não foram encontrados produtos!' });
+
+    res.status(200).json(activeProducts);
   } catch (error) {
     console.error('Search Products Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -257,7 +266,7 @@ const create = async (req, res) => {
     if (!allowedSizes.includes(size)) {
       return res
         .status(400)
-        .json({ message: 'Invalid size value. Allowed values: XS, S, M, L, XL' });
+        .json({ message: 'Tamanho inválido. Os tamanhos permitidos são XS, S, M, L e XL' });
     }
 
     const existingProduct = await Product.findOne({ reference, size });
@@ -269,7 +278,7 @@ const create = async (req, res) => {
 
     // Check if the category exists
     const cat = await Category.find({ description: category });
-    if (!cat.length) return res.status(400).json({ message: 'Category not found' });
+    if (!cat.length) return res.status(400).json({ message: 'Categoria não encontrada!' });
 
     // Body of product
     const product = new Product({
@@ -285,32 +294,9 @@ const create = async (req, res) => {
     await product.save();
     console.log('Product created with success!\nProduct Id:', product._id);
 
-    res.status(201).json({ message: 'Product registered!' });
+    res.status(201).json({ message: 'Produto adicionado com sucesso!' });
   } catch (error) {
     console.error('Product Registration Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-// Update a product
-const update = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { reference, description, price, size, stock, category } = req.body;
-
-    let product = await Product.findById(id);
-
-    product.reference = reference ? reference : product.reference;
-    product.description = description ? description : product.description;
-    product.price = price ? price : product.price;
-    product.size = size ? size : product.size;
-    product.stock = stock ? stock : product.stock;
-    product.category = category ? category : product.category;
-
-    await product.save();
-    res.status(200).json({ message: 'Product updated' });
-  } catch (error) {
-    console.error('Update Product Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -322,7 +308,7 @@ const updateByRef = async (req, res) => {
     let { ref, name, description, price, category } = req.body;
 
     let products = await Product.find({ reference });
-    if (!products) return res.status(404).json({ message: 'Product not found' });
+    if (!products) return res.status(404).json({ message: 'Produto não encontrado!' });
 
     // check if price is a number
     if (isNaN(price)) {
@@ -336,7 +322,7 @@ const updateByRef = async (req, res) => {
 
     // Check if the category exists
     const cat = await Category.find({ description: category });
-    if (!cat.length) return res.status(400).json({ message: 'Category not found' });
+    if (!cat.length) return res.status(400).json({ message: 'Categoria não encontrada!' });
 
     products.forEach(async (product) => {
       product.reference = ref ? ref : product.reference;
@@ -348,7 +334,7 @@ const updateByRef = async (req, res) => {
       await product.save();
     });
 
-    res.status(200).json({ message: 'Product updated' });
+    res.status(200).json({ message: 'Produto atualizado com sucesso!' });
   } catch (error) {
     console.error('Update Product By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -364,7 +350,7 @@ const updateImage = async (req, res) => {
     const products = await Product.find({ reference });
 
     if (!products) {
-      return res.status(404).json({ message: 'Menu não encontrado! Tente novamente mais tarde.' });
+      return res.status(404).json({ message: 'Produtos não encontrado!' });
     }
 
     if (!image) {
@@ -416,7 +402,7 @@ const updateStock = async (req, res) => {
 
     await product.save();
 
-    res.status(200).json({ message: 'Stock Atualizado!' });
+    res.status(200).json({ message: 'Stock atualizado com sucesso!' });
   } catch (error) {
     console.error('Update Stock Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -428,14 +414,14 @@ const hideAllByRef = async (req, res) => {
   try {
     const { reference } = req.params;
     const products = await Product.find({ reference });
-    if (!products) return res.status(404).json({ message: 'Products not found' });
+    if (!products) return res.status(404).json({ message: 'Produto não encontrado!' });
 
     products.forEach(async (product) => {
       product.active = false;
       await product.save();
     });
 
-    res.status(200).json({ message: 'Products hidden from store' });
+    res.status(200).json({ message: 'Produto escondido com sucesso!' });
   } catch (error) {
     console.error('Hide Products By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -447,14 +433,14 @@ const showByRef = async (req, res) => {
   try {
     const { reference } = req.params;
     const products = await Product.find({ reference });
-    if (!products) return res.status(404).json({ message: 'Products not found' });
+    if (!products) return res.status(404).json({ message: 'Produto não encontrado!' });
 
     products.forEach(async (product) => {
       product.active = true;
       await product.save();
     });
 
-    res.status(200).json({ message: 'Products shown in store' });
+    res.status(200).json({ message: 'Produto mostrado com sucesso!' });
   } catch (error) {
     console.error('Show Products By Reference Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -465,8 +451,10 @@ const showByRef = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    await Product.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Product deleted' });
+    const product = await Product.findByIdAndDelete(id);
+    if (!product) return res.status(404).json({ message: 'Produto não encontrado' });
+
+    res.status(200).json({ message: 'Produto removido com sucesso!' });
   } catch (error) {
     console.error('Delete Product Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });

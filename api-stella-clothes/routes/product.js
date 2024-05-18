@@ -50,8 +50,6 @@ router.post('/', authenticateToken, create);
 // PUT /product
 // Update stock of a product by reference
 router.put('/stock', authenticateToken, updateStock);
-// Update a product
-router.put('/:id', authenticateToken, update);
 // Update a product by reference
 router.put('/reference/:reference', authenticateToken, updateByRef);
 // Update a product image

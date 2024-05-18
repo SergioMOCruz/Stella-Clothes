@@ -4,12 +4,10 @@ const { createCheckoutSession, retrievePaymentId } = require('../controllers/str
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /stripe
-
 // Get payment intent id
 router.get('/retrieve-payment-id', authenticateToken, retrievePaymentId);
 
 // POST /stripe
-
 // Create checkout session
 router.post('/create-checkout-session', authenticateToken, createCheckoutSession);
 
