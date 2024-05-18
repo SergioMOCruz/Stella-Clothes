@@ -30,7 +30,7 @@
         </div>
 
         <div class="cart-item-quantity-row">
-          <input type="number" min="0" class="cart-item-quantity-input" [(ngModel)]="item.quantity" (ngModelChange)="onQuantityChange($event, item)"/>
+          <input type="number" min="0" max="99" class="cart-item-quantity-input" [(ngModel)]="item.quantity" (ngModelChange)="onQuantityChange($event, item)"/>
         </div>
 
         <div class="cart-item-total-row">

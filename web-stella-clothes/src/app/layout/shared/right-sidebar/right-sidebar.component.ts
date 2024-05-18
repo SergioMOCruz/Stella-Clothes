@@ -17,13 +17,9 @@ export class RightSidebarComponent {
 
   constructor() {}
 
-  toogleOverlay() {
-    this.isVisible = !this.isVisible;
-  }
-
   toggleDrawer() {
+    this.isVisible = !this.isVisible;
     this.rightSideBar.toggle();
-    this.toogleOverlay();
     this.closeMenuTrigger.emit();
   }
 }

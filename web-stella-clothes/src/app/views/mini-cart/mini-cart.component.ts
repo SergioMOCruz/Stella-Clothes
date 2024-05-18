@@ -4,7 +4,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { ProductService } from '../../services/products/product.service';
 import { UserSessionHandlerService } from '../../auth/services/helpers/user-session-handler.service';
 import { CartService } from '../../services/cart/cart.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-mini-cart',
@@ -22,6 +22,9 @@ export class MiniCartComponent {
   total: number = 0;
   isCartEmpty: boolean = true;
 
+  private subscription: Subscription;
+
+
   constructor(
     private _productService: ProductService,
     private _userSession: UserSessionHandlerService,
@@ -29,22 +32,11 @@ export class MiniCartComponent {
   ) {
     this.isLoggedIn$ = this._userSession.isLoggedIn();
 
-    this._cartService.getCartByClient().subscribe(data => {
-      this.products = data;
+    this.loadData();
+  }
 
-      if (this.products.length) {
-        this.isCartEmpty = false;
-        this.products.forEach(product => {
-          this._productService.getProductByRef(product.productReference).subscribe((data) => {
-            product.price = data[0].price;
-            this.getSubtotal();
-          });
-        });
-      } else
-        this.isCartEmpty = true
-      },
-      error => console.log(error)
-    );
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   async removeProductFromCart(product: any) {
@@ -70,5 +62,24 @@ export class MiniCartComponent {
 
   redirectToLogin() {
     this.redirectToLoginEvent.emit();
+  }
+
+  async loadData() {
+    this.subscription = await this._cartService.getCartByClient().subscribe(data => {
+      this.products = data;
+
+      if (this.products.length) {
+        this.isCartEmpty = false;
+        this.products.forEach(product => {
+          this._productService.getProductByRef(product.productReference).subscribe((data) => {
+            product.price = data[0].price;
+            this.getSubtotal();
+          });
+        });
+      } else
+        this.isCartEmpty = true
+      },
+      error => console.log(error)
+    );
   }
 }

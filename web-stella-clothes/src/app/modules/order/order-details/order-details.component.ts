@@ -3,6 +3,8 @@ import { NavbarComponent } from '../../../layout/shared/navbar/navbar.component'
 import { OrderService } from '../../../services/orders/order.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-order-details',
@@ -42,5 +44,43 @@ export class OrderDetailsComponent {
         status: newestStatus.status,
         time: new Date(newestStatus.date)
     };
+  }
+
+  generatePDF() {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Stella Clothes", 105, 20, { align: "center" });
+    doc.setFontSize(12);
+    doc.text("Av. Brasília, 1400-038 Lisboa", 105, 30, { align: "center" });
+    doc.text("987 654 321", 105, 35, { align: "center" });
+
+    doc.text("Nome Cliente: " + this.order.firstName + " " + this.order.lastName, 10, 50);
+    doc.text("Recibo #" + this.order._id, 10, 60);
+    doc.text("Data Encomenda: " + this.formatDate(this.order.createdAt), 10, 70);
+
+    const formatOrderDataForTable = (orderData): (string | number)[][] => {
+      return orderData.map(product => [
+        product.name,
+        product.quantity.toString(),
+        `${product.priceAtTime} €`,
+        `${product.priceAtTime * product.quantity} €`
+      ]);
+    };
+
+    (doc as any).autoTable({
+      startY: 80,
+      head: [['Descrição Artigo', 'Quantidade', 'Preço/Unidade', 'Total']],
+      body: formatOrderDataForTable(this.order.orderData),
+      foot: [
+        [{ content: 'Total', colSpan: 3, styles: { halign: 'right' } }, `${this.order.total} €`]
+      ]
+    });
+
+    doc.text("Obrigado pelo teu pedido na Stella Clothes", 105, (doc as any).autoTable.previous.finalY + 20, { align: "center" });
+    doc.text("Com os nossos melhores cumprimentos", 105, (doc as any).autoTable.previous.finalY + 30, { align: "center" });
+    doc.text("Stella Clothes", 105, (doc as any).autoTable.previous.finalY + 35, { align: "center" });
+
+    doc.save(`Recibo_${ this.order._id }.pdf`);
   }
 }

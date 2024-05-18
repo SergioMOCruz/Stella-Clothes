@@ -1,15 +1,20 @@
 <app-navbar></app-navbar>
 <section id="order-details" *ngIf="order">
-  <div id="order-details-info">
-    <div>
-      <p>Número encomenda</p>
-      <p>Estado</p>
-      <p id="order-details-info-date">Data de Compra</p>
+  <div id="order-details-info-container">
+    <div id="order-details-info">
+      <div>
+        <p>Número encomenda</p>
+        <p>Estado</p>
+        <p id="order-details-info-date">Data de Compra</p>
+      </div>
+      <div id="order-details-info-numbers">
+        <p>{{ order._id }}</p>
+        <p>{{ getNewestStatus(order).status }} &#64; {{ formatDate(getNewestStatus(order).time) }}</p>
+        <p id="order-details-info-date">{{ formatDate(order.createdAt) }}</p>
+      </div>
     </div>
-    <div>
-      <p>{{ order._id }}</p>
-      <p>{{ getNewestStatus(order).status }} &#64; {{ formatDate(getNewestStatus(order).time) }}</p>
-      <p id="order-details-info-date">{{ formatDate(order.createdAt) }}</p>
+    <div id="order-details-download-pdf">
+      <button id="order-details-download-pdf-button" (click)="generatePDF()">Descarregar Recibo</button>
     </div>
   </div>
   <div id="order-products-container">
@@ -41,7 +46,6 @@
     </div>
   </div>
 </section>
-
 
 <section id="log-in-screen" *ngIf="!order">
   <p>Lamentamos, mas algo correu mal</p>

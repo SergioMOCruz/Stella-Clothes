@@ -13,7 +13,7 @@
       <p>Tamanho</p>
       <select id="product-sizes-select" [(ngModel)]="selectedSize">
         <ng-container *ngFor="let product of organizedProducts">
-          <option [value]="product.size"  [disabled]="product.stock <= 0">{{ product.size }} <a *ngIf="product.stock <= 0">- Esgotado</a></option>
+          <option [value]="product.size"  [disabled]="product.stock <= 0">{{ product.size }} <a *ngIf="product.stock <= 0">- Esgotado</a> <a *ngIf="product.stock > 0 && product.stock <= 10">- Stock: {{ product.stock }}</a></option>
         </ng-container>
       </select>
     </div>

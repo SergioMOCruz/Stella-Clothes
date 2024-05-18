@@ -61,6 +61,7 @@ export class NavbarComponent {
     this.showForgotPassword = false;
     this.showProfileMenu = false;
     this.showSearchMenu = false;
+    this.showMiniCart = false;
   }
 
   toggleForm(formType: string) {
@@ -72,7 +73,7 @@ export class NavbarComponent {
     this.showSearchMenu = formType === 'search-product';
   }
 
-  redirectToCategory(reference: number) {
+  redirectToCategory(reference) {
     this._router.navigate(['/category/' + reference]).then(() => {
       window.location.reload();
     });
