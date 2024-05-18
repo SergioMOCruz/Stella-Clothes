@@ -29,7 +29,7 @@ const login = async (req, res) => {
         accID: account._id,
       });
     } else {
-      res.status(403).json({ message: 'Incorrect Password' });
+      res.status(401).json({ message: 'Incorrect Password' });
     }
   } catch (error) {
     console.error('Account Login Error:', error);
