@@ -29,7 +29,7 @@ const login = async (req, res) => {
         accID: account._id,
       });
     } else {
-      res.status(401).json({ message: 'Incorrect Password' });
+      res.status(401).json({ message: 'O dados de início de sessão estão incorretos!' });
     }
   } catch (error) {
     console.error('Account Login Error:', error);
@@ -101,12 +101,12 @@ const create = async (req, res) => {
     // Check if account already exists
     accountExists = await Account.findOne({ email });
     if (accountExists) {
-      return res.status(409).json({ message: 'The email you entered already belongs to an account' });
+      return res.status(409).json({ message: 'O email já se encontra registado!' });
     }
 
     accountExists = await Account.findOne({ nif });
     if (accountExists) {
-      return res.status(409).json({ message: 'The nif you entered already belongs to an account' });
+      return res.status(409).json({ message: 'O NIF já se encontra registado!' });
     }
 
     // Hash password
@@ -126,9 +126,125 @@ const create = async (req, res) => {
     await account.save();
     console.log('Account created with success!\nAccount Id:', account._id);
 
-    res.status(201).json({ message: 'Account registered!' });
+    res.status(201).json({ message: 'Conta registada com sucesso!' });
   } catch (error) {
     console.error('Account Registration Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Send a reset password email
+const resetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const account = await Account.findOne({ email });
+
+    if (!account) {
+      return res.status(404).json({ message: 'Conta não encontrada!' });
+    }
+
+    // Generate a unique token for resetting the password (you can use any method here)
+    const resetToken = generateResetToken();
+
+    // Update the account with the reset token and expiry date
+    account.resetPasswordToken = resetToken;
+    // Token expiry time: 10 minutes
+    account.resetPasswordExpires = Date.now() + 600000;
+    await account.save();
+
+    // Send the reset password email
+    await sendResetPasswordEmail(email, resetToken);
+
+    res.status(200).json({ message: 'Reset password email sent' });
+  } catch (error) {
+    console.error('Reset Password Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Function to generate a random token (You can replace this with any token generation method you prefer)
+function generateResetToken() {
+  return Math.random().toString(36).slice(2);
+}
+
+// Function to send the reset password email
+async function sendResetPasswordEmail(email, resetToken) {
+  // Create a Nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.hostinger.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  // Email content
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Loja Online | Redefinir palavra-passe',
+    text: `Para redefinir a sua palavra-passe, clique no seguinte link: ${process.env.WEBSITE_LINK}/reset-password.html?token=${resetToken}
+    \nO link acima é válido por apenas 10 minutos.
+    \nSe não pediu para redefinir a sua palavra-passe, por favor ignore este email.
+    \nObrigado, \nA equipa Loja Online`,
+  };
+
+  // Send the email
+  await transporter.sendMail(mailOptions);
+}
+
+// Verify token
+const verifyToken = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const account = await Account.findOne({ resetPasswordToken: token });
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+    // Check if the token is expired (10 minutes)
+    const dateNow = new Date();
+    const dateNowMilliseconds = dateNow.getTime();
+    const resetPasswordExpiresMilliseconds = account.resetPasswordExpires.getTime();
+
+    if (resetPasswordExpiresMilliseconds < dateNowMilliseconds) {
+      // If the token is expired, remove the token and expiry date from the account
+      return res.status(403).json({ message: 'Token expired' });
+    }
+
+    return res.status(200).json({ message: 'Token verified' });
+  } catch (error) {
+    console.error('Verify Token Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Update a account password with token
+const updatePasswordToken = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    let account = await Account.findOne({ resetPasswordToken: token });
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    account.password = hashedPassword;
+
+    // Remove the reset password token and expiry date from the account
+    account.resetPasswordToken = undefined;
+    account.resetPasswordExpires = undefined;
+    await account.save();
+    // Send account email in response
+    res.status(200).json({ message: 'Password updated' });
+  } catch (error) {
+    console.error('Update Account Password Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -212,4 +328,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { login, getAll, getById, create, createAdmin, update, remove };
+module.exports = { login, getAll, getById, verifyToken, create, resetPassword, createAdmin, update, updatePasswordToken, remove };
