@@ -4,7 +4,6 @@ const { getCartByClientId, getCartByClientIdOrganized, create, updateQuantityInC
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /cart
-
 // Get cart by client id
 router.get('/', authenticateToken, getCartByClientId);
 router.get('/organized', authenticateToken, getCartByClientIdOrganized);

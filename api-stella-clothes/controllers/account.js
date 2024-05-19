@@ -12,7 +12,7 @@ const login = async (req, res) => {
     const account = await Account.findOne({ email });
 
     if (!account) {
-      return res.status(204).json({ message: 'Account not found' });
+      return res.status(204).json({ message: 'Conta não encontrada!' });
     }
 
     const passwordMatch = await bcrypt.compare(password, account.password);
@@ -53,6 +53,10 @@ const getById = async (req, res) => {
   try {
     const { id } = req.params;
     const account = await Account.findById(id);
+    if (!account) {
+      return res.status(404).json({ message: 'Conta não encontrada!' });
+    }
+
     res.status(200).json(account);
   } catch (error) {
     console.error('Get Account By Id Error:', error.message);
@@ -67,24 +71,17 @@ const create = async (req, res) => {
     let accountExists = false;
 
     // Check if all fields are filled
-    if (!firstName) 
-      return res.status(406).json({ message: 'The first name field is mandatory' });
-    
-    if (!lastName) 
-      return res.status(406).json({ message: 'The last name field is mandatory' });
-    
-    if (!email) 
-      return res.status(406).json({ message: 'The email field is mandatory' });
-    
-    if (!password)
-      return res.status(406).json({ message: 'The password field is mandatory' });
-    
-    if (!phone) 
-      return res.status(406).json({ message: 'The phone field is mandatory' });
+    if (!firstName) return res.status(406).json({ message: 'The first name field is mandatory' });
 
-    if (!nif) 
-      return res.status(406).json({ message: 'The nif  field is mandatory' });
-    
+    if (!lastName) return res.status(406).json({ message: 'The last name field is mandatory' });
+
+    if (!email) return res.status(406).json({ message: 'The email field is mandatory' });
+
+    if (!password) return res.status(406).json({ message: 'The password field is mandatory' });
+
+    if (!phone) return res.status(406).json({ message: 'The phone field is mandatory' });
+
+    if (!nif) return res.status(406).json({ message: 'The nif  field is mandatory' });
 
     // if any of the fields don't have the same name as the variable return an error
     if (
@@ -158,13 +155,12 @@ const resetPassword = async (req, res) => {
     // Send the reset password email
     await sendResetPasswordEmail(email, resetToken);
 
-    res.status(200).json({ message: 'Reset password email sent' });
+    res.status(200).json({ message: 'Email enviado com sucesso!' });
   } catch (error) {
     console.error('Reset Password Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
 
 // Function to generate a random token (You can replace this with any token generation method you prefer)
 function generateResetToken() {
@@ -206,7 +202,7 @@ const verifyToken = async (req, res) => {
 
     const account = await Account.findOne({ resetPasswordToken: token });
     if (!account) {
-      return res.status(401).json({ message: 'Account not found' });
+      return res.status(404).json({ message: 'Conta não encontrada!' });
     }
     // Check if the token is expired (10 minutes)
     const dateNow = new Date();
@@ -216,10 +212,10 @@ const verifyToken = async (req, res) => {
 
     if (resetPasswordExpiresMilliseconds < dateNowMilliseconds) {
       // If the token is expired, remove the token and expiry date from the account
-      return res.status(403).json({ message: 'Token expired' });
+      return res.status(403).json({ message: 'Token expirado' });
     }
 
-    return res.status(200).json({ message: 'Token verified' });
+    return res.status(200).json({ message: 'Token válido' });
   } catch (error) {
     console.error('Verify Token Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -232,12 +228,12 @@ const updatePasswordToken = async (req, res) => {
     const { token } = req.params;
     const { password } = req.body;
 
-    console.log("token", token);
-    console.log("password", password);
+    console.log('token', token);
+    console.log('password', password);
 
     let account = await Account.findOne({ resetPasswordToken: token });
     if (!account) {
-      return res.status(404).json({ message: 'Account not found' });
+      return res.status(404).json({ message: 'Conta não encontrada!' });
     }
 
     // Hash the new password
@@ -249,7 +245,7 @@ const updatePasswordToken = async (req, res) => {
     account.resetPasswordExpires = undefined;
     await account.save();
     // Send account email in response
-    res.status(200).json({ message: 'Password updated' });
+    res.status(200).json({ message: 'Palavra passe atualizada com sucesso!' });
   } catch (error) {
     console.error('Update Account Password Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -277,7 +273,9 @@ const createAdmin = async (req, res) => {
     // Check if account already exists
     const accountExists = await Account.findOne({ email });
     if (accountExists) {
-      return res.status(409).json({ message: 'The email you entered already belongs to an account' });
+      return res
+        .status(409)
+        .json({ message: 'The email you entered already belongs to an account' });
     }
 
     // Hash password
@@ -310,6 +308,9 @@ const update = async (req, res) => {
     const { firstName, lastName, phone } = req.body;
 
     let account = await Account.findById(id);
+    if (!account) {
+      return res.status(404).json({ message: 'Conta não encontrada!' });
+    }
 
     account.firstName = firstName || account.firstName;
     account.lastName = lastName || account.lastName;
@@ -327,12 +328,27 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    await Account.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Account deleted' });
+    const account = await Account.findByIdAndDelete(id);
+    if (!account) {
+      return res.status(404).json({ message: 'Conta não encontrada!' });
+    }
+
+    res.status(200).json({ message: 'Conta removida com sucesso!' });
   } catch (error) {
     console.error('Delete Account Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-module.exports = { login, getAll, getById, verifyToken, create, resetPassword, createAdmin, update, updatePasswordToken, remove };
+module.exports = {
+  login,
+  getAll,
+  getById,
+  verifyToken,
+  create,
+  resetPassword,
+  createAdmin,
+  update,
+  updatePasswordToken,
+  remove,
+};
