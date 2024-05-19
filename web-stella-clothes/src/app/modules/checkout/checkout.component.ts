@@ -26,6 +26,7 @@ export class CheckoutComponent {
   isLoggedIn$: Observable<boolean>;
   isCartEmpty: boolean;
   showWarning: boolean = false;
+  showDataWarning: boolean = false;
 
   constructor(
     private _productService: ProductService,
@@ -59,7 +60,7 @@ export class CheckoutComponent {
     );
 
     this.checkoutInfoForm = new FormGroup({
-      contact: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl('', Validators.required),
       street: new FormControl('', Validators.required),
@@ -79,11 +80,18 @@ export class CheckoutComponent {
     return parseFloat(total.toFixed(2));
   }
 
+  showInvalidDataWarning() {
+    this.showDataWarning = true;
+      setTimeout(() => {
+        this.showDataWarning = false;
+    }, 2000);
+  }
+
   checkout() {
     let dataCheckout = {
       amount: this.getSubtotal() * 100,
       orderInfo: {
-        contactInfo: this.checkoutInfoForm.get('contact').value,
+        contactInfo: this.checkoutInfoForm.get('email').value,
         firstName: this.checkoutInfoForm.get('firstName').value,
         lastName: this.checkoutInfoForm.get('lastName').value,
         street: this.checkoutInfoForm.get('street').value,
@@ -95,18 +103,22 @@ export class CheckoutComponent {
       }
     }
 
-    this._orderService.sendCheckoutRequest(dataCheckout).subscribe(
-      data => {
-        console.log(data)
-      },
-      error => {
-        console.log(error)
-        this.showWarning = true;
+    if (this.checkoutInfoForm.valid) {
+      this._orderService.sendCheckoutRequest(dataCheckout).subscribe(
+        data => {
+          console.log(data)
+        },
+        error => {
+          console.log(error)
+          this.showWarning = true;
 
-        setTimeout(() => {
-          this.showWarning = false;
-        }, 2000);
-      }
-    );
+          setTimeout(() => {
+            this.showWarning = false;
+          }, 2000);
+        }
+      );
+    } else {
+      this.showInvalidDataWarning();
+    }
   }
 }

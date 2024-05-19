@@ -5,6 +5,7 @@ const Cart = require('../models/cart');
 const Product = require('../models/product');
 const Category = require('../models/category');
 const OrderData = require('../models/order_data');
+const { uploadSingleFile } = require('../utils/google-storage');
 
 // Get all orders
 const getAll = async (req, res) => {
@@ -46,8 +47,6 @@ const getById = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-
 
 // Get order by account id
 const getByAccount = async (req, res) => {
@@ -194,7 +193,7 @@ const create = async (req, res) => {
     }
 
     // Body of order
-    const order = new Order({
+    let order = new Order({
       accountId: req.user._id,
       contactInfo: orderInfo.contactInfo,
       firstName: orderInfo.firstName,
@@ -218,6 +217,7 @@ const create = async (req, res) => {
     });
     await order.save();
 
+    let allOrderData = [];
     // Create order data for each product and remove stock from products after order is made
     for (const product of productsWithQuantity) {
       const { productReference, quantity, size } = product;
@@ -240,6 +240,8 @@ const create = async (req, res) => {
       });
       await orderData.save();
 
+      allOrderData.push(orderData);
+
       existingProduct.stock -= quantity;
       existingProduct.save();
     }
@@ -248,10 +250,40 @@ const create = async (req, res) => {
     await Account.updateOne({ _id: accountId }, { $unset: { orderInfo: '' } });
 
     console.log('Order created with success!\nOrder Id:', order._id);
-
-    res.status(201).json({ message: 'Order registered!' });
+    order = order.toObject();
+    delete order.accountId;
+    order.orderData = allOrderData;
+    
+    res.status(200).json({ order: order, message: 'Order registered!' });
   } catch (error) {
     console.error('Order Registration Error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Upload order pdf
+const uploadPdf = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pdf = req.file;
+
+    const order = await Order.findById({ _id: id });
+
+    if (!order) return res.status(404).json({ message: 'Encomenda não encontrada!' });
+    
+    if (!pdf) return res.status(400).json({ message: 'Erro ao ler o ficheiro.' });
+
+    // Upload pdf to Google Cloud Storage
+    const pdfUrl = await uploadSingleFile(pdf, id);
+
+    // Update pdf to order
+    order.pdfUrl = pdfUrl;
+
+    await order.save();
+
+    res.status(200).json(pdfUrl);
+  } catch (error) {
+    console.error('Update PDF Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -377,6 +409,7 @@ module.exports = {
   verifyOrder,
   search,
   create,
+  uploadPdf,
   update,
   updateStatus,
   remove,

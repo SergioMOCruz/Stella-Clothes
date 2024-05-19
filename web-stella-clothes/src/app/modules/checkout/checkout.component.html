@@ -5,7 +5,7 @@
       <div id="info-container">
         <form id="info-block" [formGroup]="checkoutInfoForm">
           <span>Informações de contacto</span>
-          <input type="text" placeholder="E-mail ou número de telemóvel" formControlName="contact" />
+          <input type="email" placeholder="E-mail" formControlName="email" />
           <span id="shipping-title">Morada de envio</span>
           <div class="half-inputs">
             <input type="text" placeholder="Nome Próprio" formControlName="firstName" />
@@ -51,7 +51,8 @@
         <span>Total</span>
         <span>{{ getSubtotal() }} €</span>
       </div>
-      <span id="warning-message" class="hideDisplay" [ngClass]="{'showWarning invalidData': showWarning}">Quantidade de produtos inválida</span>
+    <span id="warning-message" class="hideDisplay" [ngClass]="{'showWarning invalidData': showDataWarning}">Dados inválidos</span>
+    <span id="warning-message" class="hideDisplay" [ngClass]="{'showWarning invalidData': showWarning}">Quantidade de produtos inválida</span>
     </div>
   </div>
 </section>

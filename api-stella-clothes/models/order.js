@@ -63,6 +63,9 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  pdfUrl: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

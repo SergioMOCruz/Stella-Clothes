@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../../services/orders/order.service';
 import { CartService } from '../../services/cart/cart.service';
+import PDFMaker from '../../shared/utils/pdf-maker';
 
 @Component({
   selector: 'app-successful-payment',
@@ -44,6 +45,13 @@ export class SuccessfulPaymentComponent {
                 let paymentId: any = data;
 
                 this._orderService.sendOrderRequest(paymentId).subscribe(
+                  (data: any) => {
+                    console.log(data);
+                    this._orderService.uploadPDF(data.order._id, PDFMaker.generatePDF(data.order)).subscribe(
+                      data => console.log('Upload successful', data),
+                      error => console.error('Upload failed', error)
+                    );
+                  },
                   error => console.log(error)
                 )
               },

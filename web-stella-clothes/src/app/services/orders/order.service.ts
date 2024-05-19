@@ -53,4 +53,11 @@ export class OrderService {
       })
     );
   }
+
+  uploadPDF(orderId, pdfBlob: Blob) {
+    const formData = new FormData();
+    formData.append('pdfFile', pdfBlob, `Recibo_${orderId}.pdf`);
+
+    return this._http.post(`${environment.apiUrl}/orders/upload-pdf/${orderId}`, formData);
+  }
 }

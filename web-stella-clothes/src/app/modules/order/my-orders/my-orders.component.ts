@@ -14,14 +14,14 @@ import { UserSessionHandlerService } from '../../../auth/services/helpers/user-s
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, NavbarComponent, FooterComponent, FormsModule],
   templateUrl: './my-orders.component.html',
-  styleUrl: './my-orders.component.scss'
+  styleUrls: ['./my-orders.component.scss']
 })
 
 export class MyOrdersComponent {
 
   isLoggedIn$: Observable<boolean>;
   orders: any;
-  productOrders
+  productOrders: any;
 
   constructor(
     private _orderService: OrderService,
@@ -31,15 +31,22 @@ export class MyOrdersComponent {
     this.isLoggedIn$ = this._userSession.isLoggedIn();
 
     this._orderService.getUserOrders().subscribe(
-      data => { this.orders = data; this.formatDate(this.orders); },
+      data => {
+        this.orders = data;
+        this.sortOrdersByDate(this.orders); // Sort orders
+        this.formatDate(this.orders);
+      },
       error => console.log(error)
     );
+  }
+
+  sortOrdersByDate(orders) {
+    orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
   formatDate(orders) {
     for (let i = 0; i < orders.length; i++) {
       const dt = new Date(orders[i].createdAt);
-
       orders[i].createdAt = `${dt.getUTCHours().toString().padStart(2, '0')}:${dt.getUTCMinutes().toString().padStart(2, '0')} ${dt.getUTCDate().toString().padStart(2, '0')}-${(dt.getUTCMonth() + 1).toString().padStart(2, '0')}-${dt.getUTCFullYear()}`;
     }
   }
