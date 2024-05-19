@@ -13,7 +13,7 @@ router.get('/', authenticateToken, getAll);
 // Get account by id
 router.get('/:id', authenticateToken, getById);
 // Verify a password reset token
-router.get('/:token/verify-token', verifyToken);
+router.get('/verify-token/:token', verifyToken);
 
 // POST /account
 // LOGIN /account/login
@@ -31,7 +31,7 @@ router.post('/create', createAdmin);
 // Update a account
 router.put('/:id', authenticateToken, update);
 // Update an account password with a token
-router.put('/:token/update-pw', updatePasswordToken);
+router.put('/update-pw/:token', updatePasswordToken);
 
 // DELETE /account
 // Delete a account

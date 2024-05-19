@@ -13,6 +13,8 @@ import { UnsuccessfulPaymentComponent } from './views/unsuccessful-payment/unsuc
 import { SuccessfulPaymentComponent } from './views/successful-payment/successful-payment.component';
 import { OrderDetailsComponent } from './modules/order/order-details/order-details.component';
 import { OrderBelongsGuard } from './guards/order-belongs.guard';
+import { ResetPasswordComponent } from './layout/auth/reset-password/reset-password.component';
+import { ResetPasswordGuard } from './guards/reset-password.guard';
 
 
 export const routes: Routes = [
@@ -24,6 +26,7 @@ export const routes: Routes = [
   { path: 'category/:description', component: CategoryComponent, canActivate: [CategoryExistsGuard] },
   { path: 'product/:reference', component: ProductPageComponent, canActivate: [ProductExistsGuard] },
   { path: 'order-details/:id', component: OrderDetailsComponent, canActivate: [OrderBelongsGuard] },
+  { path: 'reset-password/:token', component: ResetPasswordComponent, canActivate: [ResetPasswordGuard] },
   { path: 'successful-payment', component: SuccessfulPaymentComponent },
   { path: 'unsuccessful-payment', component: UnsuccessfulPaymentComponent },
   { path: '404', component: FourOFourComponent },

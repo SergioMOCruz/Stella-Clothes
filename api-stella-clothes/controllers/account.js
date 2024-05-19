@@ -151,6 +151,8 @@ const resetPassword = async (req, res) => {
     account.resetPasswordToken = resetToken;
     // Token expiry time: 10 minutes
     account.resetPasswordExpires = Date.now() + 600000;
+
+    // Save the updated account
     await account.save();
 
     // Send the reset password email
@@ -162,6 +164,7 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 // Function to generate a random token (You can replace this with any token generation method you prefer)
 function generateResetToken() {
@@ -186,7 +189,7 @@ async function sendResetPasswordEmail(email, resetToken) {
     from: process.env.EMAIL,
     to: email,
     subject: 'Loja Online | Redefinir palavra-passe',
-    text: `Para redefinir a sua palavra-passe, clique no seguinte link: ${process.env.WEBSITE_LINK}/reset-password.html?token=${resetToken}
+    text: `Para redefinir a sua palavra-passe, clique no seguinte link: ${process.env.WEBSITE_LINK}/reset-password/${resetToken}
     \nO link acima é válido por apenas 10 minutos.
     \nSe não pediu para redefinir a sua palavra-passe, por favor ignore este email.
     \nObrigado, \nA equipa Loja Online`,
@@ -203,11 +206,12 @@ const verifyToken = async (req, res) => {
 
     const account = await Account.findOne({ resetPasswordToken: token });
     if (!account) {
-      return res.status(404).json({ message: 'Account not found' });
+      return res.status(401).json({ message: 'Account not found' });
     }
     // Check if the token is expired (10 minutes)
     const dateNow = new Date();
     const dateNowMilliseconds = dateNow.getTime();
+
     const resetPasswordExpiresMilliseconds = account.resetPasswordExpires.getTime();
 
     if (resetPasswordExpiresMilliseconds < dateNowMilliseconds) {
@@ -227,6 +231,9 @@ const updatePasswordToken = async (req, res) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
+
+    console.log("token", token);
+    console.log("password", password);
 
     let account = await Account.findOne({ resetPasswordToken: token });
     if (!account) {

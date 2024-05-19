@@ -472,7 +472,6 @@ module.exports = {
   searchProducts,
   searchProductsByRef,
   create,
-  update,
   updateByRef,
   updateImage,
   updateStock,
