@@ -26,7 +26,7 @@ const getById = async (req, res) => {
 
     let order = await Order.findOne({ _id: id, accountId: accountId });
 
-    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (!order) return res.status(404).json({ message: 'Encomenda não encontrada!' });
 
     let orderData = await OrderData.find({ orderId: id });
 
@@ -52,6 +52,7 @@ const getById = async (req, res) => {
 const getByAccount = async (req, res) => {
   try {
     let orders = await Order.find({ accountId: req.user._id });
+    if (!orders) return res.status(404).json({ message: 'Encomendas não encontradas!' });
 
     // Convert each Mongoose document to a plain JavaScript object
     orders = orders.map((order) => order.toObject());
@@ -59,6 +60,8 @@ const getByAccount = async (req, res) => {
     // Get order data for each order since this will be received by end user
     for (let order of orders) {
       const orderData = await OrderData.find({ orderId: order._id });
+      if (!orderData)
+        return res.status(404).json({ message: 'A encomenda não tem produtos associados!' });
 
       // Removing order account id for security measures
       delete order.accountId;
@@ -76,6 +79,7 @@ const getByAccount = async (req, res) => {
 const getByOrderData = async (req, res) => {
   try {
     let orders = await Order.find();
+    if (!orders) return res.status(404).json({ message: 'Encomendas não encontradas!' });
 
     // Convert each Mongoose document to a plain JavaScript object
     orders = orders.map((order) => order.toObject());
@@ -83,6 +87,8 @@ const getByOrderData = async (req, res) => {
     // Get order data for each order since this will be received by end user
     for (let order of orders) {
       const orderData = await OrderData.find({ orderId: order._id });
+      if (!orderData)
+        return res.status(404).json({ message: 'A encomenda não tem produtos associados!' });
 
       order.products = orderData;
     }
@@ -100,10 +106,9 @@ const verifyOrder = async (req, res) => {
     const { id } = req.params;
 
     const order = await Order.findOne({ _id: id, accountId: accountId });
+    if (!order) return res.status(404).json({ message: 'Encomenda não encontrada!' });
 
     res.status(200).json(order);
-
-    res.status(201);
   } catch (error) {
     console.error('Order Registration Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -122,6 +127,7 @@ const search = async (req, res) => {
         { lastName: { $regex: name, $options: 'i' } },
       ],
     });
+    if (!orders) return res.status(404).json({ message: 'Encomendas não encontradas!' });
 
     // Convert each Mongoose document to a plain JavaScript object
     orders = orders.map((order) => order.toObject());
@@ -129,6 +135,8 @@ const search = async (req, res) => {
     // Get order data for each order since this will be received by end user
     for (let order of orders) {
       const orderData = await OrderData.find({ orderId: order._id });
+      if (!orderData)
+        return res.status(404).json({ message: 'A encomenda não tem produtos associados!' });
 
       order.products = orderData;
     }
@@ -147,12 +155,15 @@ const create = async (req, res) => {
     const paymentId = req.body.paymentId;
     let total = 0;
 
-    if (!paymentId) return res.status(400).json({ message: 'Payment id is required' });
+    if (!paymentId) return res.status(400).json({ message: 'O ID do pagamento é obrigatório!' });
 
     let account = await Account.findOne({ _id: accountId });
+    if (!account) return res.status(404).json({ message: 'Conta não encontrada!' });
     const orderInfo = account.orderInfo;
 
     const productsWithQuantity = await Cart.find({ clientId: req.user.id });
+    if (!productsWithQuantity || productsWithQuantity.length === 0)
+      return res.status(404).json({ message: 'Carrinho vazio!' });
 
     // Check if all fields are filled except nif (nif is optional)
     if (
@@ -170,7 +181,7 @@ const create = async (req, res) => {
         (product) => product.productReference && product.quantity && product.size
       )
     ) {
-      return res.status(400).json({ message: 'All fields must be filled' });
+      return res.status(400).json({ message: 'Todos os campos devem estar preenchidos!' });
     }
 
     // Check if product exists
@@ -181,11 +192,11 @@ const create = async (req, res) => {
       const existingProduct = await Product.findOne({ reference, size });
       if (!existingProduct)
         return res.status(409).json({
-          message: `Product with reference '${reference}' and size '${size}' doesn't exist`,
+          message: `O produto com a referência '${reference}' e tamanho '${size}' não existe!`,
         });
       if (existingProduct.stock < quantity)
         return res.status(409).json({
-          message: `Product with reference '${reference}' and size '${size}' doesn't have enough stock`,
+          message: `O produto com a referência '${reference}' e tamanho '${size}' não tem stock suficiente!`,
         });
 
       const subTotal = quantity * existingProduct.price;
@@ -253,7 +264,7 @@ const create = async (req, res) => {
     order = order.toObject();
     delete order.accountId;
     order.orderData = allOrderData;
-    
+
     res.status(200).json({ order: order, message: 'Order registered!' });
   } catch (error) {
     console.error('Order Registration Error:', error.message);
@@ -270,7 +281,7 @@ const uploadPdf = async (req, res) => {
     const order = await Order.findById({ _id: id });
 
     if (!order) return res.status(404).json({ message: 'Encomenda não encontrada!' });
-    
+
     if (!pdf) return res.status(400).json({ message: 'Erro ao ler o ficheiro.' });
 
     // Upload pdf to Google Cloud Storage
@@ -296,6 +307,7 @@ const update = async (req, res) => {
 
     // Find order by id
     let order = await Order.findById(id);
+    if (!order) return res.status(404).json({ message: 'Encomenda não encontrada!' });
 
     // Update order and verify if all fields are filled
     order.accountId = accountId || order.accountId;
@@ -305,7 +317,7 @@ const update = async (req, res) => {
     order.status = status || order.status;
 
     await order.save();
-    res.status(200).json({ message: 'Order updated' });
+    res.status(200).json({ message: 'Encomenda atualizada com sucesso!' });
   } catch (error) {
     console.error('Update Order Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -320,11 +332,11 @@ const updateStatus = async (req, res) => {
 
     // Find order by id
     let order = await Order.findById(id);
-    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (!order) return res.status(404).json({ message: 'Encomenda não encontrada!' });
 
     // Check if status is valid
     if (!status || !['Em processo', 'Pago', 'Enviado', 'Entregue', 'Cancelado'].includes(status))
-      return res.status(400).json({ message: 'Invalid status' });
+      return res.status(400).json({ message: 'Estado inválido!' });
 
     // Update order status and verify if all fields are filled
     order.status.push({
@@ -393,8 +405,9 @@ const updateStatus = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    await Order.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Order deleted' });
+    const order = await Order.findByIdAndDelete(id);
+    if (!order) return res.status(404).json({ message: 'Encomenda não encontrada!' });
+    res.status(200).json({ message: 'Encomenda removida com sucesso!' });
   } catch (error) {
     console.error('Delete Order Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
