@@ -1,8 +1,7 @@
 <app-navbar></app-navbar>
-<section id="cart" *ngIf="isLoggedIn">
-  <div id="emptyCart" *ngIf="cartItems.length == 0">
-    <p>Página não encontrada</p>
-    <p>Lamentamos, mas esta página já não está disponível no nosso site</p>
+<section id="cart" *ngIf="(isLoggedIn$ | async)">
+  <div id="empty-cart" *ngIf="cartItems.length == 0">
+    <p>Lamentamos, não possuí nenhum item no seu carrinho</p>
     <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
   </div>
   <div id="cart-box" *ngIf="cartItems.length > 0">
@@ -31,7 +30,7 @@
         </div>
 
         <div class="cart-item-quantity-row">
-          <input type="number" class="cart-item-quantity-input" [(ngModel)]="item.quantity"/>
+          <input type="number" min="0" max="99" class="cart-item-quantity-input" [(ngModel)]="item.quantity" (ngModelChange)="onQuantityChange($event, item)"/>
         </div>
 
         <div class="cart-item-total-row">
@@ -45,12 +44,12 @@
         <span class="cart-subtotal-title">Subtotal</span>
         <span class="cart-subtotal-value">{{ getSubtotal() }} €</span>
       </div>
-      <button class="cart-payment">PAGAMENTO</button>
+      <button class="cart-payment" [routerLink]="['/checkout']">PAGAMENTO</button>
     </div>
   </div>
 </section>
 
-<section id="log-in-screen" *ngIf="!isLoggedIn">
+<section id="log-in-screen" *ngIf="!(isLoggedIn$ | async)">
   <p>Lamentamos, mas para ver esta página necessita de iniciar sessão</p>
   <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
 </section>

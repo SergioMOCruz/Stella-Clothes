@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { CreatePaymentIntent, WebhookEvents } = require('../middleware/stripe');
+const { createCheckoutSession, retrievePaymentId } = require('../controllers/stripe');
 const { authenticateToken } = require('../middleware/authenticate');
 
+// GET /stripe
+// Get payment intent id
+router.get('/retrieve-payment-id', authenticateToken, retrievePaymentId);
+
 // POST /stripe
-// Create a new stripe
-router.post('/create-payment-intent', authenticateToken, CreatePaymentIntent);
-router.post('/webhook', authenticateToken, WebhookEvents);
+// Create checkout session
+router.post('/create-checkout-session', authenticateToken, createCheckoutSession);
 
 module.exports = router;

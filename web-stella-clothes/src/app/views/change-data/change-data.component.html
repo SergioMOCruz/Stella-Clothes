@@ -4,11 +4,6 @@
     <input class="user-info" type="text" placeholder="Primeiro Nome" formControlName="firstName" required />
     <input class="user-info" type="text" placeholder="Último Nome" formControlName="lastName" required />
     <input class="user-info" type="text" placeholder="Telefone" formControlName="phone" required />
-    <input class="user-info" type="text" placeholder="Morada" formControlName="address" required />
-    <input class="user-info" type="text" placeholder="Mais informações (Opcional)" formControlName="addressContinued" />
-    <input class="user-info" type="text" placeholder="Cidade" formControlName="city" required />
-    <input class="user-info" type="text" placeholder="Código Postal" formControlName="postalCode" required />
-    <input class="user-info" type="text" placeholder="País" formControlName="country" required />
     <span class="hideDisplay" [ngClass]="{'showWarning invalidData': showInvalidWarning}">Dados inválidos</span>
     <span class="hideDisplay" [ngClass]="{'showWarning validData': showValidWarning}">Utilizador atualizado com sucesso</span>
     <input id="change-data-save" type="button" (click)="saveNewInfo()" value="Guardar" />

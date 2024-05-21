@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { NavigationExtras, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LoginService } from '../../../auth/services/login.service';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserSessionHandlerService } from '../../../auth/services/helpers/user-session-handler.service';
 import { LoginInterface } from '../../../shared/interfaces/auth/login-interface';
-import { UserService } from '../../../services/users/user.service';
 import { User } from '../../../shared/interfaces/users/user';
 
 @Component({
@@ -27,7 +26,6 @@ export class LoginComponent {
   user: User = null;
 
   constructor(
-    private _router: Router,
     private _loginService: LoginService,
     private _userSession: UserSessionHandlerService
   ) {
@@ -52,14 +50,14 @@ export class LoginComponent {
     }, 2000);
   }
 
-  validateAndLogin() {
+  async validateAndLogin() {
     if (this.loginForm.valid) {
       let dataUser: LoginInterface = {
         email: this.loginForm.get('email').value,
         password: this.loginForm.get('password').value
       }
 
-      this._loginService.authLogin(dataUser).subscribe(
+      await this._loginService.authLogin(dataUser).subscribe(
         data => {
           this._userSession.loginHelper(data);
         },

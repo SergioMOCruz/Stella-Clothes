@@ -2,9 +2,11 @@
 
 footer {
   width: 100vw;
+  height: 20vh;
   background-color: #fff;
   padding: 2rem 3rem;
   font-family: $font-telex;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
 #footer-container {

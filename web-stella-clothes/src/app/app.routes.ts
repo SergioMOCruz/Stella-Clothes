@@ -4,16 +4,31 @@ import { HomeComponent } from './modules/home/home.component';
 import { FourOFourComponent } from './views/four-o-four/four-o-four.component';
 import { ProductPageComponent } from './modules/product-page/product-page.component';
 import { CartComponent } from './modules/cart/cart.component';
+import { MyOrdersComponent } from './modules/order/my-orders/my-orders.component';
 import { ProductExistsGuard } from './guards/product-exists.guard';
-import { AuthGuard } from './auth/guards/auth.guard';
+import { CategoryComponent } from './modules/category/category.component';
+import { CategoryExistsGuard } from './guards/category-exists.guard';
+import { CheckoutComponent } from './modules/checkout/checkout.component';
+import { UnsuccessfulPaymentComponent } from './views/unsuccessful-payment/unsuccessful-payment.component';
+import { SuccessfulPaymentComponent } from './views/successful-payment/successful-payment.component';
+import { OrderDetailsComponent } from './modules/order/order-details/order-details.component';
+import { OrderBelongsGuard } from './guards/order-belongs.guard';
+import { ResetPasswordComponent } from './layout/auth/reset-password/reset-password.component';
+import { ResetPasswordGuard } from './guards/reset-password.guard';
 
 
 export const routes: Routes = [
-  // In routes needing of Authentication add { ..., canActivate: [AuthGuard] }
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'product/:ref', component: ProductPageComponent, canActivate: [ProductExistsGuard] },
+  { path: 'my-orders', component: MyOrdersComponent },
   { path: 'cart', component: CartComponent },
+  { path: 'checkout', component: CheckoutComponent },
+  { path: 'category/:description', component: CategoryComponent, canActivate: [CategoryExistsGuard] },
+  { path: 'product/:reference', component: ProductPageComponent, canActivate: [ProductExistsGuard] },
+  { path: 'order-details/:id', component: OrderDetailsComponent, canActivate: [OrderBelongsGuard] },
+  { path: 'reset-password/:token', component: ResetPasswordComponent, canActivate: [ResetPasswordGuard] },
+  { path: 'successful-payment', component: SuccessfulPaymentComponent },
+  { path: 'unsuccessful-payment', component: UnsuccessfulPaymentComponent },
   { path: '404', component: FourOFourComponent },
   { path: '**', redirectTo: '/404' },
 ];

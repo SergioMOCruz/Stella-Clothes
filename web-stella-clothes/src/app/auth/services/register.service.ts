@@ -14,6 +14,6 @@ export class RegisterService {
   ) { }
 
   authRegister(data: RegisterInterface) {
-    return this._http.post(`${environment.apiUrl}/clients/register`, data);
+    return this._http.post(`${environment.apiUrl}/accounts/register`, data);
   }
 }

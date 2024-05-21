@@ -1,33 +1,31 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const Client = require('../models/client');
+const Account = require('../models/account');
 
 // Middleware to authenticate user using JWT token.
 const authenticateToken = (req, res, next) => {
   // Extract the JWT token from the Authorization header
   const token = req.headers.authorization?.split(' ')[1];
   if (token == null) {
-    return res.sendStatus(401);
+    return res.status(401).json({ message: 'O token não foi enviado!' });
   }
 
   // Get the JWT secret from the environment variables
   const jwtSecret = process.env.JWT_SECRET;
   if (!jwtSecret) {
-    console.error('JWT secret is not provided');
-    return res.sendStatus(500);
+    return res.status(500).json({ message: 'O JWT secret não foi enviado!' });
   }
 
   // Verify the token
   jwt.verify(token, jwtSecret, async (err, user) => {
     if (err) {
-      console.error('JWT Verification Error:', err);
-      return res.sendStatus(403);
+      return res.status(403).json({ message: 'Existiu um erro na verificação do token:' + err });
     }
 
     // If token is valid, retrieve user from database
     try {
-      const userData = await Client.findById(user.id)
+      const userData = await Account.findById(user.id);
       if (!userData) {
         return res.sendStatus(404);
       }
@@ -35,8 +33,7 @@ const authenticateToken = (req, res, next) => {
       req.user = userData;
       next();
     } catch (err) {
-      console.error('Error finding user:', err);
-      return res.sendStatus(500);
+      return res.status(500).json({ message: 'Error finding user:' + err });
     }
   });
 };

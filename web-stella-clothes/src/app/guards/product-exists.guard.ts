@@ -14,8 +14,8 @@ export class ProductExistsGuard implements CanActivate {
   ) {}
 
   canActivate(next: ActivatedRouteSnapshot): Observable<boolean> {
-    const ref = next.params['ref'];
-    return this._productService.doesProductExist(ref).pipe(
+    const reference = next.params['reference'];
+    return this._productService.doesProductExist(reference).pipe(
       map(isValid => {
         if (isValid)
           return true;

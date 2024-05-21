@@ -1,3 +1,4 @@
 node_modules/
 .env
+google-storage-key.json
 .DS_Store

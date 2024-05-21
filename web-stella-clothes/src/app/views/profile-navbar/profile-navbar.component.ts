@@ -5,6 +5,7 @@ import { User } from '../../shared/interfaces/users/user';
 import { NavigationExtras, Router } from '@angular/router';
 import { ChangeDataComponent } from '../change-data/change-data.component';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/users/user.service';
 
 @Component({
   selector: 'app-profile-navbar',
@@ -22,14 +23,13 @@ export class ProfileNavbarComponent {
 
   constructor(
     private _router: Router,
-    private _userSession: UserSessionHandlerService,
+    private _userService: UserService,
     private _loginService: LoginService
   ) {
-    this.user = this._userSession.getLocalUserData()
-    if (!this.user) {
-      this._loginService.signOut();
-      this._router.navigate(['/']);
-    }
+    this._userService.getCurrentUser().subscribe(
+      data => this.user = data,
+      error => console.log(error)
+    );
   }
 
   signOut() {
@@ -44,6 +44,11 @@ export class ProfileNavbarComponent {
   }
 
   toggleForm(formType: string) {
+    if (formType == 'my-orders') {
+      this._router.navigate(['/my-orders']);
+      return;
+    }
+
     this.showMyAccountMenu = formType === 'my-account';
     this.showChangeDataMenu = formType === 'change-data';
   }

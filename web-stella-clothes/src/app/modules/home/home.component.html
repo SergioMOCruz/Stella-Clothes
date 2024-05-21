@@ -25,16 +25,16 @@
       </div>
       <div id="categories-buttons">
         <div id="categories-buttons-frst">
-          <a class="white-button" [routerLink]="['/Home']">Blusões</a>
-          <a class="white-button" [routerLink]="['/Home']">Camisas</a>
-          <a class="white-button" [routerLink]="['/Home']">Calças</a>
-          <a class="white-button" [routerLink]="['/Home']">Malhas</a>
+          <a class="white-button" (click)="redirectToCategory('Saias')">Saias</a>
+          <a class="white-button" (click)="redirectToCategory('Camisas')">Camisas</a>
+          <a class="white-button" (click)="redirectToCategory('Calças')">Calças</a>
+          <a class="white-button" (click)="redirectToCategory('Camisolas')">Camisolas</a>
         </div>
         <div id="categories-buttons-scnd">
-          <a class="white-button" [routerLink]="['/Home']">T-Shirts</a>
-          <a class="white-button" [routerLink]="['/Home']">Polos</a>
-          <a class="white-button" [routerLink]="['/Home']">Calçado</a>
-          <a class="white-button" [routerLink]="['/Home']">Acessórios</a>
+          <a class="white-button" (click)="redirectToCategory('T-shirts')">T-Shirts</a>
+          <a class="white-button" (click)="redirectToCategory('Cachecóis')">Cachecóis</a>
+          <a class="white-button" (click)="redirectToCategory('Blusões')">Blusões</a>
+          <a class="white-button" (click)="redirectToCategory('Pijamas')">Pijamas</a>
         </div>
       </div>
     </div>

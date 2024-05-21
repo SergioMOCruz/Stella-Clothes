@@ -10,7 +10,7 @@ const app = express();
 // Rate limiter
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 200, // limit each IP to 100 requests per 10 minutes 
+  max: 200, // limit each IP to 100 requests per 10 minutes
 });
 
 // Apply rate limiter to all requests
@@ -20,16 +20,22 @@ app.use(limiter);
 const port = process.env.PORT || 5001;
 
 // Middleware
-const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
-app.use(cors({
-  origin: function (origin, callback) {
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+// TODO: Remove this before deploying to production
+// const allowedOrigins = ['http://localhost:4200', 'http://127.0.0.1:4200'];
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (allowedOrigins.includes(origin) || !origin) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   }
+// }));
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 // Logger
 app.use((req, res, next) => {
@@ -44,12 +50,12 @@ app.use(express.json());
 connectDB();
 
 // Routes
-app.use('/clients', require('./routes/client'));
-app.use('/employees', require('./routes/employee'));
+app.use('/accounts', require('./routes/account'));
 app.use('/products', require('./routes/product'));
 app.use('/orders', require('./routes/order'));
 app.use('/cart', require('./routes/cart'));
 app.use('/categories', require('./routes/category'));
+app.use('/stripe', require('./routes/stripe'));
 
 // Start the server
 app.listen(port, () => {

@@ -76,8 +76,12 @@
   &-name {
     width: 100%;
     font-size: 1rem;
-    font-weight: bold;
     color: black;
+  }
+
+  &-size {
+    font-size: 0.8rem;
+    color: #686868;
   }
 
   &-quantity-price {
@@ -156,5 +160,13 @@
     &:hover {
       filter: brightness(0.8);
     }
+  }
+}
+
+#empty-cart {
+  margin-top: 4rem;
+
+  &-message {
+    margin-bottom: 32rem;
   }
 }

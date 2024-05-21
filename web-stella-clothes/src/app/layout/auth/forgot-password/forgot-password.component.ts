@@ -53,12 +53,12 @@ export class ForgotPasswordComponent {
     if (this.fpasswordForm.valid) {
       let email = this.fpasswordForm.get('email').value;
 
-      this._utilsAuthService
-        .forgotPassword(email)
-        .then(() => {
+      this._utilsAuthService.forgotPassword(email).subscribe(
+        data => {
           this.showWarning('valid');
-        })
-        .catch(() => {
+        },
+        error => {
+          console.log(error);
           this.showWarning('invalid');
         });
     } else {

@@ -73,4 +73,14 @@
   background-color: #000;
   margin-top: 2rem;
   padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.showWarning {
+  margin-top: 2rem;
+}
+
+.add-cart-disabled {
+  cursor: default !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
 }

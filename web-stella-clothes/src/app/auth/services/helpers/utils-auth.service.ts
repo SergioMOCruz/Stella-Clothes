@@ -1,5 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,19 +9,18 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 export class UtilsAuthService {
 
   constructor(
-    public afAuth: AngularFireAuth,
+    private _http: HttpClient
   ) { }
 
   forgotPassword(passwordResetEmail: string) {
-    return this.afAuth
-      .sendPasswordResetEmail(passwordResetEmail)
-      .catch((error) => {
-        window.alert(error);
-      });
+    return this._http.post(`${environment.apiUrl}/accounts/reset-pw`, { email: passwordResetEmail });
   }
 
-  sendVerificationMail() {
-    return this.afAuth.currentUser
-      .then((u: any) => u.sendEmailVerification())
+  verifyToken(token: string) {
+    return this._http.get(`${environment.apiUrl}/accounts/verify-token/${token}`);
+  }
+
+  updatePassword(token: string, password: string) {
+    return this._http.put(`${environment.apiUrl}/accounts/update-pw/${token}`, { password: password });
   }
 }

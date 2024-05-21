@@ -3,10 +3,11 @@
 #navbar {
   position: relative;
   width: 100vw;
+  min-height: 10vh;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 2rem 0;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 
   &-menu, &-logo, &-utils {
     width: 33%;
@@ -50,12 +51,24 @@
 }
 
 #sidenav {
-  width: 25vw;
+  width: 15vw;
   position: absolute;
   top: 0;
   left: 0;
   border: 0;
-  padding: 1.25rem;
+  padding: 3rem 0 0 6rem;
+}
+
+.category {
+  &-title {
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+
+  &-description {
+    margin-bottom: 1rem;
+    cursor: pointer;
+  }
 }
 
 #open-menu {

@@ -1,16 +1,10 @@
 <section id="my-account-container" *ngIf="showMyAccountMenu">
-    <span id="my-account-title">OLÁ {{ user.firstName + ' ' + user.lastName  }}</span>
-    <div id="my-account-items">
+    <span id="my-account-title" *ngIf="user">OLÁ {{ user.firstName + ' ' + user.lastName  }}</span>
+    <div id="my-account-items" (click)="toggleForm('my-orders')">
       <i class="icons fa-solid fa-box-open"></i> AS MINHAS COMPRAS
     </div>
     <div id="my-account-items" (click)="toggleForm('change-data')">
       <i class="icons fa-solid fa-fingerprint"></i> DADOS PESSOAIS
-    </div>
-    <div id="my-account-items">
-      <i class="icons fa-solid fa-credit-card"></i> MÉTODOS DE PAGAMENTO
-    </div>
-    <div id="my-account-items">
-      <i class="icons fa-solid fa-circle-info"></i> APOIO AO CLIENTE
     </div>
     <div id="my-account-items" (click)="signOut()">
       <i class="icons fa-solid fa-door-open"></i> SAIR

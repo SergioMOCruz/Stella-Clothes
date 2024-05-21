@@ -5,9 +5,4 @@ export interface RegisterInterface {
   password: string
   phone: string
   nif: string
-  address: string
-  addressContinued: string
-  city: string
-  postalCode: string
-  country: string
 }

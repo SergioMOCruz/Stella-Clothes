@@ -1,48 +1,105 @@
 const Cart = require('../models/cart');
+const Product = require('../models/product');
 
-// Get all carts
-const getAll = async (req, res) => {
+const getCartByClientId = async (req, res) => {
   try {
-    const carts = await Cart.find();
-    res.status(200).json(carts);
+    const clientId = req.user.id;
+
+    let cart = await Cart.find({ clientId: clientId });
+
+    if (!cart) return res.status(404).json({ message: 'Carrinho não encontrado!' });
+
+    cart = cart.map((item) => {
+      const obj = item.toObject();
+      delete obj.clientId;
+      return obj;
+    });
+
+    return res.status(200).json(cart);
   } catch (error) {
-    console.error('Get All Carts Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error retrieving cart:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
-// Get cart by id
-const getById = async (req, res) => {
+const getCartByClientIdOrganized = async (req, res) => {
   try {
-    const { id } = req.params;
-    const cart = await Cart.findById(id);
-    res.status(200).json(cart);
+    const carts = await Cart.find({ clientId: req.user.id });
+
+    if (!carts) return res.status(404).json({ message: 'Carrinho não encontrado!' });
+
+    const organizedCarts = carts.map((cart) => cart.toObject()).sort((a, b) => a._id - b._id);
+
+    return res.status(200).json(organizedCarts);
   } catch (error) {
-    console.error('Get Cart By Id Error:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error retrieving cart:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
 // Create a new cart
 const create = async (req, res) => {
   try {
-    const { clientId, productsId } = req.body;
+    const clientId = req.user.id;
+    const products = req.body;
 
-    // Check if all fields are filled
-    if (!clientId || !productsId) {
-      return res.status(400).json({ message: 'All fields must be filled' });
+    if (!products || products.length === 0) {
+      return res.status(400).json({ message: 'Produtos não enviados!' });
     }
 
-    // Body of cart
-    const cart = new Cart({
-      clientId,
-      productsId,
-    });
+    for (const product of products) {
+      const { productReference, quantity, size } = product;
 
-    await cart.save();
-    console.log('Cart created with success!\nCart Id:', cart._id);
+      const allowedSizes = ['XS', 'S', 'M', 'L', 'XL'];
+      if (!allowedSizes.includes(size)) {
+        return res
+          .status(400)
+          .json({
+            message: `Tamanho inválido do produto ${productReference}. Os tamanhos permitidos são XS, S, M, L e XL.`,
+          });
+      }
 
-    res.status(201).json({ message: 'Cart registered!' });
+      const existingProduct = await Product.findOne({ reference: productReference, size: size });
+      if (!existingProduct) {
+        return res
+          .status(404)
+          .json({
+            message: `Produto com a referência '${productReference}' e tamanho '${size}' não existe!`,
+          });
+      }
+
+      if (!productReference || !quantity || !size) {
+        return res.status(400).json({ message: 'Existem campos não preenchidos!' });
+      }
+    }
+
+    for (const product of products) {
+      const { productReference, name, image, quantity, size } = product;
+
+      const existingCartItem = await Cart.findOne({
+        clientId: clientId,
+        productReference: productReference,
+        size: size,
+      });
+      if (existingCartItem) {
+        existingCartItem.quantity += product.quantity;
+
+        await existingCartItem.save();
+        res.status(201).json({ message: 'Quantidade do produto atualizada!\n' });
+      } else {
+        const newCartItem = new Cart({
+          clientId,
+          productReference,
+          name,
+          image,
+          quantity,
+          size,
+        });
+
+        await newCartItem.save();
+        res.status(201).json({ message: 'Produto adicionado ao carrinho com sucesso!\n' });
+      }
+    }
   } catch (error) {
     console.error('Cart Registration Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -50,20 +107,20 @@ const create = async (req, res) => {
 };
 
 // Update a cart
-const update = async (req, res) => {
+const updateQuantityInCart = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { clientId, productsId } = req.body;
+    const { item, quantity } = req.body;
+    const clientId = req.user.id;
 
-    // Find cart by id
-    let cart = await Cart.findById(id);
+    const existingCart = await Cart.findOne({ clientId, productReference: item.productReference });
+    if (!existingCart) {
+      return res.status(404).json({ message: 'Carrinho não encontrado!' });
+    }
 
-    // Update cart
-    cart.clientId = clientId || cart.clientId;
-    cart.productsId = productsId || cart.productsId;
+    existingCart.quantity = quantity;
 
-    await cart.save();
-    res.status(200).json({ message: 'Cart updated' });
+    await existingCart.save();
+    res.status(200).json({ message: 'Quantidade do produto atualizada!' });
   } catch (error) {
     console.error('Update Cart Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -71,15 +128,27 @@ const update = async (req, res) => {
 };
 
 // Delete a cart
-const remove = async (req, res) => {
+const removeItemfromCart = async (req, res) => {
   try {
-    const { id } = req.params;
-    await Cart.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Cart deleted' });
+    const clientId = req.user.id;
+    const { productReference, size } = req.body;
+
+    const cart = await Cart.findOneAndRemove({ clientId, productReference, size });
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrinho não encontrado!' });
+    }
+
+    res.status(200).json({ message: 'Carrinho removido com sucesso!' });
   } catch (error) {
     console.error('Delete Cart Error:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = {
+  getCartByClientId,
+  getCartByClientIdOrganized,
+  create,
+  updateQuantityInCart,
+  removeItemfromCart,
+};

@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { getAll, create, update, remove } = require('../controllers/category');
+const { getAll, getById, getByDescription, create, update, remove } = require('../controllers/category');
 const { authenticateToken } = require('../middleware/authenticate');
 
 // GET /category
 // Get all categories
-router.get('/', authenticateToken, getAll);
+router.get('/', getAll);
+
+router.get('/:id', getById);
+
+router.get('/description/:description', getByDescription);
 
 // POST /category
 // Create a new category

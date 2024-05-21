@@ -6,27 +6,40 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../services/products/product.service';
 import { CommonModule } from '@angular/common';
 import { Size } from '../../shared/enum/size';
+import { CategoryService } from '../../services/categories/category.service';
+import { FormsModule } from '@angular/forms';
+import { CartItems } from '../../shared/interfaces/products/cart-items';
+import { CartService } from '../../services/cart/cart.service';
+import { UserService } from '../../services/users/user.service';
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
   templateUrl: './product-page.component.html',
   styleUrl: './product-page.component.scss',
 })
 
 export class ProductPageComponent {
-
+  selectedSize: Size;
   productRef;
   organizedProducts: Product[];
   infoProduct: Product;
+  cart: CartItems[] = [];
+  showValidWarning: boolean = false;
+  showInvalidWarning: boolean = false;
+  addToCartDisabled: boolean = true;
+
 
   constructor(
     private _route: ActivatedRoute,
-    private _productService: ProductService
+    private _productService: ProductService,
+    private _userService: UserService,
+    private _categoryService: CategoryService,
+    private _cartService: CartService
   ) {
     this._route.paramMap.subscribe((params) => {
-      this.productRef = params.get('ref');
+      this.productRef = params.get('reference');
     });
 
     this._productService.getProductByRef(this.productRef).subscribe((data) => {
@@ -34,9 +47,20 @@ export class ProductPageComponent {
         if (Array.isArray(data)) {
           this.organizedProducts = this.sortBySizeAndStock(data);
           this.infoProduct = this.organizedProducts[0];
+
+          this._categoryService.getCategoryById(this.infoProduct.category).subscribe((data) => {
+            this.infoProduct.category = data.description;
+          });
         }
       }
     });
+
+    this._userService.getCurrentUser().subscribe(
+      data => {
+        if (data) this.addToCartDisabled = false;
+      },
+      error => console.log(error)
+    )
   }
 
   sortBySizeAndStock(products: Product[]): Product[] {
@@ -51,5 +75,61 @@ export class ProductPageComponent {
       if (a.stock === b.stock) return 0;
       return a.stock > b.stock ? -1 : 1;
     });
+  }
+
+  async addToCart() {
+    let newItem: boolean = false;
+    this.cart = [];
+
+    await this._cartService.getCartByClient().subscribe((data) => {
+        if (data !== null) this.cart = data;
+      },
+      error => console.log(error)
+    );
+
+    this.organizedProducts.forEach(product => {
+      if (product.size === this.selectedSize && product.stock > 0) {
+        let newCartItem: CartItems = {
+          productReference: product.reference,
+          name: product.name,
+          image: product.image,
+          quantity: 1,
+          size: product.size,
+        };
+
+        if (this.cart.length === 0) this.cart.push(newCartItem);
+        else {
+          for (const cartItem of this.cart) {
+            if (cartItem.productReference === newCartItem.productReference) {
+              cartItem.quantity += 1;
+              return;
+            } else {
+              newItem = true;
+            }
+          }
+
+          if (newItem) {
+            this.cart.push(newCartItem);
+          }
+        }
+      }
+    });
+
+    await this._cartService.changeItemsInCart(this.cart).subscribe(
+      data => {
+        this.showValidWarning = true;
+
+        setTimeout(() => {
+          this.showValidWarning = false;
+        }, 2000);
+      },
+      error => {
+        this.showInvalidWarning = true;
+
+        setTimeout(() => {
+          this.showInvalidWarning = false;
+        }, 2000);
+      }
+    );
   }
 }
