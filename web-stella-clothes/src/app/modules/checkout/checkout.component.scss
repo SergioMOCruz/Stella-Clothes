@@ -13,19 +13,20 @@
     justify-content: space-around;
     align-items: center;
     padding: 2rem 0;
+    margin-top: 2rem;
   }
 
   &-rst-half, &-nd-half {
     width: 50%;
     height: 100%;
-    padding: 1rem 1rem;
   }
 
   &-rst-half {
-    border-right: 1px solid #E2E2E2;
+    margin-right: 3rem;
   }
 
   &-nd-half {
+    border-left: 1px solid #E2E2E2;
     padding: 3rem;
     display: flex;
     flex-direction: column;
@@ -99,7 +100,7 @@
   &-container {
     width: 100%;
     max-height: 55%;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding-right: 1.5rem;
   }
 

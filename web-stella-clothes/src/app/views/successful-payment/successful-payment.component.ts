@@ -46,7 +46,6 @@ export class SuccessfulPaymentComponent {
 
                 this._orderService.sendOrderRequest(paymentId).subscribe(
                   (data: any) => {
-                    console.log(data);
                     this._orderService.uploadPDF(data.order._id, PDFMaker.generatePDF(data.order)).subscribe(
                       data => console.log('Upload successful', data),
                       error => console.error('Upload failed', error)

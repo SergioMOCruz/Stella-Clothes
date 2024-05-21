@@ -1,4 +1,5 @@
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 export default class PDFMaker {
   private static formatDate(date) {

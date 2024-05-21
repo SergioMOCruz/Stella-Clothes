@@ -42,7 +42,7 @@
       <p>{{ order.address.country }}</p>
     </div>
     <div id="order-resume-total">
-      <p>{{ order.orderData.length }} artigos &#64; {{ order.total }} €</p>
+      <p>{{ order.orderData.length }} artigos &#64; {{ roundPrice(order.total) }} €</p>
     </div>
   </div>
 </section>
