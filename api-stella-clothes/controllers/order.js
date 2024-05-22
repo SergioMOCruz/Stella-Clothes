@@ -344,9 +344,13 @@ const updateStatus = async (req, res) => {
       date: Date.now(),
     });
 
+    console.log('Order:', order);
+
     // Send email to user with order status with nodemailer
-    const account = await Account.findById(order.accountId);
-    const email = account.email;
+    const email = order.contactInfo;
+    // Check if email is valid
+    if (!email || !email.includes('@') || !email.includes('.'))
+      return res.status(400).json({ message: 'Email inválido!' });
 
     // Create a Nodemailer transporter
     const transporter = nodemailer.createTransport({
