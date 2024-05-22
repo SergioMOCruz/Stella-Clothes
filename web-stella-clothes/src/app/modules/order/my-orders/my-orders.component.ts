@@ -58,4 +58,8 @@ export class MyOrdersComponent {
   seeOrderDetails(orderId) {
     this._router.navigate(['/order-details/' + orderId]);
   }
+
+  parseTotal(total) {
+    return parseFloat(total.toFixed(2))
+  }
 }

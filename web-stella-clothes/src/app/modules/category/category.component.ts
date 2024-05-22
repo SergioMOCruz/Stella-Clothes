@@ -18,7 +18,7 @@ export class CategoryComponent {
 
   category: string = null;
   idCategory: number = null;
-  categoryProducts: Product[] = null;
+  categoryProducts: Product[] = [];
   emptyCategory: boolean = true;
 
   constructor(
@@ -29,6 +29,9 @@ export class CategoryComponent {
     this.category = this._route.snapshot.paramMap.get('description');
     this._categoryService.getCategoryByDescription(this.category).subscribe(data => this.idCategory = data._id);
 
-    this._productService.getProductsByCategory(this.category).subscribe(data => this.categoryProducts = data);
+    this._productService.getProductsByCategory(this.category).subscribe(
+      data => this.categoryProducts = data,
+      error => console.log(error)
+    );
   }
 }
