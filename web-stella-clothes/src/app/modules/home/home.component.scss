@@ -19,10 +19,10 @@
   background-repeat: no-repeat;
   background-size: cover;
   color: #fff;
+  text-transform: uppercase;
 
   #titles, #buttons {
     width: 100%;
-    height: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -174,4 +174,12 @@
     font-size: 2rem;
     overflow: hidden;
   }
+}
+
+.white-button {
+  font-family: $font-telex;
+  border: 1px solid;
+  padding: 1rem 0;
+  text-decoration: none;
+  cursor: pointer;
 }

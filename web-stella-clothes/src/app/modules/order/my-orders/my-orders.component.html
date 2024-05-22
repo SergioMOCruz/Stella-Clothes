@@ -10,7 +10,7 @@
       <div id="order-details">
         <div class="order-text">{{ getNewestStatus(order) }}</div>
         <div>
-          <span class="order-text">{{order.total}} €</span>
+          <span class="order-text">{{ parseTotal(order.total) }} €</span>
           <button type="button" class="order-button" (click)="seeOrderDetails(order._id)">- Ver Encomenda</button>
         </div>
       </div>
