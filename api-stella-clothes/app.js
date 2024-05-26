@@ -20,7 +20,7 @@ app.use(limiter);
 const port = process.env.PORT || 5001;
 
 // Middleware
-const allowedOrigins = ['http://localhost:4200', 'http://127.0.0.1:4200', 'https://stella-clothes.netlify.app'];
+const allowedOrigins = ['http://localhost:4200', 'http://127.0.0.1:4200', 'https://stella-clothes.netlify.app', 'https://stella-backoffice.netlify.app'];
 app.use(cors({
   origin: function (origin, callback) {
     if (allowedOrigins.includes(origin) || !origin) {
