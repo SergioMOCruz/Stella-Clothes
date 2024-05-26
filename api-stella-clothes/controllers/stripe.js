@@ -35,7 +35,6 @@ const retrievePaymentId = async (req, res) => {
 const createCheckoutSession = async (req, res) => {
   let hash = '';
   const stripe = Stripe(stripeSecretKey);
-  const domain = `http://localhost:4200`;
 
   const amount = req.body.amount;
   let deliveryInfo = req.body.orderInfo;
@@ -93,8 +92,8 @@ const createCheckoutSession = async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: `${domain}/successful-payment?hash=${hash}`,
-      cancel_url: `${domain}/unsuccessful-payment`,
+      success_url: `${process.env.WEBSITE_LINK}/successful-payment?hash=${hash}`,
+      cancel_url: `${process.env.WEBSITE_LINK}/unsuccessful-payment`,
       expand: ['payment_intent'],
     });
 
