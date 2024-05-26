@@ -1,0 +1,8 @@
+<mat-drawer-container id="sidenav-right-sidebar-container" autosize>
+  <mat-drawer id="sidenav-right-sidebar" mode="side" from="right" #rightSideBar>
+    <ng-content></ng-content>
+    <div id="close-menu" (click)="toggleDrawer()">X</div>
+  </mat-drawer>
+</mat-drawer-container>
+
+<div id="overlay" [hidden]="!isVisible"></div>

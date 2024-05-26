@@ -1,0 +1,40 @@
+<mat-drawer-container id="sidenav-container" autosize>
+  <mat-drawer #drawer id="sidenav" mode="side" from="right">
+    <p class="category-title">Coleção</p>
+    <p class="category-description" *ngFor="let category of categories" (click)="redirectToCategory(category.description)">{{ category.description }}</p>
+    <div id="close-menu" (click)="drawer.toggle(); toggleOverlay()">X</div>
+  </mat-drawer>
+</mat-drawer-container>
+
+<div id="navbar">
+  <div id="navbar-menu">
+    <div id="open-menu" (click)="drawer.toggle(); toggleOverlay()"><span></span><span></span><span></span></div>
+  </div>
+  <div id="navbar-logo" routerLink="/">STELLA CLOTHES</div>
+  <div id="navbar-utils">
+    <div id="util-search" (click)="toggleForm('search-product')">
+      <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
+    </div>
+    <div id="util-myaccount" *ngIf="!(isLoggedIn$ | async)" (click)="toggleRightSidebar(); toggleForm('login')">Iniciar Sessão</div>
+    <div id="util-myaccount" *ngIf="(isLoggedIn$ | async)" (click)="toggleRightSidebar(); toggleForm('my-account')">A Minha Conta</div>
+    <div id="util-cart" (click)="toggleRightSidebar(); toggleForm('mini-cart')">
+      <i class="fa-solid fa-bag-shopping"></i>
+    </div>
+  </div>
+</div>
+
+<app-search-product *ngIf="showSearchMenu" (redirectToHomeEvent)="closeMenuEvent()"></app-search-product>
+
+
+<app-right-sidebar (closeMenuTrigger)="closeMenuEvent()" #rightSideBar>
+  <ng-container>
+    <app-login class="auth-containers" *ngIf="showLogin" (redirectToRegisterEvent)="toggleForm('register')" (redirectToForgotPasswordEvent)="toggleForm('forgot-password')"></app-login>
+    <app-register class="auth-containers" *ngIf="showRegister" (redirectToLoginEvent)="toggleForm('login')"></app-register>
+    <app-forgot-password class="auth-containers" *ngIf="showForgotPassword" (redirectToLoginEvent)="toggleForm('login')"></app-forgot-password>
+    <app-mini-cart class="auth-containers" *ngIf="showMiniCart" (redirectToLoginEvent)="toggleForm('login')"></app-mini-cart>
+    <app-profile-navbar class="auth-containers" *ngIf="showProfileMenu && (isLoggedIn$ | async)"></app-profile-navbar>
+  </ng-container>
+</app-right-sidebar>
+
+
+<div id="overlay" (click)="drawer.toggle(); toggleOverlay()" [hidden]="!isVisible"></div>

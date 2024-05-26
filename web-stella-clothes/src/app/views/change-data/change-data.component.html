@@ -1,0 +1,12 @@
+<section id="change-data-container">
+  <form id="change-data-block" [formGroup]="updateInfoForm">
+    Dados Pessoais
+    <input class="user-info" type="text" placeholder="Primeiro Nome" formControlName="firstName" required />
+    <input class="user-info" type="text" placeholder="Último Nome" formControlName="lastName" required />
+    <input class="user-info" type="text" placeholder="Telefone" formControlName="phone" required />
+    <span class="hideDisplay" [ngClass]="{'showWarning invalidData': showInvalidWarning}">Dados inválidos</span>
+    <span class="hideDisplay" [ngClass]="{'showWarning validData': showValidWarning}">Utilizador atualizado com sucesso</span>
+    <input id="change-data-save" type="button" (click)="saveNewInfo()" value="Guardar" />
+  </form>
+  <input id="change-data-go-back" (click)="goBack()" value="Voltar" />
+</section>

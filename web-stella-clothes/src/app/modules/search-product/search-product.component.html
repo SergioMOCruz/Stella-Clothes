@@ -1,0 +1,39 @@
+<div id="search">
+  <div id="search-bar">
+    <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="O QUE ESTÁS À PROCURA?">
+    <i id="search-bar-close"  class="fa-solid fa-x" (click)="redirectToHome()"></i>
+  </div>
+
+  <div id="recommendations" *ngIf="this.searchTerm.length == 0">
+    <div id="recommendations-title">RECOMENDADO PARA TI</div>
+    <div id="recommendations-products">
+      <div id="product-showcase" *ngFor="let product of products" (click)="redirectToProduct(product.reference)">
+        <img class="product-showcase-image" [src]="product.image" alt="roupa">
+        <p class="product-showcase-title">{{ product.name }}</p>
+        <p class="product-showcase-price">{{ product.price }} €</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="showcase-products" *ngIf="searchTerm.length >= 0">
+    <div id="showcase-products-loader" *ngIf="loading; else searchResultsBlock">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+    </div>
+
+    <ng-template #searchResultsBlock>
+      <div id="product-showcase" *ngFor="let product of searchResults" (click)="redirectToProduct(product.reference)">
+        <div class="product-item">
+          <img class="product-showcase-minis" [src]="product.image" alt="roupa">
+          <p class="product-showcase-title">{{ product.name }}</p>
+          <p class="product-showcase-price">{{ product.price }} €</p>
+        </div>
+      </div>
+    </ng-template>
+
+
+    <div *ngIf="searchResults.length === 0 && !loading && searchTerm.length !== 0">
+      LAMENTAMOS, NÃO FORAM ENCONTRADOS RESULTADOS PARA A PESQUISA
+    </div>
+  </div>
+
+</div>

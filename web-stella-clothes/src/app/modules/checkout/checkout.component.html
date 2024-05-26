@@ -1,0 +1,69 @@
+<app-navbar></app-navbar>
+<section id="checkout" *ngIf="(isLoggedIn$ | async) && !isCartEmpty">
+  <div id="checkout-container">
+    <div id="checkout-rst-half">
+      <div id="info-container">
+        <form id="info-block" [formGroup]="checkoutInfoForm">
+          <span>Informações de contacto</span>
+          <input type="email" placeholder="E-mail" formControlName="email" />
+          <span id="shipping-title">Morada de envio</span>
+          <div class="half-inputs">
+            <input type="text" placeholder="Nome Próprio" formControlName="firstName" />
+            <input type="text" placeholder="Apelido" formControlName="lastName" />
+          </div>
+          <input type="text" placeholder="Morada" formControlName="street" />
+          <input type="text" placeholder="Apartamento, suíte, etc. (opcional)" formControlName="addressExtra" />
+          <input type="text" placeholder="Cidade" formControlName="city" />
+          <div class="half-inputs">
+            <input type="text" placeholder="País" formControlName="country" />
+            <input type="text" placeholder="Código Postal" formControlName="postalCode" />
+          </div>
+          <input type="text" placeholder="NIF (opcional)" formControlName="nif" />
+        </form>
+        <div id="actions" class="half-inputs">
+          <span id="go-back" [routerLink]="['/cart']"><i class="fa-solid fa-less-than"></i>Voltar Atrás</span>
+          <button id="go-to-pay" (click)="checkout()">Pagamento</button>
+        </div>
+      </div>
+    </div>
+    <div id="checkout-nd-half">
+      <div id="products-list-item-container">
+        <div id="products-list-item" *ngFor="let product of cartItems">
+          <div id="products-list-item-image">
+            <img [src]="product.image" [alt]="product.name" />
+            <span id="products-list-item-quantity">{{ product.quantity }}</span>
+          </div>
+          <div id="products-list-item-details">
+            <p id="products-list-item-details-name">
+              {{ product.name }}
+            </p>
+            <p id="products-list-item-details-size">
+              Tamanho {{ product.size }}
+            </p>
+          </div>
+          <div id="products-list-item-price">
+            {{ product.price }} €
+          </div>
+        </div>
+      </div>
+
+      <div id="expenses" *ngIf="cartItems.length">
+        <span>Total</span>
+        <span>{{ getSubtotal() }} €</span>
+      </div>
+    <span id="warning-message" class="hideDisplay" [ngClass]="{'showWarning invalidData': showDataWarning}">Dados inválidos</span>
+    <span id="warning-message" class="hideDisplay" [ngClass]="{'showWarning invalidData': showWarning}">Quantidade de produtos inválida</span>
+    </div>
+  </div>
+</section>
+
+
+<section id="log-in-screen" *ngIf="!(isLoggedIn$ | async)">
+  <p>Lamentamos, mas para ver esta página necessita de iniciar sessão</p>
+  <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
+</section>
+
+<section id="log-in-screen" *ngIf="(isLoggedIn$ | async) && isCartEmpty">
+  <p>Lamentamos, mas atualmente não possuí itens no carrinho</p>
+  <a class="redirect" [routerLink]="['/']">Regressar à página principal</a>
+</section>
