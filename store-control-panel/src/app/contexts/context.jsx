@@ -24,7 +24,8 @@ const ContextProvider = (props) => {
   }
 
   // API URL
-  const api = 'http://localhost:3001';
+  //const api = 'http://localhost:3001';
+  const api = 'https://loja-online-x9oa.onrender.com';
 
   // CRUD HEADERS
   const headersCRUD = {
