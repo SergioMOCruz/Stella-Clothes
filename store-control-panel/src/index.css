@@ -140,7 +140,8 @@ ul {
   list-style: none;
 }
 
-input, select {
+input,
+select {
   outline: none;
   border: 1px solid rgba(224, 224, 224, 0.5);
   border-radius: var(--border-radius-input);
@@ -219,5 +220,12 @@ textarea {
   }
   100% {
     background-position: 0% 100%;
+  }
+}
+
+/* MEDIA QUERY THAT ONLY ALLOWS PCS TO ACCESS */
+@media (width > 1024px) {
+  body {
+    display: none;
   }
 }
