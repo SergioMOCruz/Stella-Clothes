@@ -17,7 +17,7 @@ body {
 }
 
 /* MEDIA QUERY THAT ONLY ALLOWS PCS TO ACCESS */
-@media (width > 1024px) {
+@media (width < 1024px) {
   body {
     display: none;
   }
